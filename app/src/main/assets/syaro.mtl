@@ -1,0 +1,554 @@
+newmtl syaroSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG2
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG3
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG4
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG5
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG6
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG7
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd eye glass color.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG8
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd eyes.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG9
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd body.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG10
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG11
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG12
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG13
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG14
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG15
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG16
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG17
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG18
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG19
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG20
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG21
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG22
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd body.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG23
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd body.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG24
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG25
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG26
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd face.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG27
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd face.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG28
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd face.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG29
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd eyestock.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG30
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd face.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG31
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd face.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG32
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd face.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG33
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG34
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd face.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG35
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd face.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG36
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd face.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG37
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG38
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG39
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG40
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG41
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG42
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG43
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG44
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions2.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG45
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG46
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG47
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG48
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions2.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG49
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG50
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd expressions.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG51
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 0.68 0.68 0.68
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG52
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG53
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG54
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG55
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG56
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG57
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG58
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd maid.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG59
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG60
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd underpants.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
+newmtl syaroSG61
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd hair.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 7.61
