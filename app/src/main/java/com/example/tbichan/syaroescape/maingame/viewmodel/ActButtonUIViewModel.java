@@ -22,7 +22,7 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by tbichan on 2017/12/16.
  */
 
-public class UIViewModel extends GlViewModel {
+public class ActButtonUIViewModel extends GlViewModel {
 
     // 環境VMリスト
     private ArrayList<EnvironmentViewModel> environmentViewModelArrayList = new ArrayList<>();
@@ -34,7 +34,7 @@ public class UIViewModel extends GlViewModel {
     // 表示か
     private boolean show = false;
 
-    public UIViewModel(GlView glView, SceneBase sceneBase, String name){
+    public ActButtonUIViewModel(GlView glView, SceneBase sceneBase, String name){
         super(glView, sceneBase, name);
 
     }

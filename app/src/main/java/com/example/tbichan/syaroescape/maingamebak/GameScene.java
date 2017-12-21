@@ -56,7 +56,7 @@ public class GameScene extends SceneBase {
         OpponentViewModel enemyViewModel = new OpponentViewModel(glView, this, "EnemyViewModel");
         enemyViewModel.setPosition(1252, 256);
         glView.addViewModel(enemyViewModel);
-        UIViewModel uiViewModel = new UIViewModel(glView, this, "UIViewModel"); // UIVM
+        UIViewModel uiViewModel = new UIViewModel(glView, this, "ActButtonUIViewModel"); // UIVM
         glView.addViewModel(uiViewModel);
 
         ParticleViewModel particleViewModel = new ParticleViewModel(glView, this, "ParticleModel");

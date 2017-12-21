@@ -105,15 +105,19 @@ public class GlRenderer implements GLSurfaceView.Renderer {
         if (!SceneManager.getInstance().isNowSceneLoad()) return;
 
         // 更新
-        for (int i = 0; i < mViewmodelList.size(); i++) {
+        try {
+            for (int i = 0; i < mViewmodelList.size(); i++) {
 
-            // awakeが行われていないvmは更新しない。
-            GlViewModel glViewModel = mViewmodelList.get(i);
-            if (!glViewModel.isAwakeFlg()) continue;
-            if (glViewModel.getCnt() == 0) glViewModel.start();
-            else glViewModel.update(gl);
-            glViewModel.addCnt();
+                // awakeが行われていないvmは更新しない。
+                GlViewModel glViewModel = mViewmodelList.get(i);
+                if (!glViewModel.isAwakeFlg()) continue;
+                if (glViewModel.getCnt() == 0) glViewModel.start();
+                else glViewModel.update(gl);
+                glViewModel.addCnt();
 
+            }
+        } catch (IndexOutOfBoundsException e) {
+            Log.e("error", e.toString());
         }
 
         /* 1.0
@@ -140,13 +144,17 @@ public class GlRenderer implements GLSurfaceView.Renderer {
         zBuffer = 0.0f;
 
         // 描画
-        for (int i = 0; i < mViewmodelList.size(); i++) {
+        try {
+            for (int i = 0; i < mViewmodelList.size(); i++) {
 
-            // awakeが行われていないvmは描画しない。
-            GlViewModel glViewModel = mViewmodelList.get(i);
-            if (!glViewModel.isAwakeFlg()) continue;
-            if (!glViewModel.isVisible()) continue;
-            glViewModel.draw(this);
+                // awakeが行われていないvmは描画しない。
+                GlViewModel glViewModel = mViewmodelList.get(i);
+                if (!glViewModel.isAwakeFlg()) continue;
+                if (!glViewModel.isVisible()) continue;
+                glViewModel.draw(this);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            Log.e("error", e.toString());
         }
 
         //Log.d("hoge", zBuffer+"");

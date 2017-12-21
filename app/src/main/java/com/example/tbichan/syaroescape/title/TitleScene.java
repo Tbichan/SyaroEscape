@@ -24,7 +24,7 @@ public class TitleScene extends SceneBase {
     public void load(GlView glView) {
         System.out.println("title");
         TitleViewModel titleViewModel = new TitleViewModel(glView, this, "TitleViewModel");
-        UIViewModel uiViewModel = new UIViewModel(glView, this, "UIViewModel");
+        UIViewModel uiViewModel = new UIViewModel(glView, this, "ActButtonUIViewModel");
         FadeViewModel fadeViewModel = new FadeViewModel(glView, this, "FadeViewModel");
         ParticleViewModel particleViewModel = new ParticleViewModel(glView, this, "ParticleModel");
 

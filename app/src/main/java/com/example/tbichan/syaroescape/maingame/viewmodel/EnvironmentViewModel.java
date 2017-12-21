@@ -3,9 +3,7 @@ package com.example.tbichan.syaroescape.maingame.viewmodel;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import android.content.Context;
 import android.util.Log;
-import android.view.MotionEvent;
 
 
 import com.example.tbichan.syaroescape.R;
@@ -24,6 +22,7 @@ import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
 
 import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_ADD_CUP;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_END;
 
 /**
  * Created by tbichan on 2017/12/10.
@@ -59,16 +58,25 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     private boolean playerActive = false;
 
     // uiVM
-    private UIViewModel uiViewModel;
+    private ActButtonUIViewModel uiViewModel;
 
     // デフォルト位置
     private float defaultX = 0f;
 
-    // 移動回数
-    private int moveCnt = 0;
-
     // 初期化済みかどうか
     private boolean initFlg = false;
+
+    // 自分のターンになった時の行動総回数
+    private int preActCnt = 0;
+
+    // 行動総回数(move)
+    private int actCnt = 0;
+
+    // 交代間隔
+    private int actInterval = 2;
+
+    // カップに視点を合わせているか
+    private boolean cupLook = false;
 
     public EnvironmentViewModel(GlView glView, SceneBase sceneBase, String name, int id) {
         super(glView, sceneBase, name);
@@ -135,7 +143,10 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     }
     
     // 環境の変更時に実行されます。
-    public void changeEnvironment() {
+    public void changeEnvironment(boolean end) {
+
+        // 行動回数追加
+        actCnt++;
     	
     	// ステージデータを確認
     	int deskCnt = 0;
@@ -184,20 +195,22 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             cupList.remove(delCup);
         }
 
-    	// 移動回数更新
-        moveCnt++;
-
         // カップ取得回数取得
         int getCupCnt = env.getGetCupCnt();
 
-        Log.d("cupCnt", getCupCnt + "");
-
         // シーンに報告
-        GameScene nowScene = (GameScene)SceneManager.getInstance().getNowScene();
-        nowScene.notify(this);
-    	
-    	// 移動可能リスト取得
-    	//createPlayerEnableMoveList(1);
+        GameScene nowScene = (GameScene)getScene();
+
+        if (end || actCnt - preActCnt >= actInterval) {
+
+            // ターン交代を通知
+            nowScene.notify(this, "turnend");
+
+        } else {
+
+            nowScene.notify(this);
+        }
+
     }
 
     // プレイヤーの移動できるところ一覧を消します。
@@ -368,6 +381,9 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             // 最初の一回は適用しない
             if (initFlg) {
 
+                // ターン終了かどうか
+                boolean end = false;
+
                 // パラメータ確認
                 if (params != null) {
                     if (params.length > 0) {
@@ -375,12 +391,20 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                         // カップ追加時
                         if (params[0].equals(PARAM_ADD_CUP)) {
 
+                            // カップに視点を合わせる。
+                            setCupLook(true);
+
                             createCup();
+
+                        }
+                        // 終了時
+                        else if (params[0].equals(PARAM_END)) {
+                            end = true;
                         }
                     }
                 }
 
-                changeEnvironment();
+                changeEnvironment(end);
             } else {
                 initFlg = true;
             }
@@ -395,7 +419,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     }
 
     // 環境にクエリとして送ります。
-    public void queryEnv(String query, boolean network) {
+    public final void queryEnv(String query, boolean network) {
         env.notify(query);
 
         if (network == true) {
@@ -430,7 +454,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     }
 
 
-    public void setUiViewModel(UIViewModel uiViewModel) {
+    public void setUiViewModel(ActButtonUIViewModel uiViewModel) {
         this.uiViewModel = uiViewModel;
     }
 
@@ -504,13 +528,10 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         // 環境にクエリ通達
         final int playerIndex = player.getMapIndex();
 
-        //String query = playerX + "," + playerY + "," + nextX + "," + nextY;
-        String query = "move:" + playerIndex + "," + playerIndex;
-        //String query = player.getMapX() + ", " + player.getMapY() + ", " + player.getMapX() + ", " + player.getMapY();
+        String query = "end";
+
         queryEnv(query);
 
-        if (moveCnt % 2 == 1) queryEnv(query);
-        //Log.d("hoge", moveCnt+"");
     }
 
     public float getDefaultX() {
@@ -528,6 +549,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     public void setTurn(boolean turn) {
         if (turn) {
             turnCnt = getCnt();
+            preActCnt = actCnt;
         } else {
             turnCnt = -1;
         }
@@ -535,10 +557,6 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
     public int getTurnCnt() {
         return turnCnt;
-    }
-
-    public int getMoveCnt() {
-        return moveCnt;
     }
 
     public Player getPlayer() {
@@ -560,11 +578,22 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         return id;
     }
 
+    public boolean isCupLook() {
+        return cupLook;
+    }
+
+    public void setCupLook(boolean cupLook) {
+        this.cupLook = cupLook;
+    }
+
     /**
      * 移動後の処理です。
      */
     @Override
     public void endMove() {
-        ((GameScene)getScene()).notify(this, "playerLook");
+        if (isTurn() && isCupLook()) {
+            ((GameScene)getScene()).notify(this, "playerLook");
+            setCupLook(false);
+        }
     }
 }

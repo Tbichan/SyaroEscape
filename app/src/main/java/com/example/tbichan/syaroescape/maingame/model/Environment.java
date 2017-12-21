@@ -28,6 +28,9 @@ public class Environment implements GlObservable {
 	// カップ追加時のパラメータ
 	public static final String PARAM_ADD_CUP = "add cup";
 
+	// ターン終了
+	public static final String PARAM_END = "end";
+
 	// ステージマップ(プレイヤー...1、机の位置...2)
 	private int[][] playerMap = {
 			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -178,6 +181,11 @@ public class Environment implements GlObservable {
 			} else if (query.startsWith("cup:")) {
 				final int cupIndex = Integer.parseInt(query.replace("cup:", ""));
 				createCup(cupIndex % MAP_SIZE, cupIndex / MAP_SIZE);
+			} else if (query.startsWith(PARAM_END)) {
+				// 変更を通知
+				for (GlObservable glObservable: observableHashSet) {
+					glObservable.notify(this, PARAM_END);
+				}
 			}
 		}
 

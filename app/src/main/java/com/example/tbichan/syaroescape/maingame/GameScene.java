@@ -1,6 +1,5 @@
 package com.example.tbichan.syaroescape.maingame;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -14,7 +13,8 @@ import com.example.tbichan.syaroescape.maingame.viewmodel.BGViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentOtherPlayerViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.StatusViewModel;
-import com.example.tbichan.syaroescape.maingame.viewmodel.UIViewModel;
+import com.example.tbichan.syaroescape.maingame.viewmodel.ActButtonUIViewModel;
+import com.example.tbichan.syaroescape.maingame.viewmodel.StringViewModel;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
@@ -29,7 +29,7 @@ import com.example.tbichan.syaroescape.scene.SceneBase;
 public class GameScene extends SceneBase implements GlObservable {
 
     // パーティクル
-    ParticleViewModel particleViewModel;
+    private ParticleViewModel particleViewModel;
 
     // 環境VM
     private EnvironmentViewModel environmentViewModel;
@@ -37,6 +37,9 @@ public class GameScene extends SceneBase implements GlObservable {
 
     // ステータス
     private StatusViewModel statusViewModel;
+
+    // 文字VM
+    private StringViewModel stringViewModel;
 
     // 行動総回数
     private int actCnt = 0;
@@ -76,6 +79,7 @@ public class GameScene extends SceneBase implements GlObservable {
         addBitmap(R.drawable.cancel_button);
         addBitmap(R.drawable.your_turn);
         addBitmap(R.drawable.com_turn);
+        addBitmap(R.drawable.end_game);
 
         // vmの追加
         NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
@@ -169,7 +173,7 @@ public class GameScene extends SceneBase implements GlObservable {
         glView.addViewModel(environmentOtherPlayerViewModel);
 
         // UI作成
-        UIViewModel uiViewModel = new UIViewModel(glView, this, "UIViewModel");
+        ActButtonUIViewModel uiViewModel = new ActButtonUIViewModel(glView, this, "ActButtonUIViewModel");
         uiViewModel.addEnvironmentViewModel(environmentViewModel);
         uiViewModel.addEnvironmentViewModel(environmentOtherPlayerViewModel);
         environmentViewModel.setUiViewModel(uiViewModel);
@@ -178,9 +182,15 @@ public class GameScene extends SceneBase implements GlObservable {
         // ステータス
         statusViewModel = new StatusViewModel(glView, this, "StatusViewModel");
 
+        // 文字VM
+        stringViewModel = new StringViewModel(glView, this, "StringViewModel");
+        glView.addViewModel(stringViewModel);
+
         // 通知に追加
         environmentViewModel.addEnvGlObserver(statusViewModel);
+        environmentViewModel.addEnvGlObserver(stringViewModel);
         environmentOtherPlayerViewModel.addEnvGlObserver(statusViewModel);
+        environmentOtherPlayerViewModel.addEnvGlObserver(stringViewModel);
         glView.addViewModel(statusViewModel);
 
         // fadein
@@ -201,19 +211,39 @@ public class GameScene extends SceneBase implements GlObservable {
     // 報告を受けます。
     public void notify(Object o, String... params) {
 
-        if (o instanceof EnvironmentViewModel) {
+        // パラメータ確認
+        if (params != null && params.length > 0) {
 
-            // ターン交代時かどうか
-            boolean turnFlg = false;
+            // ターン終了
+            if (params[0].equals("turnend")) {
+                // プレイヤー交代
+                setTurn(1 - turn);
+            } else if (params[0].startsWith("cup:")) {
+                // カップに視点を合わせる
+                int cupIndex = Integer.parseInt(params[0].replace("cup:", ""));
+                lookAtCup(cupIndex);
+            }
+            else if (params[0].startsWith("playerLook")) {
+                // プレイヤーに視点を合わせる。
+                EnvironmentViewModel envVM = environmentViewModel;
+                if (turn == 1) envVM = environmentOtherPlayerViewModel;
+
+                lookAtPlayer(envVM.getId());
+
+            }
+
+            Log.d("hoges", params[0]);
+        }
+
+        if (o instanceof EnvironmentViewModel) {
 
             // パラメータがないとき
             if (params == null || params.length == 0) {
 
-                Log.d("hoge", "aaaab");
-
                 // 自分の環境から
                 if (o == environmentViewModel) {
 
+                    /*
                     if (environmentViewModel.getMoveCnt() % 2 == 0) {
                         Log.d("交代", environmentViewModel.getMoveCnt() + "");
 
@@ -223,12 +253,7 @@ public class GameScene extends SceneBase implements GlObservable {
                         float playerX = environmentOtherPlayerViewModel.getPlayer().getX();
                         float playerY = environmentOtherPlayerViewModel.getPlayer().getY();
 
-                        // 相手のplayerの中心にVMを移動
-                        /*
-                        environmentViewModel.move(-2400f - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                        environmentOtherPlayerViewModel.move(-2400f + 2400f  - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f),
-                                -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                                */
+
                         lookAt(-2400f - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f));
 
                         // 相手を移動可能に
@@ -236,7 +261,7 @@ public class GameScene extends SceneBase implements GlObservable {
                         cupLook = false;
 
                     }
-
+                    */
                     actCnt++;
 
                 }
@@ -244,6 +269,7 @@ public class GameScene extends SceneBase implements GlObservable {
                 // 相手の環境から
                 else if (o == environmentOtherPlayerViewModel) {
 
+                    /*
                     if (environmentOtherPlayerViewModel.getMoveCnt() % 2 == 0) {
                         Log.d("交代", environmentOtherPlayerViewModel.getMoveCnt() + "");
 
@@ -251,19 +277,13 @@ public class GameScene extends SceneBase implements GlObservable {
                         float playerX = environmentViewModel.getPlayer().getX();
                         float playerY = environmentViewModel.getPlayer().getY();
 
-                        // 相手のplayerの中心にVMを移動
-                        /*
-                        environmentViewModel.move(-(playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                        environmentOtherPlayerViewModel.move(2400f - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f),
-                                -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                                */
                         lookAt(-(playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f));
 
                         // 自分を移動可能に
                         setTurn(0);
                         cupLook = false;
 
-                    }
+                    }*/
 
                     actCnt++;
 
@@ -273,8 +293,8 @@ public class GameScene extends SceneBase implements GlObservable {
             // パラメータがあるとき
             else if (params != null && params.length > 0) {
 
-                Log.d("hoge", params[0]);
                 // カップ追加時
+                /*
                 if (params[0].startsWith("cup:")) {
 
                     // 獲得したカップの位置を取得
@@ -286,12 +306,6 @@ public class GameScene extends SceneBase implements GlObservable {
                     // 移動量
                     float moveParam = -2400f;
                     if (o == environmentViewModel) moveParam = 0f;
-
-                    /*
-                    environmentViewModel.move(moveParam - (cupX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(cupY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                    environmentOtherPlayerViewModel.move(moveParam + 2400f - (cupX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f),
-                            -(cupY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                    */
 
                     lookAt(moveParam - (cupX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(cupY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f));
 
@@ -307,13 +321,6 @@ public class GameScene extends SceneBase implements GlObservable {
                         float playerX = environmentViewModel.getPlayer().getX();
                         float playerY = environmentViewModel.getPlayer().getY();
 
-                        // playerの中心にVMを移動
-                        /*
-                        environmentViewModel.move(-(playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                        environmentOtherPlayerViewModel.move(2400f - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f),
-                                -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                                */
-
                         lookAt(-(playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f));
                     }
 
@@ -323,17 +330,12 @@ public class GameScene extends SceneBase implements GlObservable {
                         float playerX = environmentOtherPlayerViewModel.getPlayer().getX();
                         float playerY = environmentOtherPlayerViewModel.getPlayer().getY();
 
-                        // 相手のplayerの中心にVMを移動
-                        /*
-                        environmentViewModel.move(-2400f - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                        environmentOtherPlayerViewModel.move(-2400f + 2400f - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f),
-                                -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), 25);
-                                */
                         lookAt(-2400f - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f));
                     }
 
                     cupLook = false;
                 }
+                */
             }
         }
 
@@ -344,13 +346,21 @@ public class GameScene extends SceneBase implements GlObservable {
         return actCnt;
     }
 
-    public void setTurn(int turn) {
+    public void setTurn(final int turn) {
+
+        EnvironmentViewModel envVM = environmentViewModel;
+        if (turn == 1) envVM = environmentOtherPlayerViewModel;
+
+        // 次のプレイヤーに視点を合わせる
+        lookAtPlayer(envVM.getId());
+
         this.turn = turn;
 
         // ターンを報告
         environmentViewModel.setTurn(turn == 0);
         environmentOtherPlayerViewModel.setTurn(turn == 1);
         statusViewModel.setTurn(turn);
+        stringViewModel.setTurn(turn);
 
     }
 
@@ -362,6 +372,39 @@ public class GameScene extends SceneBase implements GlObservable {
         environmentViewModel.move(lx, ly, 25);
         environmentOtherPlayerViewModel.move(lx + 2400f, ly, 25);
 
+    }
+
+    /**
+     * プレイヤーにカメラを合わせます。
+     */
+    public void lookAtPlayer(final int id) {
+        // プレイヤー位置
+        EnvironmentViewModel envVM = environmentViewModel;
+        if (id == environmentOtherPlayerViewModel.getId()) envVM = environmentOtherPlayerViewModel;
+        float playerX = envVM.getPlayer().getX();
+        float playerY = envVM.getPlayer().getY();
+
+        // カメラ移動
+        float tmp = 0f;
+        if (id == environmentOtherPlayerViewModel.getId()) tmp = -2400f;
+        lookAt(tmp - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f));
+    }
+
+    /**
+     * 新しくできたカップにカメラを合わせます。
+     * @return
+     */
+    public void lookAtCup(final int cupIndex) {
+
+        // プレイヤー位置
+        final float cupX = EnvSprite.parseX(cupIndex);
+        final float cupY = EnvSprite.parseY(cupIndex);
+
+        // 移動量
+        float moveParam = 0f;
+        if (turn == 1) moveParam = -2400f;
+
+        lookAt(moveParam - (cupX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(cupY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f));
     }
 
     public int getTurn() {
