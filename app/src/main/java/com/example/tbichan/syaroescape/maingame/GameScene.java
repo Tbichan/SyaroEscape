@@ -70,6 +70,7 @@ public class GameScene extends SceneBase implements GlObservable {
         addBitmap(R.drawable.tile_0);
         addBitmap(R.drawable.syaro_menu);
         addBitmap(R.drawable.syaro_icon);
+        addBitmap(R.drawable.anko);
         addBitmap(R.drawable.enable);
         addBitmap(R.drawable.desk);
         addBitmap(R.drawable.cups);

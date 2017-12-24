@@ -42,7 +42,7 @@ public class Environment implements GlObservable {
 			{0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2},
 			{0, 2, 0, 0, 2, 0, 2, 2, 2, 2, 0, 0},
 			{2, 0, 0, 0, 2, 2, 0, 0, 0, 2, 0, 2},
-			{0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 2},
+			{0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2},
 			{0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0},
 			{0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0},
 
@@ -136,10 +136,39 @@ public class Environment implements GlObservable {
 
 		}
 
+		// 敵が通れる位置を取得
+		moveEnemys();
+
 		// 変更を通知
 		for (GlObservable glObservable: observableHashSet) {
 			glObservable.notify(this, params);
 		}
+	}
+
+	/**
+	 * 敵が移動します。
+	 */
+	public void moveEnemys() {
+
+		// 配列のコピー
+		int[][] hogeMap = new int[MAP_SIZE][MAP_SIZE];
+		for (int y = 0; y < hogeMap.length; y++) {
+			for (int x = 0; x < hogeMap[y].length; x++) {
+				int map = playerMap[y][x];
+				hogeMap[y][x] = map;
+			}
+		}
+		hogeMap[MAP_SIZE - 1][MAP_SIZE - 1] = 3;
+
+		// A-starアルゴリズムによる最短経路探索
+		AStar aStar = new AStar(hogeMap);
+		aStar.setStartId(1);
+		aStar.setSpaseId(0);
+		aStar.setGoalId(3);
+
+		aStar.loadMap();
+		aStar.calc();
+		aStar.print();
 	}
 
 	/**

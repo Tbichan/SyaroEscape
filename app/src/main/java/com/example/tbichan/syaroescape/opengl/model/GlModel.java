@@ -639,8 +639,8 @@ public abstract class GlModel {
 
         // テクスチャNo
         textureNo = texture[0];
-        Log.e("CHECLK", "ID:" + texture[0]);
-        Log.e("CHECLK", "GLES20.GL_TEXTURE2:" + GLES20.GL_TEXTURE2);
+        //Log.e("CHECLK", "ID:" + texture[0]);
+        //Log.e("CHECLK", "GLES20.GL_TEXTURE2:" + GLES20.GL_TEXTURE2);
     }
 
     // 拡大、縮小を行います。
