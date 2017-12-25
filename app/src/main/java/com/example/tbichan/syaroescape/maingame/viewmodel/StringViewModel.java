@@ -96,8 +96,8 @@ public class StringViewModel extends GlViewModel implements GlObservable {
         };
 
         endGameButton.setTexture(R.drawable.end_game);
-        endGameButton.setPosition(GlView.VIEW_WIDTH * 0.85f - 400, 50);
-        endGameButton.setSize(800, 100);
+        endGameButton.setPosition(0f, GlView.VIEW_HEIGHT - 70);
+        endGameButton.setSize(500, 70);
         addModel(endGameButton);
 
         setTurn(0);

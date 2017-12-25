@@ -13,6 +13,7 @@ import com.example.tbichan.syaroescape.maingame.model.EnableFloor;
 import com.example.tbichan.syaroescape.maingame.model.EnvSprite;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
 import com.example.tbichan.syaroescape.maingame.model.Player;
+import com.example.tbichan.syaroescape.maingame.model.Rabbit;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
@@ -44,6 +45,9 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     
     // 移動可能床リスト
     private ArrayList<EnableFloor> enableFloorList = new ArrayList<>();
+
+    // ウサギリスト
+    private ArrayList<Rabbit> rabbitList = new ArrayList<>();
     
     // 環境
     Environment env;
@@ -151,6 +155,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     	// ステージデータを確認
     	int deskCnt = 0;
         int cupCnt = 0;
+        int rabbitCnt = 0;
     	// プレイヤーモデルをロード
     	for (int y = 0; y < Environment.MAP_SIZE; y++) {
             for (int x = 0; x < Environment.MAP_SIZE; x++) {
@@ -170,6 +175,11 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                         deskCnt++;
                         break;
 
+                    case Environment.RABBIT_ID:
+                        // ウサギ位置変更
+                        rabbitList.get(rabbitCnt).move(y, x);
+                        rabbitCnt++;
+                        break;
                 }
 
                 // カップ版id取得
@@ -306,6 +316,10 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
     // マップを読み込みます。
     public void loadMap() {
+
+        // ステージデータを確認
+        int deskCnt = 0;
+        int cupCnt = 0;
     	
     	// プレイヤーモデルをロード
     	for (int y = 0; y < Environment.MAP_SIZE; y++) {
@@ -332,6 +346,18 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                         // VMに追加
                         addModel(desk);
                         break;
+
+                    case Environment.RABBIT_ID:
+                        // ウサギ作成
+                        Rabbit rabbit = new Rabbit(this, "rabbit");
+                        rabbit.move(y, x);
+
+                        // リストに追加
+                        rabbitList.add(rabbit);
+
+                        // VMに追加
+                        addModel(rabbit);
+                        break;
                 }
 
                 // カップ版id取得
@@ -341,7 +367,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
                     case Environment.CUP_ID:
                         // カップ作成
-                        Cup cup = new Cup(this, "cup");
+                        Cup cup = new Cup(this, "cup_" + cupCnt);
                         cup.move(y, x);
                         cup.setTexture(R.drawable.cups);
 
@@ -350,6 +376,9 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
                         // VMに追加
                         addModel(cup);
+
+                        cupCnt++;
+
                         break;
                 }
     		}
