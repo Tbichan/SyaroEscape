@@ -13,8 +13,8 @@
         android:theme="@android:style/Theme.NoTitleBar">
         <activity
             android:name=".activity.MainActivity"
-            android:screenOrientation="landscape"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,6 +27,12 @@
         <activity
             android:name=".activity.PlayerNameActivity"
             android:theme="@android:style/Theme.Translucent" />
+        <activity
+            android:name=".activity.OKCancelActivity"
+            android:theme="@android:style/Theme.Translucent" />
+        <activity android:name=".activity.OKActivity"
+            android:theme="@android:style/Theme.Translucent">
+        </activity>
     </application>
 
 </manifest>

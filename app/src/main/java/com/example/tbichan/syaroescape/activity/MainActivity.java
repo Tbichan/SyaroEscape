@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.tbichan.syaroescape.R;
+import com.example.tbichan.syaroescape.dialog.CustomDialogFragment;
 import com.example.tbichan.syaroescape.findbattleuser.FindBattleUserScene;
 import com.example.tbichan.syaroescape.menu.MenuScene;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
@@ -178,6 +179,37 @@ public class MainActivity extends Activity {
 
         // Activityのアニメーション設定
         //instance.overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
+    }
+
+    // OKCancelダイアログを表示します。
+    public static void showOKCancelDialog(UIListener positive, UIListener negative){
+
+        // 登録
+        EditAlertListenerManager.setPositiveListener(positive);
+        EditAlertListenerManager.setNegativeListener(negative);
+
+        // 画面遷移
+        Intent intent = new Intent(instance, OKCancelActivity.class);
+        instance.startActivityForResult(intent, 1);
+
+        // Activityのアニメーション設定
+        //instance.overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
+
+    }
+
+    // OKCancelダイアログを表示します。
+    public static void showOKDialog(UIListener pos){
+
+        // 登録
+        EditAlertListenerManager.setPositiveListener(pos);
+
+        // 画面遷移
+        Intent intent = new Intent(instance, OKActivity.class);
+        instance.startActivityForResult(intent, 1);
+
+        // Activityのアニメーション設定
+        //instance.overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
+
     }
 
     // テキストダイアログを表示します。

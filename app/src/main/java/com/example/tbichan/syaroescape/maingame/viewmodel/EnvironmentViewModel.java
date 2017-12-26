@@ -132,17 +132,19 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         player.setEnviromentViewModel(this);
         addModel(player);
 
+        // ステージをロード
+        loadMap();
+
+        // 初期化
+        env.init(20171226);
+
     }
 
     // 蛻晄悄蜃ｦ逅�蛻･繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ逋ｻ骭ｲ)
     @Override
     public void start() {
     	
-    	// ステージをロード
-    	loadMap();
 
-        // 初期化
-        env.init();
     	
     }
     
@@ -418,12 +420,12 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                     if (params.length > 0) {
 
                         // カップ追加時
-                        if (params[0].equals(PARAM_ADD_CUP)) {
+                        if (params[0].startsWith(PARAM_ADD_CUP)) {
 
                             // カップに視点を合わせる。
                             setCupLook(true);
-
-                            createCup();
+                            // sceneに報告
+                            ((GameScene)getScene()).notify(this, new String[]{params[0]});
 
                         }
                         // 終了時
@@ -526,36 +528,8 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         playerActive = false;
     }
 
-    /**
-     * ランダムにカップを作成します。
-     */
-    public void createCup() {
-        final int playerX = player.getMapX();
-        final int playerY = player.getMapY();
-
-        int cupX = (int) (Math.random() * Environment.MAP_SIZE);
-        int cupY = (int) (Math.random() * Environment.MAP_SIZE);
-
-        // プレイヤーと重なっているか確認
-        while ((cupX == playerX && cupY == playerY) || env.getCupMapID(cupY, cupX) == Environment.CUP_ID) {
-            cupX = (int) (Math.random() * Environment.MAP_SIZE);
-            cupY = (int) (Math.random() * Environment.MAP_SIZE);
-        }
-
-        // クエリ作成
-        String query = "cup:" + (cupY * Environment.MAP_SIZE + cupX);
-
-        queryEnv(query);
-
-        // sceneに報告
-        ((GameScene)getScene()).notify(this, new String[]{query});
-    }
-
     // 移動しないで終了します。
     public void endTurn() {
-        // プレイヤー移動
-        // 環境にクエリ通達
-        final int playerIndex = player.getMapIndex();
 
         String query = "end";
 

@@ -1,9 +1,12 @@
 package com.example.tbichan.syaroescape.findbattleuser.viewmodel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 
 import com.example.tbichan.syaroescape.R;
+import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.menu.MenuScene;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
@@ -12,6 +15,7 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.ui.UIListener;
 
 public class BGViewModel extends GlViewModel {
 	
@@ -94,6 +98,16 @@ public class BGViewModel extends GlViewModel {
 
 					@Override
 					public void run() {
+
+						MainActivity.showOKDialog(new UIListener() {
+							@Override
+							public void onClick(View view) {
+								SceneManager.getInstance().setNextScene(new MenuScene());
+							}
+						});
+
+
+						/*
 						// TODO �����������ꂽ���\�b�h�E�X�^�u
 						try {
 							Thread.sleep(5000);
@@ -103,6 +117,7 @@ public class BGViewModel extends GlViewModel {
 						
 						// ���j���[�ɖ߂�
 						SceneManager.getInstance().setNextScene(new MenuScene());
+						*/
 					}
             		
             	}).start();

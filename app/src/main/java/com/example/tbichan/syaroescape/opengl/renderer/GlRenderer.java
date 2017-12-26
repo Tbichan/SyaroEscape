@@ -118,19 +118,9 @@ public class GlRenderer implements GLSurfaceView.Renderer {
             }
         } catch (IndexOutOfBoundsException e) {
             Log.e("error", e.toString());
+        } catch (NullPointerException e) {
+            Log.e("error", e.toString());
         }
-
-        /* 1.0
-        // 描画用バッファをクリア
-        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-
-        gl.glClear(GL10.GL_COLOR_BUFFER_BIT
-                | GL10.GL_DEPTH_BUFFER_BIT);
-
-        gl.glMatrixMode(GL10.GL_MODELVIEW);
-        gl.glLoadIdentity();
-        gl.glTranslatef(0, 0, -3f);
-        */
 
         //MainActivity.getGlView().waitTouch();
 
@@ -154,6 +144,8 @@ public class GlRenderer implements GLSurfaceView.Renderer {
                 glViewModel.draw(this);
             }
         } catch (IndexOutOfBoundsException e) {
+            Log.e("error", e.toString());
+        } catch (NullPointerException e) {
             Log.e("error", e.toString());
         }
 

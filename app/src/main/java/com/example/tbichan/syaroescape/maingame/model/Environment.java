@@ -2,9 +2,12 @@ package com.example.tbichan.syaroescape.maingame.model;
 
 
 
+import android.util.Log;
+
 import com.example.tbichan.syaroescape.opengl.GlObservable;
 
 import java.util.HashSet;
+import java.util.Random;
 
 /**
  * 環境モデルです。
@@ -36,7 +39,7 @@ public class Environment implements GlObservable {
 
 	// ステージマップ(プレイヤー...1、机の位置...2、ウサギ...3)
 	private int[][] playerMap = {
-			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
 			{0, 1, 2, 2, 0, 0, 0, 0, 0, 2, 2, 0},
 			{2, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0},
 			{2, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 2},
@@ -47,7 +50,7 @@ public class Environment implements GlObservable {
 			{2, 0, 0, 0, 2, 2, 0, 0, 0, 2, 0, 2},
 			{0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2},
 			{0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0},
-			{0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 3},
+			{3, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 3},
 
 
 	};
@@ -70,8 +73,14 @@ public class Environment implements GlObservable {
 
 	};
 
+	// 乱数設定用
+	private Random r;
+
 	// Observserable
 	private HashSet<GlObservable> observableHashSet = new HashSet<>();
+
+	// 行動回数
+	private int actionCnt = 0;
 
 	// 獲得したカップ数
 	private int getCupCnt = 0;
@@ -134,13 +143,28 @@ public class Environment implements GlObservable {
 			// 獲得
 			getCupCnt++;
 
-			params = new String[1];
-			params[0] = PARAM_ADD_CUP;
+			// シード値に応じてカップ作成
+			int nextCupX = r.nextInt(MAP_SIZE);
+			int nextCupY = r.nextInt(MAP_SIZE);
 
+			// プレイヤーの位置かカップと被ったらやり直し
+			while (playerMap[nextCupY][nextCupX] == PLAYER_ID || cupMap[nextCupY][nextCupX] == CUP_ID) {
+				nextCupX = r.nextInt(MAP_SIZE);
+				nextCupY = r.nextInt(MAP_SIZE);
+			}
+
+			createCup(nextCupX, nextCupY);
+
+			// パラメータに設定
+			params = new String[1];
+			params[0] = PARAM_ADD_CUP + ":" + (nextCupY * MAP_SIZE + nextCupX);
 		}
 
+		// 行動回数増加
+		actionCnt++;
+
 		// 敵が通れる位置を取得
-		moveEnemys();
+		if (actionCnt % 2 == 0) moveEnemys();
 
 		// 変更を通知
 		for (GlObservable glObservable: observableHashSet) {
@@ -161,17 +185,87 @@ public class Environment implements GlObservable {
 				hogeMap[y][x] = map;
 			}
 		}
-		hogeMap[MAP_SIZE - 1][MAP_SIZE - 1] = 3;
 
-		// A-starアルゴリズムによる最短経路探索
-		AStar aStar = new AStar(hogeMap);
-		aStar.setStartId(1);
-		aStar.setSpaseId(0);
-		aStar.setGoalId(3);
 
-		aStar.loadMap();
-		aStar.calc();
-		aStar.print();
+		for (int i = 0;; i++) {
+			// i番目の敵インデックス取得
+			int rabbitIndex = -1;
+
+			int num = 0;
+
+			boolean flg = true;
+
+			for (int y = 0; y < hogeMap.length; y++) {
+				for (int x = 0; x < hogeMap[y].length; x++) {
+					int map = hogeMap[y][x];
+					if (map == RABBIT_ID) {
+
+						if (num == i) {
+
+							rabbitIndex = y * MAP_SIZE + x;
+							flg = false;
+							break;
+						}
+						num++;
+					}
+				}
+
+				if (!flg) break;
+			}
+
+
+
+			if (rabbitIndex == -1) break;
+
+			// ゴールに設定
+			hogeMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = 100;
+
+
+			// A-starアルゴリズムによる最短経路探索
+			AStar aStar = new AStar(hogeMap);
+			aStar.setStartId(1);
+			aStar.setSpaseId(0);
+			aStar.setGoalId(100);
+
+			aStar.loadMap();
+			aStar.calc();
+			aStar.print();
+
+			// 次の敵インデックス取得
+			int nextIndex = aStar.next();
+
+			// ルートがなければ静止
+			if (nextIndex != -1) {
+
+				// 消す
+				playerMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = 0;
+
+				playerMap[nextIndex / MAP_SIZE][nextIndex % MAP_SIZE] = RABBIT_ID;
+			}
+
+			// もとに戻す
+			hogeMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = RABBIT_ID;
+		}
+
+	}
+
+	/**
+	 * i-1番目の敵インデックスを取得します。
+	 */
+	public int getRabbitIndex(final int i){
+
+		int num = 0;
+
+		for (int y = 0; y < playerMap.length; y++) {
+			for (int x = 0; x < playerMap[y].length; x++) {
+				int map = playerMap[y][x];
+				if (map == RABBIT_ID) {
+					if (num == i) return y * MAP_SIZE + x;
+					num++;
+				}
+			}
+		}
+		return -1;
 	}
 
 	/**
@@ -187,7 +281,11 @@ public class Environment implements GlObservable {
 	}
 
 	// 初期化
-    public void init() {
+    public void init(int seed) {
+
+		// シード値を設定
+		r = new Random(seed);
+
         // 変更を通知
         for (GlObservable glObservable: observableHashSet) {
             glObservable.notify(this);
@@ -239,9 +337,14 @@ public class Environment implements GlObservable {
 
 			// 次の次が机ならfalse
 			if (playerMap[newY + dy][newX + dx] == DESK_ID) return false;
+			// 次の次がウサギならfalse
+			if (playerMap[newY + dy][newX + dx] == RABBIT_ID) return false;
 
 			return true;
 		}
+
+		// 次にウサギがいればfalse
+		if (playerMap[newY][newX] == RABBIT_ID) return false;
 
 		return true;
 	}
@@ -250,4 +353,7 @@ public class Environment implements GlObservable {
 		observableHashSet.add(glObservable);
 	}
 
+	public int getActionCnt() {
+		return actionCnt;
+	}
 }

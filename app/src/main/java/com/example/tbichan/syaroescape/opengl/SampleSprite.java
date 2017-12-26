@@ -70,7 +70,7 @@ public class SampleSprite {
         height    = bitmap.getHeight();
     }
 
-    public void draw( GL10 gl){
+    public void draw(GL10 gl){
         gl.glDisable(GL10.GL_DEPTH_TEST);
         //背景色を白色で塗りつぶし
         gl.glColor4x(0x10000, 0x10000, 0x10000, 0x10000);

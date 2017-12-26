@@ -66,6 +66,7 @@ public class AStar {
      */
     public void calc(){
 
+
         // ゴールのx, y座標
         int tx = goal.getX();
         int ty = goal.getY();
@@ -180,6 +181,21 @@ public class AStar {
             }
             System.out.println();
         }
+    }
+
+    /**
+     * 次の経路インデックス取得
+     */
+    public int next() {
+
+        Node parent = goal.getParent();
+
+        if (parent != null) {
+            return parent.getY() * size + parent.getX();
+
+        }
+        return -1;
+
     }
 
     /**

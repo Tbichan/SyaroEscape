@@ -219,9 +219,9 @@ public class GameScene extends SceneBase implements GlObservable {
             if (params[0].equals("turnend")) {
                 // プレイヤー交代
                 setTurn(1 - turn);
-            } else if (params[0].startsWith("cup:")) {
+            } else if (params[0].startsWith(Environment.PARAM_ADD_CUP)) {
                 // カップに視点を合わせる
-                int cupIndex = Integer.parseInt(params[0].replace("cup:", ""));
+                int cupIndex = Integer.parseInt(params[0].replace(Environment.PARAM_ADD_CUP + ":", ""));
                 lookAtCup(cupIndex);
             }
             else if (params[0].startsWith("playerLook")) {
@@ -233,7 +233,7 @@ public class GameScene extends SceneBase implements GlObservable {
 
             }
 
-            Log.d("hoges", params[0]);
+            Log.d("params", params[0]);
         }
 
         if (o instanceof EnvironmentViewModel) {

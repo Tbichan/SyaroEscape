@@ -1,0 +1,31 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ボタンが押されていないとき -->
+    <item android:state_pressed="false" android:state_enabled="true">
+        <shape android:shape="rectangle" >
+            <solid android:color="#FF0000" />
+            <stroke android:width="1px" android:color="#CC000A" />
+            <padding android:left="150px" android:top="100px" android:right="150px" android:bottom="100px" />
+            <corners android:radius="30px" />
+            <gradient android:startColor="#FFDF91" android:endColor="#FFEEC9" android:angle="270" />
+        </shape>
+    </item>
+    <!-- ボタンが押されたとき -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle" >
+            <solid android:color="#FF0000" />
+            <stroke android:width="1px" android:color="#CC000A" />
+            <padding android:left="100px" android:top="100px" android:right="100px" android:bottom="100px" />
+            <corners android:radius="30px" />
+            <gradient android:startColor="#998557" android:endColor="#998E78" android:angle="270" />
+        </shape>
+    </item>
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle" >
+            <solid android:color="#BBBBBB" />
+            <stroke android:width="10px" android:color="#BBBBBB" />
+            <padding android:left="100px" android:top="100px" android:right="100px" android:bottom="100px" />
+            <corners android:radius="30px" />
+            <gradient android:startColor="#BBBBBB" android:endColor="#BBBBBB" />
+        </shape>
+    </item>
+</selector>

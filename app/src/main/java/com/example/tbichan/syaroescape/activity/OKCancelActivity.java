@@ -1,29 +1,22 @@
 package com.example.tbichan.syaroescape.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.ui.EditAlertListenerManager;
 
-public class PlayerNameActivity extends Activity {
+public class OKCancelActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +50,6 @@ public class PlayerNameActivity extends Activity {
 
             activity = getActivity();
 
-
-
             Dialog dialog = new Dialog(activity);
 
             // タイトル非表示
@@ -66,7 +57,7 @@ public class PlayerNameActivity extends Activity {
 
             dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
             dialog.setCanceledOnTouchOutside(false);
-            dialog.setContentView(R.layout.custom_name_dialog);
+            dialog.setContentView(R.layout.custom_okcancel);
 
             // 背景を透明にする
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -74,28 +65,25 @@ public class PlayerNameActivity extends Activity {
             // OKボタンのリスナ
             Button button = (Button)dialog.findViewById(R.id.positive_button);
             //button.setTypeface(Typeface.createFromAsset(activity.getAssets(), "uzura.ttf"));
-            editText = (EditText)dialog.findViewById(R.id.name_text);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
                     // クリック伝達
-                    EditAlertListenerManager.getPositiveListener().onClick(editText);
+                    EditAlertListenerManager.getPositiveListener().onClick(null);
 
                     dismiss();
                     activity.finish();
                 }
             });
-
-            /*
             // closeボタンのリスナ
-            dialog.findViewById(R.id.close_button).setOnClickListener(new View.OnClickListener() {
+            dialog.findViewById(R.id.negative_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     dismiss();
                     activity.finish();
                 }
-            });*/
+            });
 
             return dialog;
         }
