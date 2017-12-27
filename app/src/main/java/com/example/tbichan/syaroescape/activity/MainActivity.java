@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
                         // 画面ON時
                         Log.d("surface", "SCREEN_ON");
                         // テクスチャリロード
-                        MainActivity.getGlView().loadTexAll();
+                        //MainActivity.getGlView().loadTexAll();
                     } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
                         // 画面OFF時
                         Log.d("surface", "SCREEN_OFF");
@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause(){
         super.onPause();
-        if (glView != null) glView.onPause();
+        //if (glView != null) glView.onPause();
     }
 
     @Override
@@ -269,7 +269,7 @@ public class MainActivity extends Activity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         // テクスチャリロード
-        MainActivity.getGlView().loadTexAll();
+        //MainActivity.getGlView().loadTexAll();
         Log.d("MainActivity", "return");
     }
 

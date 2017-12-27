@@ -31,8 +31,8 @@ public class GlViewCallBack implements SurfaceHolder.Callback, Runnable{
             thread.start(); //スレッドを開始
         } else {
             // テクスチャリロード
-            MainActivity.getGlView().loadTexAll();
-            Log.d("surface", "reloadTex");
+            //MainActivity.getGlView().loadTexAll();
+            //Log.d("surface", "reloadTex");
         }
     }
 

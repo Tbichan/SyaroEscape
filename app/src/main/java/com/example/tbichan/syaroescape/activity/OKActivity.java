@@ -7,12 +7,15 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.ui.EditAlertListenerManager;
@@ -28,6 +31,7 @@ public class OKActivity extends Activity {
         dialogFragment.setCancelable(false);
         dialogFragment.show(getFragmentManager(), "test");
 
+
     }
 
     @Override
@@ -40,10 +44,16 @@ public class OKActivity extends Activity {
         }
     }
 
-    public static class TestDialogFragment extends DialogFragment {
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d("TouchEvent", "X:" + event.getX() + ",Y:" + event.getY());
+        MainActivity.getGlView().onTouchEvent(event);
+        return false;
+    }
+
+    public static class TestDialogFragment extends DialogFragment implements View.OnTouchListener {
 
         Activity activity;
-        EditText editText;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -56,6 +66,7 @@ public class OKActivity extends Activity {
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
             dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
             dialog.setCanceledOnTouchOutside(false);
             dialog.setContentView(R.layout.activity_ok_dialog);
 
@@ -65,6 +76,7 @@ public class OKActivity extends Activity {
             // OKボタンのリスナ
             Button button = (Button)dialog.findViewById(R.id.positive_button);
             //button.setTypeface(Typeface.createFromAsset(activity.getAssets(), "uzura.ttf"));
+
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -78,6 +90,12 @@ public class OKActivity extends Activity {
             });
 
             return dialog;
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            MainActivity.getGlView().onTouchEvent(event);
+            return false;
         }
     }
 }

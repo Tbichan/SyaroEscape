@@ -74,21 +74,26 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
                     // プレイヤーの移動できるところ一覧を取得します。
                     final ArrayList<Integer> spriteEnableMoveList = new ArrayList<>(getSpriteEnableMoveList(playerY * Environment.MAP_SIZE + playerX, 1));
 
-                    // 移動をランダムに選択
-                    int nextIndex = spriteEnableMoveList.get((int) (Math.random() * spriteEnableMoveList.size()));
+                    if (spriteEnableMoveList.size() != 0) {
 
-                    while (playerY * Environment.MAP_SIZE + playerX == nextIndex) {
-                        nextIndex = spriteEnableMoveList.get((int) (Math.random() * spriteEnableMoveList.size()));
+                        // 移動をランダムに選択
+                        int nextIndex = spriteEnableMoveList.get((int) (Math.random() * spriteEnableMoveList.size()));
+
+                        while (playerY * Environment.MAP_SIZE + playerX == nextIndex) {
+                            nextIndex = spriteEnableMoveList.get((int) (Math.random() * spriteEnableMoveList.size()));
+                        }
+
+                        final int nextX = nextIndex % Environment.MAP_SIZE;
+                        final int nextY = nextIndex / Environment.MAP_SIZE;
+
+                        // 環境にクエリ通達
+                        final int playerIndex = getPlayer().getMapIndex();
+
+                        String query = "move:" + playerIndex + "," + nextIndex;
+                        queryEnv(query);
+                    } else  {
+                        endTurn();
                     }
-
-                    final int nextX = nextIndex % Environment.MAP_SIZE;
-                    final int nextY = nextIndex / Environment.MAP_SIZE;
-
-                    // 環境にクエリ通達
-                    final int playerIndex = getPlayer().getMapIndex();
-
-                    String query = "move:" + playerIndex + "," + nextIndex;
-                    queryEnv(query);
 
                 } else {
                     // リプレイ

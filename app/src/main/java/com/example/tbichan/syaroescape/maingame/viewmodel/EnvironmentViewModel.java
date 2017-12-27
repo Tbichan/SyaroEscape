@@ -22,6 +22,8 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
 
+import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_DESK;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_RABBIT;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_ADD_CUP;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_END;
 
@@ -99,9 +101,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     @Override
     public void awake() {
 
-        // 繝｢繝�Ν隱ｭ縺ｿ霎ｼ縺ｿ
-
-        // 繧ｿ繧､繝ｫ
+        // タイル作成
         GlModel tile = new GlModel(this, "tile") {
 
             // 蛻晄悄蜃ｦ逅�蛻･繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ逋ｻ骭ｲ)
@@ -149,17 +149,17 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     }
     
     // 環境の変更時に実行されます。
-    public void changeEnvironment(boolean end) {
+    public void changeEnvironment(String... params) {
 
         // 行動回数追加
         actCnt++;
-    	
-    	// ステージデータを確認
-    	int deskCnt = 0;
+
+        // ステージデータを確認
+        int deskCnt = 0;
         int cupCnt = 0;
         int rabbitCnt = 0;
-    	// プレイヤーモデルをロード
-    	for (int y = 0; y < Environment.MAP_SIZE; y++) {
+        // プレイヤーモデルをロード
+        for (int y = 0; y < Environment.MAP_SIZE; y++) {
             for (int x = 0; x < Environment.MAP_SIZE; x++) {
 
                 // id取得
@@ -168,59 +168,114 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                 switch (id) {
                     case Environment.PLAYER_ID:
                         // 移動
-                        player.move(y, x);
+                        player.move(y, x, 10);
                         break;
-
-                    case Environment.DESK_ID:
-                        // 机位置変更
-                        deskList.get(deskCnt).move(y, x);
-                        deskCnt++;
-                        break;
-
+                    /*
                     case Environment.RABBIT_ID:
                         // ウサギ位置変更
-                        rabbitList.get(rabbitCnt).move(y, x);
+                        rabbitList.get(rabbitCnt).move(y, x, 10);
                         rabbitCnt++;
-                        break;
+                        break;*/
                 }
 
                 // カップ版id取得
                 id = env.getCupMapID(y, x);
 
+                /*
                 switch (id) {
 
                     case Environment.CUP_ID:
                         // カップ位置変更
                         cupList.get(cupCnt).move(y, x);
+                        //cupList.get(cupCnt).hide(60);
                         cupCnt++;
                         break;
-                }
+                }*/
             }
         }
 
-        // 余ったカップを削除
-        while (cupCnt < cupList.size()) {
-            //Log.d("hoge", cupCnt+"");
-            Cup delCup = cupList.get(cupList.size() - 1);
-            delCup.delete();
-            delCup.setVisible(false);
-            cupList.remove(delCup);
-        }
 
         // カップ取得回数取得
         int getCupCnt = env.getGetCupCnt();
 
-        // シーンに報告
-        GameScene nowScene = (GameScene)getScene();
+        // 机の移動を確認
+        String param = contains(params, MOVE_DESK);
+        if (param != null) {
 
-        if (end || actCnt - preActCnt >= actInterval) {
+            // 移動元と移動先の机を取得
+            String[] hoge = param.replace(MOVE_DESK + ":", "").split(",");
+            int oldIndex = Integer.parseInt(hoge[0]);
+            int nextIndex = Integer.parseInt(hoge[1]);
+
+            // 机を取得
+            EnvSprite desk = getDesk(oldIndex);
+
+            // 移動
+            desk.move(nextIndex / Environment.MAP_SIZE, nextIndex % Environment.MAP_SIZE, 10);
+
+        }
+
+        for (int i = 0;; i++) {
+            // i番目のウサギの移動を確認
+            param = contains(params, MOVE_RABBIT, i);
+            if (param == null) break;
+
+            // 移動元と移動先のウサギを取得
+            String[] hoge = param.replace(MOVE_RABBIT + ":", "").split(",");
+            int oldIndex = Integer.parseInt(hoge[0]);
+            int nextIndex = Integer.parseInt(hoge[1]);
+
+            // ウサギを取得
+            Rabbit rabbit = getRabbit(oldIndex);
+
+            Log.d("hoge", oldIndex+"," + param);
+
+            // 移動
+            rabbit.move(nextIndex / Environment.MAP_SIZE, nextIndex % Environment.MAP_SIZE, 10);
+        }
+
+        // カップの取得を確認
+        param = contains(params, PARAM_ADD_CUP);
+        if (param != null) {
+
+            // 移動元と移動先のカップを取得
+            String[] hoge = param.replace(PARAM_ADD_CUP + ":", "").split(",");
+            int oldIndex = Integer.parseInt(hoge[0]);
+            int nextIndex = Integer.parseInt(hoge[1]);
+
+            // カップを取得
+            Cup cup = getCup(oldIndex);
+
+            // 移動
+            cup.move(nextIndex / Environment.MAP_SIZE, nextIndex % Environment.MAP_SIZE, 10);
+            cup.hide(60);
+        }
+
+
+        // シーンに報告
+        GameScene nowScene = (GameScene) getScene();
+
+        if (actCnt - preActCnt >= actInterval) {
 
             // ターン交代を通知
             nowScene.notify(this, "turnend");
 
         } else {
 
-            nowScene.notify(this);
+            boolean flg = true;
+
+            param = contains(params, PARAM_END);
+
+            if (param != null) {
+
+                // ターン交代を通知
+                nowScene.notify(this, "turnend");
+                flg = false;
+            }
+            if (flg) {
+
+                nowScene.notify(this);
+            }
         }
 
     }
@@ -412,30 +467,19 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             // 最初の一回は適用しない
             if (initFlg) {
 
-                // ターン終了かどうか
-                boolean end = false;
-
                 // パラメータ確認
-                if (params != null) {
-                    if (params.length > 0) {
+                String param = contains(params, PARAM_ADD_CUP);
+                if (param != null) {
 
-                        // カップ追加時
-                        if (params[0].startsWith(PARAM_ADD_CUP)) {
+                    // カップ追加時
 
-                            // カップに視点を合わせる。
-                            setCupLook(true);
-                            // sceneに報告
-                            ((GameScene)getScene()).notify(this, new String[]{params[0]});
-
-                        }
-                        // 終了時
-                        else if (params[0].equals(PARAM_END)) {
-                            end = true;
-                        }
-                    }
+                    // カップに視点を合わせる。
+                    setCupLook(true);
+                    // sceneに報告
+                    ((GameScene) getScene()).notify(this, new String[]{param});
                 }
 
-                changeEnvironment(end);
+                changeEnvironment(params);
             } else {
                 initFlg = true;
             }
@@ -590,6 +634,36 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     }
 
     /**
+     * インデックスに対応する机を取得します。
+     */
+    public EnvSprite getDesk(int index) {
+        for (EnvSprite desk: deskList) {
+            if (index == desk.getMapIndex()) return desk;
+        }
+        return null;
+    }
+
+    /**
+     * インデックスに対応するカップを取得します。
+     */
+    public Cup getCup(int index) {
+        for (Cup cup: cupList) {
+            if (index == cup.getMapIndex()) return cup;
+        }
+        return null;
+    }
+
+    /**
+     * インデックスに対応するウサギを取得します。
+     */
+    public Rabbit getRabbit(int index) {
+        for (Rabbit rabbit: rabbitList) {
+            if (index == rabbit.getMapIndex()) return rabbit;
+        }
+        return null;
+    }
+
+    /**
      * 移動後の処理です。
      */
     @Override
@@ -598,5 +672,29 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             ((GameScene)getScene()).notify(this, "playerLook");
             setCupLook(false);
         }
+    }
+
+    /**
+     * パラメータの中に含まれているかを取得します。
+     */
+    public String contains(final String[] params, final String word) {
+        return contains(params, word, 0);
+    }
+
+    /**
+     * パラメータの中に含まれているかを取得します。
+     */
+    public String contains(final String[] params, final String word, final int index) {
+        if (params == null) return null;
+
+        int num = 0;
+
+        for (String param: params) {
+            if (param.contains(word)) {
+                if (num == index) return param;
+                num++;
+            }
+        }
+        return null;
     }
 }

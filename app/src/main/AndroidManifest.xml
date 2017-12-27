@@ -30,9 +30,10 @@
         <activity
             android:name=".activity.OKCancelActivity"
             android:theme="@android:style/Theme.Translucent" />
-        <activity android:name=".activity.OKActivity"
-            android:theme="@android:style/Theme.Translucent">
-        </activity>
+        <activity
+            android:name=".activity.OKActivity"
+            android:theme="@android:style/Theme.Dialog" />
+
     </application>
 
 </manifest>

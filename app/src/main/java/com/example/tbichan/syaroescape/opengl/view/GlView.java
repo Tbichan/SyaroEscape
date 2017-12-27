@@ -228,6 +228,7 @@ public class GlView extends GLSurfaceView {
     }
 
     // テクスチャの一斉ロード
+    /*
     public void loadTexAll() {
 
         // viewmodelのリスト
@@ -241,5 +242,5 @@ public class GlView extends GLSurfaceView {
         } catch (ConcurrentModificationException e) {
 
         }
-    }
+    }*/
 }

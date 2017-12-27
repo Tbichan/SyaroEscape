@@ -34,6 +34,8 @@ public class Cup extends EnvSprite {
 
     @Override
     public void update() {
+        super.update();
+
         int animIndex = (getCnt() / 3) % ANIM_NUM;
 
         float u1 = animIndex % 8 / 8f;

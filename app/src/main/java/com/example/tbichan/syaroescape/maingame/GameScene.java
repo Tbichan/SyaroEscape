@@ -221,7 +221,7 @@ public class GameScene extends SceneBase implements GlObservable {
                 setTurn(1 - turn);
             } else if (params[0].startsWith(Environment.PARAM_ADD_CUP)) {
                 // カップに視点を合わせる
-                int cupIndex = Integer.parseInt(params[0].replace(Environment.PARAM_ADD_CUP + ":", ""));
+                int cupIndex = Integer.parseInt(params[0].replace(Environment.PARAM_ADD_CUP + ":", "").split(",")[1]);
                 lookAtCup(cupIndex);
             }
             else if (params[0].startsWith("playerLook")) {
