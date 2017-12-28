@@ -12,6 +12,7 @@ import com.example.tbichan.syaroescape.common.viewmodel.ParticleViewModel;
 import com.example.tbichan.syaroescape.maingame.model.EnvSprite;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
 import com.example.tbichan.syaroescape.maingame.viewmodel.BGViewModel;
+import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentNetworkPlayerViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentOtherPlayerViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.StatusViewModel;
@@ -39,7 +40,7 @@ public class GameScene extends SceneBase implements GlObservable {
 
     // 環境VM
     private EnvironmentViewModel environmentViewModel;
-    private EnvironmentOtherPlayerViewModel environmentOtherPlayerViewModel;
+    private EnvironmentViewModel environmentOtherPlayerViewModel;
 
     // ステータス
     private StatusViewModel statusViewModel;
@@ -58,6 +59,7 @@ public class GameScene extends SceneBase implements GlObservable {
 
     // カップに視点を置いているかどうか
     private boolean cupLook = false;
+
 
     // シーンのロード
     @Override
@@ -168,13 +170,13 @@ public class GameScene extends SceneBase implements GlObservable {
         // 背景
         glView.addViewModel(new BGViewModel(glView, this, "BG"));
 
-        // 環境を作成
-        environmentViewModel = new EnvironmentViewModel(glView, this, "Env_0", 26656);
 
+        environmentViewModel = createPlayerViewModel(glView);
         glView.addViewModel(environmentViewModel);
 
-        // 環境を作成
-        environmentOtherPlayerViewModel = new EnvironmentOtherPlayerViewModel(glView, this, "Env_1", 33146);
+        // 環境を作成33146
+        environmentOtherPlayerViewModel = createOtherViewModel(glView);
+
         environmentOtherPlayerViewModel.setX(2400);
         //environmentOtherPlayerViewModel.setDefaultX(2400);
         glView.addViewModel(environmentOtherPlayerViewModel);
@@ -211,8 +213,33 @@ public class GameScene extends SceneBase implements GlObservable {
         glView.moveFrontViewModel(particleViewModel);
 
         // 自分を移動可能に
-        setTurn(0);
+        setTurn(initTurn());
 
+    }
+
+    /**
+     * Player用VM作成
+     */
+    public EnvironmentViewModel createPlayerViewModel(GlView glView) {
+        // 環境を作成26656
+        return new EnvironmentViewModel(glView, this, "Env_0", 33146);
+    }
+
+    /**
+     * 相手用VM作成
+     */
+    public EnvironmentViewModel createOtherViewModel(GlView glView) {
+        // 環境を作成26656
+        return new EnvironmentOtherPlayerViewModel(glView, this, "Env_1", 25565);
+    }
+
+    /**
+     * 最初のターンを設定します。
+     */
+    public int initTurn() {
+        if (getPlayerViewModel().getId() >= getOtherPlayerViewModel().getId())
+            return 0;
+        return 1;
     }
 
     // 報告を受けます。
@@ -469,5 +496,30 @@ public class GameScene extends SceneBase implements GlObservable {
 
     public int getTurn() {
         return turn;
+    }
+
+    /**
+     * 自分を取得します。
+     */
+    public EnvironmentViewModel getPlayerViewModel() {
+        return environmentViewModel;
+    }
+
+    /**
+     * 相手を取得します。
+     */
+    public EnvironmentViewModel getOtherPlayerViewModel() {
+        return environmentOtherPlayerViewModel;
+    }
+
+    /**
+     * 相手のIDを取得します。
+     */
+    public int getOtherId(EnvironmentViewModel envVM) {
+        if (envVM == environmentViewModel) {
+            return environmentOtherPlayerViewModel.getId();
+        } else {
+            return environmentViewModel.getId();
+        }
     }
 }

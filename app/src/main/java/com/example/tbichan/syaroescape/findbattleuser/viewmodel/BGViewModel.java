@@ -7,10 +7,12 @@ import android.view.View;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.activity.MainActivity;
+import com.example.tbichan.syaroescape.maingame.NetworkGameScene;
 import com.example.tbichan.syaroescape.menu.MenuScene;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
+import com.example.tbichan.syaroescape.opengl.store.StoreManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
@@ -76,13 +78,32 @@ public class BGViewModel extends GlViewModel {
 	@Override
 	public void start() {
 
-		MyHttp myHttp = new MyHttp("err" + NetWorkManager.DOMAIN) {
+		int playerId = -1;
+
+		// 待ちリストに登録
+		if (StoreManager.containsKey("player_id")) {
+
+			// プレイヤー名をよみこみ
+			playerId = StoreManager.restoreInteger("player_id");
+		}
+
+		MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/find/find.py?id=" + playerId) {
 
             @Override
             public void success() {
                 // 表示
                 try {
                     Log.d("net", result());
+
+
+					String otherId = result().replace("\n", "");
+
+					// 相手のIDを保存
+					StoreManager.save("other_id", otherId);
+
+					// 対戦モードに移行
+					SceneManager.getInstance().setNextScene(new NetworkGameScene());
+
                 } catch (Exception e) {
 
                 }
@@ -107,13 +128,13 @@ public class BGViewModel extends GlViewModel {
 
 
 					}
-            		
+
             	}).start();
 
             }
 
-        }.setSecondUrl("err" + NetWorkManager.DOMAIN_SECOND);
-        
+        }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/find/find.py?id=" + playerId);
+
         myHttp.connect();
 	}
 

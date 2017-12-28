@@ -95,6 +95,9 @@ public class PlayerDetailViewModel extends GlViewModel {
 
                     // 名前を保存
                     StoreManager.save("menu_playername", text);
+
+                    // IDをランダムで生成
+                    StoreManager.save("player_id", (int)(Math.random() * 25535));
                 }
             });
         }

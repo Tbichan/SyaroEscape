@@ -35,6 +35,14 @@ public class StoreManager {
         return value.toString();
     }
 
+    public static Integer restoreInteger(String key) {
+        Object value = storeMap.get(key);
+
+        if (value == null) return null;
+
+        return Integer.parseInt(value.toString());
+    }
+
     public static boolean containsKey(String key) {
         return storeMap.containsKey(key);
     }

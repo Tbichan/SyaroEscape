@@ -16,7 +16,7 @@ public class Cup extends EnvSprite {
     public Cup(GlViewModel glViewModel, String name) {
         super(glViewModel, name);
         setTexture(R.drawable.cups);
-        setTag("cup");
+        //setTag("cup");
 
     }
 

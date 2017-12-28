@@ -60,8 +60,13 @@ public class EnvironmentNetworkPlayerViewModel extends EnvironmentViewModel {
                     // 今のシ－ン
                     GameScene sceneBase = (GameScene)getScene();
 
+                    // 相手のIDを取得
+                    final int otherId = sceneBase.getOtherPlayerViewModel().getId();
+
+                    Log.d("net", NetWorkManager.DOMAIN + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt);
+
                     // サーバから行動を取得する。
-                    myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/send/receive.py?num=" + sceneBase.getActCnt()) {
+                    myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt) {
 
                         // 接続成功時
                         @Override
@@ -69,8 +74,11 @@ public class EnvironmentNetworkPlayerViewModel extends EnvironmentViewModel {
                             // 表示
                             try {
                                 String query = result().replace("\n", "");
+                                // ID情報を分割
+
                                 queryEnv(query, false);
-                                Log.d("net", query);
+                                Log.d("net:" + queryCnt, query);
+                                queryCnt++;
                                 myHttp = null;
                             } catch (Exception e) {
 
@@ -84,7 +92,7 @@ public class EnvironmentNetworkPlayerViewModel extends EnvironmentViewModel {
 
                         }
 
-                    }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/send/receive.py?num=" + sceneBase.getActCnt());
+                    }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt);
 
                     myHttp.connect();
                 }
