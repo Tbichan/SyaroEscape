@@ -1,9 +1,11 @@
 package com.example.tbichan.syaroescape.scene;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.tbichan.syaroescape.opengl.view.GlView;
+import com.example.tbichan.syaroescape.scene.timer.SceneTimer;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -67,6 +69,7 @@ public abstract class SceneBase {
 
     // コンストラクタ
     public SceneBase() {
+        cnt = 0;
     }
 
     // シーンのロード
@@ -100,4 +103,27 @@ public abstract class SceneBase {
     public ArrayList<Integer> getImgIdList() {
         return imgIdList;
     }
+
+    // タイマーを設定(別スレッド)
+    public final void startTimer(final SceneTimer st, final Object o, final int interval) {
+
+        final int startCnt = cnt;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (getCnt() - startCnt < interval) {
+                    try {
+                        Thread.sleep(1);
+
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+                st.endTimer(o);
+            }
+        }).start();
+    }
+
 }

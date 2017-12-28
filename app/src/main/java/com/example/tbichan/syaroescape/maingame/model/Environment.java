@@ -27,10 +27,10 @@ public class Environment implements GlObservable {
 	public static final int DESK_ID = 2;
 
 	// ウサギ
-	public static final int RABBIT_ID = 3;
+	public static final int RABBIT_ID = 4;
 
 	// カップ
-	public static final int CUP_ID = 4;
+	public static final int CUP_ID = 8;
 
 	// マップサイズ
 	public static final int MAP_SIZE = 12;
@@ -44,40 +44,43 @@ public class Environment implements GlObservable {
 	// カップ追加時のパラメータ
 	public static final String PARAM_ADD_CUP = "add cup";
 
+	// 衝突時のパラメータ
+	public static final String PARAM_HIT = "hit";
+
 	// ターン終了
 	public static final String PARAM_END = "end";
 
-	// ステージマップ(プレイヤー...1、机の位置...2、ウサギ...3)
+	// ステージマップ(プレイヤー...1、机の位置...2、ウサギ...4)
 	private int[][] playerMap = {
-			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
 			{0, 1, 2, 2, 0, 0, 0, 0, 0, 2, 2, 0},
 			{2, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0},
-			{2, 0, 0, 3, 2, 2, 2, 2, 2, 0, 3, 2},
-			{0, 0, 2, 0, 0, 2, 3, 3, 0, 2, 0, 0},
+			{2, 0, 0, 4, 2, 2, 2, 2, 2, 0, 4, 2},
+			{0, 0, 2, 0, 0, 2, 4, 4, 0, 2, 0, 0},
 			{2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0},
 			{0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2},
-			{0, 2, 0, 0, 2, 0, 2, 2, 2, 2, 3, 0},
-			{2, 0, 0, 0, 2, 2, 0, 0, 0, 2, 3, 2},
+			{0, 2, 0, 0, 2, 0, 2, 2, 2, 2, 4, 0},
+			{2, 0, 0, 0, 2, 2, 0, 0, 0, 2, 4, 2},
 			{0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2},
-			{0, 0, 0, 0, 2, 0, 2, 0, 3, 2, 0, 0},
-			{3, 0, 2, 2, 0, 0, 0, 0, 3, 3, 0, 3},
+			{0, 0, 0, 0, 2, 0, 2, 0, 4, 2, 0, 0},
+			{4, 0, 2, 2, 0, 0, 0, 0, 4, 4, 0, 4},
 
 
 	};
 
-	// ステージマップ(カップ...4)
+	// ステージマップ(カップ...8)
 	private int[][] cupMap = {
-			{0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0},
-			{0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 0},
-			{0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0},
+			{0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 8, 0},
+			{0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0},
-			{0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0},
+			{0, 0, 0, 8, 0, 0, 0, 0, 0, 8, 0, 0},
 			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{0, 0, 4, 0, 0, 0, 0, 0, 4, 0, 0, 0},
-			{0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0},
-			{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0},
+			{0, 0, 8, 0, 0, 0, 0, 0, 8, 0, 0, 0},
+			{0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0},
+			{8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0},
 			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 
 
@@ -117,7 +120,7 @@ public class Environment implements GlObservable {
 	public int getPlayerMapPlyaerIndex() {
 		for (int y = 0; y < MAP_SIZE; y++) {
 			for (int x = 0; x < MAP_SIZE; x++) {
-				if (playerMap[y][x] == PLAYER_ID) return y * MAP_SIZE + x;
+				if (isMapID(y, x, PLAYER_ID)) return y * MAP_SIZE + x;
 			}
 		}
 
@@ -210,7 +213,7 @@ public class Environment implements GlObservable {
 		for (int y = 0; y < preMap.length; y++) {
 			for (int x = 0; x < preMap[y].length; x++) {
 				int map = playerMap[y][x];
-				if (map == PLAYER_ID) map = 0;
+				if (isMapID(y, x, PLAYER_ID)) map = 0;
 				preMap[y][x] = map;
 			}
 		}
@@ -220,16 +223,18 @@ public class Environment implements GlObservable {
 
 		for (int i = 0;; i++) {
 
+
+			// 机位置を取得
 			for (int y = 0; y < hogeMap.length; y++) {
 				for (int x = 0; x < hogeMap[y].length; x++) {
 					int map = playerMap[y][x];
-					if (map == PLAYER_ID) map = 0;
+					if (map != DESK_ID) map = 0;
 					hogeMap[y][x] = map;
 				}
 			}
 
 			// プレイヤーはひとつ前にする。
-			hogeMap[prePlayerIndex/MAP_SIZE][prePlayerIndex%MAP_SIZE] = PLAYER_ID;
+			hogeMap[prePlayerIndex/MAP_SIZE][prePlayerIndex%MAP_SIZE] |= PLAYER_ID;
 
 			// i番目の敵インデックス取得
 			int rabbitIndex = -1;
@@ -242,7 +247,9 @@ public class Environment implements GlObservable {
 			for (int y = 0; y < preMap.length; y++) {
 				for (int x = 0; x < preMap[y].length; x++) {
 					int map = preMap[y][x];
-					if (map == RABBIT_ID) {
+
+					// ウサギがいたら
+					if (isMapID(preMap, y, x, RABBIT_ID)) {
 
 						if (num == i) {
 							rabbitIndex = y * MAP_SIZE + x;
@@ -263,7 +270,7 @@ public class Environment implements GlObservable {
 
 			// A-starアルゴリズムによる最短経路探索
 			AStar aStar = new AStar(hogeMap);
-			aStar.setStartId(1);
+			aStar.setStartId(PLAYER_ID);
 			aStar.setSpaseId(0);
 			aStar.setGoalId(100);
 
@@ -278,7 +285,7 @@ public class Environment implements GlObservable {
 			if (nextIndex != -1) {
 
 				// 移動できれば移動
-				if (playerMap[nextIndex / MAP_SIZE][nextIndex % MAP_SIZE] == 0) {
+				if (isMapID(nextIndex / MAP_SIZE, (nextIndex) % MAP_SIZE, 0) || isMapID(nextIndex / MAP_SIZE, (nextIndex) % MAP_SIZE, PLAYER_ID)) {
 					// 移動
 					moveRabbit(rabbitIndex, nextIndex, params);
 				}
@@ -290,11 +297,11 @@ public class Environment implements GlObservable {
 				// 横方向からプレイヤーに近づけるなら接近
 				int dx = (int)Math.signum(playerIndex % MAP_SIZE - rabbitIndex % MAP_SIZE);
 				int dy = (int)Math.signum(playerIndex / MAP_SIZE - rabbitIndex / MAP_SIZE);
-				if (dx != 0 && playerMap[rabbitIndex / MAP_SIZE][(rabbitIndex + dx) % MAP_SIZE] == 0) {
+				if (dx != 0 && (isMapID(rabbitIndex / MAP_SIZE, (rabbitIndex + dx) % MAP_SIZE, 0) || isMapID(rabbitIndex / MAP_SIZE, (rabbitIndex + dx) % MAP_SIZE, PLAYER_ID))) {
 
 					// 移動
 					moveRabbit(rabbitIndex, (rabbitIndex / MAP_SIZE) * MAP_SIZE + (rabbitIndex + dx) % MAP_SIZE, params);
-				} else if (dy != 0 && playerMap[(rabbitIndex + dy) / MAP_SIZE][rabbitIndex % MAP_SIZE] == 0) {
+				} else if (dy != 0 && (isMapID((rabbitIndex + dy) / MAP_SIZE, rabbitIndex % MAP_SIZE, 0) || isMapID((rabbitIndex + dy) / MAP_SIZE, rabbitIndex % MAP_SIZE, PLAYER_ID))){
 					// 移動
 					moveRabbit(rabbitIndex, ((rabbitIndex + dy) / MAP_SIZE) * MAP_SIZE + rabbitIndex % MAP_SIZE, params);
 				}
@@ -311,13 +318,16 @@ public class Environment implements GlObservable {
 
 		if (playerMap[nextIndex / MAP_SIZE][nextIndex % MAP_SIZE] == PLAYER_ID) {
 			// 衝突
-			MainActivity.showOKDialog(null);
+			//MainActivity.showOKDialog(null);
+			// パラメータに追加
+			if (params != null) params.add(PARAM_HIT);
 		}
 
 		// 消す
 		playerMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = 0;
 
-		playerMap[nextIndex / MAP_SIZE][nextIndex % MAP_SIZE] = RABBIT_ID;
+		//playerMap[nextIndex / MAP_SIZE][nextIndex % MAP_SIZE] = RABBIT_ID;
+		setMapPostion(nextIndex / MAP_SIZE, nextIndex % MAP_SIZE, RABBIT_ID);
 
 		// パラメータに追加
 		if (params != null) params.add(MOVE_RABBIT + ":" + rabbitIndex + "," + nextIndex);
@@ -333,7 +343,9 @@ public class Environment implements GlObservable {
 		for (int y = 0; y < playerMap.length; y++) {
 			for (int x = 0; x < playerMap[y].length; x++) {
 				int map = playerMap[y][x];
-				if (map == RABBIT_ID) {
+
+				// ウサギがいれば
+				if (isMapID(y, x, RABBIT_ID)) {
 					if (num == i) return y * MAP_SIZE + x;
 					num++;
 				}
@@ -355,10 +367,7 @@ public class Environment implements GlObservable {
 	}
 
 	// 初期化
-    public void init(int seed) {
-
-		// シード値を設定
-		r = new Random(seed);
+    public void init() {
 
         // 変更を通知
         for (GlObservable glObservable: observableHashSet) {
@@ -399,13 +408,17 @@ public class Environment implements GlObservable {
 				for (GlObservable glObservable: observableHashSet) {
 					glObservable.notify(this, (String[])nextParams.toArray(new String[nextParams.size()]));
 				}
+			} else if (query.startsWith("seed")) {
+				int seed = Integer.parseInt(query.replace("seed:", ""));
+				// シード値を設定
+				r = new Random(seed);
 			}
 		}
 
 	}
 
 	// 移動可能か判定
-	public boolean isMove(int oldX, int oldY, int newX, int newY) {
+	public boolean isPlayerMove(int oldX, int oldY, int newX, int newY) {
 
 		// 移動量
 		int dy = newY - oldY;
@@ -438,5 +451,38 @@ public class Environment implements GlObservable {
 
 	public int getActionCnt() {
 		return actionCnt;
+	}
+
+	/**
+	 * IDがあるか確認します。
+	 * @param id
+	 * @return
+	 */
+	public boolean isMapID(final int y, final int x, final int id) {
+		if (id != 0) {
+			return (playerMap[y][x] & id) != 0;
+		} else {
+			return playerMap[y][x] == 0;
+		}
+	}
+
+	/**
+	 * IDがあるか確認します。
+	 * @param id
+	 * @return
+	 */
+	public boolean isMapID(final int[][] map, final int y, final int x, final int id) {
+		if (id != 0) {
+			return (map[y][x] & id) != 0;
+		} else {
+			return map[y][x] == 0;
+		}
+	}
+
+	/**
+	 * IDをセットします。
+	 */
+	public void setMapPostion(final int y, final int x, final int id) {
+		playerMap[y][x] |= id;
 	}
 }

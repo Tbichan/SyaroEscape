@@ -75,9 +75,7 @@ public class BGViewModel extends GlViewModel {
 
 	@Override
 	public void start() {
-		// TODO �����������ꂽ���\�b�h�E�X�^�u
 
-		// �ʐM�J�n...
 		MyHttp myHttp = new MyHttp("err" + NetWorkManager.DOMAIN) {
 
             @Override
@@ -99,7 +97,8 @@ public class BGViewModel extends GlViewModel {
 					@Override
 					public void run() {
 
-						MainActivity.showOKDialog(new UIListener() {
+						MainActivity.showOKDialog( "エラー", "ネットワークエラー",
+								new UIListener() {
 							@Override
 							public void onClick(View view) {
 								SceneManager.getInstance().setNextScene(new MenuScene());
@@ -107,17 +106,6 @@ public class BGViewModel extends GlViewModel {
 						});
 
 
-						/*
-						// TODO �����������ꂽ���\�b�h�E�X�^�u
-						try {
-							Thread.sleep(5000);
-						} catch(InterruptedException e) {
-							
-						}
-						
-						// ���j���[�ɖ߂�
-						SceneManager.getInstance().setNextScene(new MenuScene());
-						*/
 					}
             		
             	}).start();

@@ -198,13 +198,15 @@ public class MainActivity extends Activity {
     }
 
     // OKCancelダイアログを表示します。
-    public static void showOKDialog(UIListener pos){
+    public static void showOKDialog(String title, String message, UIListener pos){
 
         // 登録
         EditAlertListenerManager.setPositiveListener(pos);
 
         // 画面遷移
         Intent intent = new Intent(instance, OKActivity.class);
+        intent.putExtra("title_OKActivity", title);
+        intent.putExtra("message_OKActivity", message);
         instance.startActivityForResult(intent, 1);
 
         // Activityのアニメーション設定

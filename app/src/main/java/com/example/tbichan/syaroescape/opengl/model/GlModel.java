@@ -1,16 +1,14 @@
 package com.example.tbichan.syaroescape.opengl.model;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import android.util.Log;
 import android.view.MotionEvent;
 
-import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.BitMapManager;
+import com.example.tbichan.syaroescape.opengl.model.timer.GlCountTimer;
 import com.example.tbichan.syaroescape.opengl.renderer.GlRenderer;
 import com.example.tbichan.syaroescape.opengl.shader.ShaderSource;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
@@ -22,8 +20,6 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
-import javax.microedition.khronos.opengles.GL11Ext;
 
 /**
  * Created by tbichan on 2017/10/15.
@@ -126,6 +122,10 @@ public abstract class GlModel {
 
     // 画像の明るさ
     private float bright = 0.0f;
+
+    // カウントタイマー
+    private GlCountTimer ct = null;
+
 
     public float getAlpha() {
         return alpha;
@@ -661,6 +661,13 @@ public abstract class GlModel {
         Matrix.translateM(worldMatrix, 0, worldMatrix, 0, (left + right) * 0.5f, (bottom + top) * 0.5f, 0f);
         Matrix.scaleM(worldMatrix, 0, worldMatrix, 0, sx, sy, 1f);
         Matrix.translateM(worldMatrix, 0, worldMatrix, 0, -(left + right) * 0.5f, -(bottom + top) * 0.5f, 0f);
+    }
+
+    /**
+     * カウントタイムを設定します。
+     */
+    public void setCountTimer(GlCountTimer ct) {
+        this.ct = ct;
     }
 
 }

@@ -20,12 +20,12 @@ import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
-import com.example.tbichan.syaroescape.scene.SceneManager;
 
 import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_DESK;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_RABBIT;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_ADD_CUP;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_END;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_HIT;
 
 /**
  * Created by tbichan on 2017/12/10.
@@ -135,8 +135,8 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         // ステージをロード
         loadMap();
 
-        // 初期化
-        env.init(20171226);
+        // シード値設定
+        queryEnv("seed:20171228");
 
     }
 
@@ -165,17 +165,9 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                 // id取得
                 int id = env.getPlayerMapID(y, x);
 
-                switch (id) {
-                    case Environment.PLAYER_ID:
-                        // 移動
-                        player.move(y, x, 10);
-                        break;
-                    /*
-                    case Environment.RABBIT_ID:
-                        // ウサギ位置変更
-                        rabbitList.get(rabbitCnt).move(y, x, 10);
-                        rabbitCnt++;
-                        break;*/
+                if (env.isMapID(y, x, Environment.PLAYER_ID)) {
+                    // 移動
+                    player.move(y, x, 10);
                 }
 
                 // カップ版id取得
@@ -353,7 +345,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         	if (moveX >= Environment.MAP_SIZE) continue;
         	
         	// Envに移動できるか確認
-        	if (!env.isMove(spriteX, spriteY, moveX, moveY)) continue;
+        	if (!env.isPlayerMove(spriteX, spriteY, moveX, moveY)) continue;
         	
         	int index = moveY * Environment.MAP_SIZE + moveX;
         	
@@ -465,7 +457,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         } else if (o instanceof Environment) {
 
             // 最初の一回は適用しない
-            if (initFlg) {
+            //if (initFlg) {
 
                 // パラメータ確認
                 String param = contains(params, PARAM_ADD_CUP);
@@ -479,10 +471,21 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                     ((GameScene) getScene()).notify(this, new String[]{param});
                 }
 
+                // パラメータ確認
+                param = contains(params, PARAM_HIT);
+                if (param != null) {
+
+                    // 衝突
+
+                    // sceneに報告
+                    ((GameScene) getScene()).notify(this, new String[]{param});
+                }
+
                 changeEnvironment(params);
-            } else {
-                initFlg = true;
-            }
+            //} else {
+             //   initFlg = true;
+
+            //}
 
 
         }

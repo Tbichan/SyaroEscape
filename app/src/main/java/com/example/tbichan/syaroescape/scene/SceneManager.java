@@ -62,13 +62,21 @@ public class SceneManager {
 
         // ループ
         while (thread != null) {
+            long oldTime = System.currentTimeMillis();
             // 今のシーンを更新
             mNowScene.update();
             mNowScene.addCnt();
 
             if (mTmpScene != null) loadNextScene();
 
+            long newTime = System.currentTimeMillis();
+            long sleepTime = 16 - (newTime - oldTime); // 休止できる時間
+            if(sleepTime < 2) sleepTime = 2; // 最低でも2msは休止
+            try {
+                Thread.sleep(sleepTime); // 休止
+            } catch (InterruptedException e) {
 
+            }
         }
 
     }

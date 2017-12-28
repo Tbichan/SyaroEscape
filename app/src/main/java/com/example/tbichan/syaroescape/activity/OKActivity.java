@@ -3,6 +3,7 @@ package com.example.tbichan.syaroescape.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.ui.EditAlertListenerManager;
@@ -70,6 +72,14 @@ public class OKActivity extends Activity {
             dialog.setCanceledOnTouchOutside(false);
             dialog.setContentView(R.layout.activity_ok_dialog);
 
+            // インテントから取得
+            Intent intent = activity.getIntent();
+            String title = intent.getStringExtra("title_OKActivity");
+            String message = intent.getStringExtra("message_OKActivity");
+
+            ((TextView)dialog.findViewById(R.id.title)).setText(title);
+            ((TextView)dialog.findViewById(R.id.message)).setText(message);
+
             // 背景を透明にする
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -82,7 +92,9 @@ public class OKActivity extends Activity {
                 public void onClick(View v) {
 
                     // クリック伝達
-                    EditAlertListenerManager.getPositiveListener().onClick(null);
+                    if (EditAlertListenerManager.getPositiveListener() != null) {
+                        EditAlertListenerManager.getPositiveListener().onClick(null);
+                    }
 
                     dismiss();
                     activity.finish();

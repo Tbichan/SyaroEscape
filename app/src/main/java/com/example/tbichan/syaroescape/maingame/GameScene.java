@@ -2,8 +2,10 @@ package com.example.tbichan.syaroescape.maingame;
 
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 
 import com.example.tbichan.syaroescape.R;
+import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.NowLoadViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.ParticleViewModel;
@@ -15,11 +17,15 @@ import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.StatusViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.ActButtonUIViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.StringViewModel;
+import com.example.tbichan.syaroescape.menu.MenuScene;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.scene.timer.SceneTimer;
+import com.example.tbichan.syaroescape.ui.UIListener;
 
 /**
  * タイトルシーン
@@ -229,8 +235,11 @@ public class GameScene extends SceneBase implements GlObservable {
                 EnvironmentViewModel envVM = environmentViewModel;
                 if (turn == 1) envVM = environmentOtherPlayerViewModel;
 
-                lookAtPlayer(envVM.getId());
+                lookAtPlayer(envVM.getId(), 0);
 
+            } else if (params[0].startsWith("hit")) {
+                // 衝突
+                hit((EnvironmentViewModel) o);
             }
 
             Log.d("params", params[0]);
@@ -343,6 +352,34 @@ public class GameScene extends SceneBase implements GlObservable {
 
     }
 
+    public void hit(EnvironmentViewModel envVM) {
+        // 自分の環境から
+        if (envVM == environmentViewModel) {
+            Log.d("result", "lose");
+
+            MainActivity.showOKDialog( "決着", "あなたの負け",
+                    new UIListener() {
+                        @Override
+                        public void onClick(View view) {
+                            SceneManager.getInstance().setNextScene(new MenuScene());
+                        }
+                    });
+        }
+        // 相手から
+        else {
+            Log.d("result", "win");
+            MainActivity.showOKDialog( "決着", "あなたの勝ち！",
+                    new UIListener() {
+                        @Override
+                        public void onClick(View view) {
+                            SceneManager.getInstance().setNextScene(new MenuScene());
+                        }
+                    });
+        }
+
+
+    }
+
     public int getActCnt() {
         return actCnt;
     }
@@ -353,7 +390,7 @@ public class GameScene extends SceneBase implements GlObservable {
         if (turn == 1) envVM = environmentOtherPlayerViewModel;
 
         // 次のプレイヤーに視点を合わせる
-        lookAtPlayer(envVM.getId());
+        lookAtPlayer(envVM.getId(), 180);
 
         this.turn = turn;
 
@@ -376,9 +413,31 @@ public class GameScene extends SceneBase implements GlObservable {
     }
 
     /**
+     * カメラを移動します。
+     * @return
+     */
+    public void lookAt(final float lx, final float ly, final int timerInterval) {
+
+        if (timerInterval == 0) {
+            lookAt(lx, ly);
+            return;
+        }
+        startTimer(new SceneTimer() {
+            @Override
+            public void endTimer(Object o) {
+                environmentViewModel.move(lx, ly, 25);
+                environmentOtherPlayerViewModel.move(lx + 2400f, ly, 25);
+
+            }
+        }, null, timerInterval);
+
+
+    }
+
+    /**
      * プレイヤーにカメラを合わせます。
      */
-    public void lookAtPlayer(final int id) {
+    public void lookAtPlayer(final int id, int time) {
         // プレイヤー位置
         EnvironmentViewModel envVM = environmentViewModel;
         if (id == environmentOtherPlayerViewModel.getId()) envVM = environmentOtherPlayerViewModel;
@@ -388,7 +447,7 @@ public class GameScene extends SceneBase implements GlObservable {
         // カメラ移動
         float tmp = 0f;
         if (id == environmentOtherPlayerViewModel.getId()) tmp = -2400f;
-        lookAt(tmp - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f));
+        lookAt(tmp - (playerX - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f), -(playerY - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f), time);
     }
 
     /**
