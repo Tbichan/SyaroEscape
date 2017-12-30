@@ -24,6 +24,9 @@ public class BitMapManager {
     // 画像のリスト
     private static HashMap<Integer, Bitmap> bitHashMap = new HashMap<>();
 
+    // 外部画像個数
+    private static int outBitMapNum = -1;
+
     public static void addBitMap(int key, Bitmap bitmap){
         bitHashMap.put(key, bitmap);
     }
@@ -34,6 +37,42 @@ public class BitMapManager {
 
     public static boolean isBitmap(int key) {
         return bitHashMap.containsKey(key);
+    }
+
+    // 文字列の画像を作成します。
+    public static Bitmap createStrImage(String str, int fontSize, int width, int height, int color) {
+
+        // ①文字列の情報を取得
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(color);
+
+        // フォントをよみこむ
+        paint.setTypeface( Typeface.DEFAULT );
+
+        paint.setTextSize(fontSize);
+
+        Paint.FontMetrics fm = paint.getFontMetrics();
+
+        // ②文字列が収まる大きさのBitmapを生成
+        Bitmap bitmap = Bitmap.createBitmap(
+                width, height, Bitmap.Config.ARGB_8888);
+
+        // ③生成したBitmapにひも付けたCanvasを用意
+        Canvas canvas = new Canvas(bitmap);
+
+        // ④CanvasのdrawText()で、Bitmapに文字列を描画
+        String[] lines = str.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+
+            canvas.drawText(lines[i], 0, (i + 1) * -fm.top, paint);
+        }
+
+        addBitMap(outBitMapNum, bitmap);
+
+        outBitMapNum--;
+
+        // ⑤Bitmapデータを返す
+        return bitmap;
     }
 
     // 文字列の画像を作成します。
@@ -78,6 +117,9 @@ public class BitMapManager {
 
         // リサイズ画像
         Bitmap bmpRsz = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+
+        addBitMap(outBitMapNum, bitmap);
+        outBitMapNum--;
 
         // ⑤Bitmapデータを返す
         return bmpRsz;
@@ -130,6 +172,9 @@ public class BitMapManager {
 
         // リサイズ画像
         Bitmap bmpRsz = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+
+        addBitMap(outBitMapNum, bitmap);
+        outBitMapNum--;
 
         // ⑤Bitmapデータを返す
         return bmpRsz;

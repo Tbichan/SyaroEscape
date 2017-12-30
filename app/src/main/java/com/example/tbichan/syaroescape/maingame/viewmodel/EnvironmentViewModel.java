@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.maingame.GameScene;
+import com.example.tbichan.syaroescape.maingame.model.Carrot;
 import com.example.tbichan.syaroescape.maingame.model.Cup;
 import com.example.tbichan.syaroescape.maingame.model.EnableFloor;
 import com.example.tbichan.syaroescape.maingame.model.EnvSprite;
@@ -21,6 +22,7 @@ import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 
+import static com.example.tbichan.syaroescape.maingame.model.Environment.CARROT_ID;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_DESK;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_RABBIT;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_ADD_CUP;
@@ -50,6 +52,9 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
     // ウサギリスト
     private ArrayList<Rabbit> rabbitList = new ArrayList<>();
+
+    // ニンジンリスト
+    private ArrayList<Carrot> carrotList = new ArrayList<>();
     
     // 環境
     Environment env;
@@ -69,9 +74,6 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     // デフォルト位置
     private float defaultX = 0f;
 
-    // 初期化済みかどうか
-    private boolean initFlg = false;
-
     // 自分のターンになった時の行動総回数
     private int preActCnt = 0;
 
@@ -83,6 +85,9 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
     // カップに視点を合わせているか
     private boolean cupLook = false;
+
+    // Observserable
+    private ArrayList<GlObservable> glObservableList = new ArrayList<>();
 
     public EnvironmentViewModel(GlView glView, SceneBase sceneBase, String name, int id) {
         super(glView, sceneBase, name);
@@ -97,14 +102,12 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
     }
 
-    // 隱ｭ縺ｿ霎ｼ縺ｿ
     @Override
     public void awake() {
 
         // タイル作成
         GlModel tile = new GlModel(this, "tile") {
 
-            // 蛻晄悄蜃ｦ逅�蛻･繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ逋ｻ骭ｲ)
             @Override
             public void start() {
 
@@ -139,14 +142,6 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         queryEnv("seed:20171228");
 
     }
-
-    // 蛻晄悄蜃ｦ逅�蛻･繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ逋ｻ骭ｲ)
-    @Override
-    public void start() {
-    	
-
-    	
-    }
     
     // 環境の変更時に実行されます。
     public void changeEnvironment(String... params) {
@@ -154,10 +149,6 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         // 行動回数追加
         actCnt++;
 
-        // ステージデータを確認
-        int deskCnt = 0;
-        int cupCnt = 0;
-        int rabbitCnt = 0;
         // プレイヤーモデルをロード
         for (int y = 0; y < Environment.MAP_SIZE; y++) {
             for (int x = 0; x < Environment.MAP_SIZE; x++) {
@@ -170,25 +161,8 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                     player.move(y, x, 10);
                 }
 
-                // カップ版id取得
-                id = env.getCupMapID(y, x);
-
-                /*
-                switch (id) {
-
-                    case Environment.CUP_ID:
-                        // カップ位置変更
-                        cupList.get(cupCnt).move(y, x);
-                        //cupList.get(cupCnt).hide(60);
-                        cupCnt++;
-                        break;
-                }*/
             }
         }
-
-
-        // カップ取得回数取得
-        int getCupCnt = env.getGetCupCnt();
 
         // 机の移動を確認
         String param = contains(params, MOVE_DESK);
@@ -220,9 +194,8 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             // ウサギを取得
             Rabbit rabbit = getRabbit(oldIndex);
 
-            Log.d("hoge", oldIndex+"," + param);
-
-            // 移動
+            // 時間差で移動
+            rabbit.move(oldIndex / Environment.MAP_SIZE, oldIndex % Environment.MAP_SIZE, 15);
             rabbit.move(nextIndex / Environment.MAP_SIZE, nextIndex % Environment.MAP_SIZE, 10);
         }
 
@@ -240,7 +213,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
             // 移動
             cup.move(nextIndex / Environment.MAP_SIZE, nextIndex % Environment.MAP_SIZE, 10);
-            cup.hide(60);
+            cup.hide(45);
         }
 
 
@@ -268,6 +241,11 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
                 nowScene.notify(this);
             }
+        }
+
+        // Observerに通知
+        for (GlObservable glObservable: glObservableList) {
+            glObservable.notify(this);
         }
 
     }
@@ -367,7 +345,6 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     public void loadMap() {
 
         // ステージデータを確認
-        int deskCnt = 0;
         int cupCnt = 0;
     	
     	// プレイヤーモデルをロード
@@ -429,6 +406,17 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                         cupCnt++;
 
                         break;
+
+                    case Environment.CARROT_ID:
+                        // ニンジン作成
+                        Carrot carrot = new Carrot(this, "carrot_" + 0);
+                        carrot.move(y, x);
+
+                        // リストに追加
+                        carrotList.add(carrot);
+
+                        // VMに追加
+                        addModel(carrot);
                 }
     		}
     	}
@@ -442,7 +430,6 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         if (o instanceof Player) {
 
             if (uiViewModel != null) uiViewModel.tapPlayer();
-            //uiViewShowButton();
         }
 
         // 移動可能床クリック時
@@ -456,37 +443,29 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
         } else if (o instanceof Environment) {
 
-            // 最初の一回は適用しない
-            //if (initFlg) {
+            // パラメータ確認
+            String param = contains(params, PARAM_ADD_CUP);
+            if (param != null) {
 
-                // パラメータ確認
-                String param = contains(params, PARAM_ADD_CUP);
-                if (param != null) {
+                // カップ追加時
 
-                    // カップ追加時
+                // カップに視点を合わせる。
+                setCupLook(true);
+                // sceneに報告
+                ((GameScene) getScene()).notify(this, new String[]{param});
+            }
 
-                    // カップに視点を合わせる。
-                    setCupLook(true);
-                    // sceneに報告
-                    ((GameScene) getScene()).notify(this, new String[]{param});
-                }
+            // パラメータ確認
+            param = contains(params, PARAM_HIT);
+            if (param != null) {
 
-                // パラメータ確認
-                param = contains(params, PARAM_HIT);
-                if (param != null) {
+                // 衝突
 
-                    // 衝突
+                // sceneに報告
+                ((GameScene) getScene()).notify(this, new String[]{param});
+            }
 
-                    // sceneに報告
-                    ((GameScene) getScene()).notify(this, new String[]{param});
-                }
-
-                changeEnvironment(params);
-            //} else {
-             //   initFlg = true;
-
-            //}
-
+            changeEnvironment(params);
 
         }
 
@@ -614,6 +593,13 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     }
 
     /**
+     * 環境VMにObserverを追加します。
+     */
+    public void addGlObserver(GlObservable glObservable) {
+        glObservableList.add(glObservable);
+    }
+
+    /**
      * 環境にObserverを追加します。
      */
     public void addEnvGlObserver(GlObservable glObserver) {
@@ -675,6 +661,13 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             ((GameScene)getScene()).notify(this, "playerLook");
             setCupLook(false);
         }
+    }
+
+    /**
+     * 環境からカフェインパワーを取得します。
+     */
+    public int getCaffeinePower() {
+        return env.getCupCnt() * 3;
     }
 
     /**

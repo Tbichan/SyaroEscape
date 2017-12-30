@@ -32,6 +32,9 @@ public class Environment implements GlObservable {
 	// カップ
 	public static final int CUP_ID = 8;
 
+	// カップ
+	public static final int CARROT_ID = 16;
+
 	// マップサイズ
 	public static final int MAP_SIZE = 12;
 
@@ -68,7 +71,7 @@ public class Environment implements GlObservable {
 
 	};
 
-	// ステージマップ(カップ...8)
+	// ステージマップ(カップ...8、ニンジン...16)
 	private int[][] cupMap = {
 			{0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0},
 			{0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 8, 0},
@@ -82,7 +85,6 @@ public class Environment implements GlObservable {
 			{0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0},
 			{8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0},
 			{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-
 
 	};
 
@@ -203,9 +205,89 @@ public class Environment implements GlObservable {
 	}
 
 	/**
+	 * 敵が一番近いプレイヤーまたはニンジンを取得します。
+	 */
+	public int getNearPlayerOrCarrot(int rabbitIndex) {
+
+		// 配列のコピー
+		int[][] hogeMap = new int[MAP_SIZE][MAP_SIZE];
+
+		// 机位置のみを取得
+		for (int y = 0; y < hogeMap.length; y++) {
+			for (int x = 0; x < hogeMap[y].length; x++) {
+				int map = playerMap[y][x];
+				if (map != DESK_ID) map = 0;
+				hogeMap[y][x] = map;
+			}
+		}
+
+		// プレイヤーニンジンリスト
+		ArrayList<Integer> carrotIndexList = new ArrayList<>();
+
+		// プレイヤーインデックス追加
+		//carrotIndexList.add(getPlayerMapPlyaerIndex());
+
+		// ニンジン位置のみを取得
+		for (int y = 0; y < hogeMap.length; y++) {
+			for (int x = 0; x < hogeMap[y].length; x++) {
+				if (isMapID(cupMap, y, x, CARROT_ID)) carrotIndexList.add(y * MAP_SIZE + x);
+			}
+		}
+
+		// ニンジンがなければプレイヤー追跡
+		if (carrotIndexList.size() == 0) return getPlayerMapPlyaerIndex();
+
+		int minCost = Integer.MAX_VALUE;
+		int minIndex = -1;
+
+		// ニンジンをループで回す。
+		for (final int carrotIndex : carrotIndexList) {
+
+			if (carrotIndex == rabbitIndex) {
+				minIndex = rabbitIndex;
+				continue;
+			}
+
+			// スタート配置
+			hogeMap[carrotIndex/MAP_SIZE][carrotIndex%MAP_SIZE] = 100;
+
+			// ウサギ設置
+			hogeMap[rabbitIndex/MAP_SIZE][rabbitIndex%MAP_SIZE] = 200;
+
+			// A-starアルゴリズムによる最短経路探索
+			AStar aStar = new AStar(hogeMap);
+			aStar.setStartId(100);
+			aStar.setSpaseId(0);
+			aStar.setGoalId(200);
+
+			aStar.loadMap();
+			System.out.println(hogeMap);
+			aStar.calc();
+
+			// コスト計算
+			int cost = aStar.getCost();
+
+
+			Log.d("near", carrotIndex + "," + cost + "");
+
+			if (cost > 0 && cost < minCost) {
+				minIndex = carrotIndex;
+				minCost = cost;
+			}
+
+			// スタート配置戻す
+			hogeMap[carrotIndex/MAP_SIZE][carrotIndex%MAP_SIZE] = 0;
+		}
+		return minIndex;
+	}
+
+	/**
 	 * 敵が移動します。
 	 */
 	public void moveEnemys(ArrayList<String> params) {
+
+		// プレイヤーの位置
+		final int playerIndex = getPlayerMapPlyaerIndex();
 
 		// 配列のコピー（固定）
 		int[][] preMap = new int[MAP_SIZE][MAP_SIZE];
@@ -228,13 +310,10 @@ public class Environment implements GlObservable {
 			for (int y = 0; y < hogeMap.length; y++) {
 				for (int x = 0; x < hogeMap[y].length; x++) {
 					int map = playerMap[y][x];
-					if (map != DESK_ID) map = 0;
+					if (map == RABBIT_ID) map = 0;
 					hogeMap[y][x] = map;
 				}
 			}
-
-			// プレイヤーはひとつ前にする。
-			hogeMap[prePlayerIndex/MAP_SIZE][prePlayerIndex%MAP_SIZE] |= PLAYER_ID;
 
 			// i番目の敵インデックス取得
 			int rabbitIndex = -1;
@@ -265,51 +344,62 @@ public class Environment implements GlObservable {
 			// なければ抜ける
 			if (rabbitIndex == -1) break;
 
-			// ゴールに設定
-			hogeMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = 100;
+			// 一番近いプレイヤーまたはニンジンを取得
+			int nearPlayerOrCarrotIndex = getNearPlayerOrCarrot(rabbitIndex);
 
-			// A-starアルゴリズムによる最短経路探索
-			AStar aStar = new AStar(hogeMap);
-			aStar.setStartId(PLAYER_ID);
-			aStar.setSpaseId(0);
-			aStar.setGoalId(100);
+			// 同位置なら移動しない
+			if (nearPlayerOrCarrotIndex != rabbitIndex) {
 
-			aStar.loadMap();
-			aStar.calc();
-			aStar.print();
+				// プレイヤー
+				hogeMap[nearPlayerOrCarrotIndex / MAP_SIZE][nearPlayerOrCarrotIndex % MAP_SIZE] = 100;
 
-			// 次の敵インデックス取得
-			int nextIndex = aStar.next();
+				// ゴールに設定
+				hogeMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = 200;
 
-			// ルートがなければ静止
-			if (nextIndex != -1) {
+				// A-starアルゴリズムによる最短経路探索
+				AStar aStar = new AStar(hogeMap);
+				aStar.setStartId(100);
+				aStar.setSpaseId(0);
+				aStar.setGoalId(200);
 
-				// 移動できれば移動
-				if (isMapID(nextIndex / MAP_SIZE, (nextIndex) % MAP_SIZE, 0) || isMapID(nextIndex / MAP_SIZE, (nextIndex) % MAP_SIZE, PLAYER_ID)) {
-					// 移動
-					moveRabbit(rabbitIndex, nextIndex, params);
+				aStar.loadMap();
+				System.out.println(hogeMap);
+				aStar.calc();
+				aStar.print();
+
+				// 次の敵インデックス取得
+				int nextIndex = aStar.next();
+
+				// ルートがなければ静止
+				if (nextIndex != -1) {
+
+					// 移動できれば移動
+					if (isMapID(nextIndex / MAP_SIZE, (nextIndex) % MAP_SIZE, 0) || isMapID(nextIndex / MAP_SIZE, (nextIndex) % MAP_SIZE, PLAYER_ID)) {
+						// 移動
+						moveRabbit(rabbitIndex, nextIndex, params);
+					}
+
+				} else {
+					// プレイヤーインデックス
+					//final int playerIndex = getPlayerMapPlyaerIndex();
+
+					// 横方向からプレイヤーに近づけるなら接近
+					int dx = (int) Math.signum(nearPlayerOrCarrotIndex % MAP_SIZE - rabbitIndex % MAP_SIZE);
+					int dy = (int) Math.signum(nearPlayerOrCarrotIndex / MAP_SIZE - rabbitIndex / MAP_SIZE);
+					if (dx != 0 && (isMapID(rabbitIndex / MAP_SIZE, (rabbitIndex + dx) % MAP_SIZE, 0) || isMapID(rabbitIndex / MAP_SIZE, (rabbitIndex + dx) % MAP_SIZE, PLAYER_ID))) {
+
+						// 移動
+						moveRabbit(rabbitIndex, (rabbitIndex / MAP_SIZE) * MAP_SIZE + (rabbitIndex + dx) % MAP_SIZE, params);
+					} else if (dy != 0 && (isMapID((rabbitIndex + dy) / MAP_SIZE, rabbitIndex % MAP_SIZE, 0) || isMapID((rabbitIndex + dy) / MAP_SIZE, rabbitIndex % MAP_SIZE, PLAYER_ID))) {
+						// 移動
+						moveRabbit(rabbitIndex, ((rabbitIndex + dy) / MAP_SIZE) * MAP_SIZE + rabbitIndex % MAP_SIZE, params);
+					}
+
 				}
 
-			} else {
-				// プレイヤーインデックス
-				final int playerIndex = getPlayerMapPlyaerIndex();
-
-				// 横方向からプレイヤーに近づけるなら接近
-				int dx = (int)Math.signum(playerIndex % MAP_SIZE - rabbitIndex % MAP_SIZE);
-				int dy = (int)Math.signum(playerIndex / MAP_SIZE - rabbitIndex / MAP_SIZE);
-				if (dx != 0 && (isMapID(rabbitIndex / MAP_SIZE, (rabbitIndex + dx) % MAP_SIZE, 0) || isMapID(rabbitIndex / MAP_SIZE, (rabbitIndex + dx) % MAP_SIZE, PLAYER_ID))) {
-
-					// 移動
-					moveRabbit(rabbitIndex, (rabbitIndex / MAP_SIZE) * MAP_SIZE + (rabbitIndex + dx) % MAP_SIZE, params);
-				} else if (dy != 0 && (isMapID((rabbitIndex + dy) / MAP_SIZE, rabbitIndex % MAP_SIZE, 0) || isMapID((rabbitIndex + dy) / MAP_SIZE, rabbitIndex % MAP_SIZE, PLAYER_ID))){
-					// 移動
-					moveRabbit(rabbitIndex, ((rabbitIndex + dy) / MAP_SIZE) * MAP_SIZE + rabbitIndex % MAP_SIZE, params);
-				}
-
+				// もとに戻す
+				hogeMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = RABBIT_ID;
 			}
-
-			// もとに戻す
-			hogeMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = RABBIT_ID;
 		}
 
 	}
@@ -362,7 +452,7 @@ public class Environment implements GlObservable {
 		cupMap[cupY][cupX] = CUP_ID;
 	}
 
-	public int getGetCupCnt() {
+	public int getCupCnt() {
 		return getCupCnt;
 	}
 

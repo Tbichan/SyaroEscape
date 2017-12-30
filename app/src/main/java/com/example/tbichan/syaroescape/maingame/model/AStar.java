@@ -199,6 +199,25 @@ public class AStar {
     }
 
     /**
+     * コスト出力
+     */
+    public int getCost() {
+        String[][] hogeMap = new String[size][size];
+
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                if (map[y][x] == startId) hogeMap[y][x] = "Ｓ";
+                else if (map[y][x] == goalId) hogeMap[y][x] = "Ｇ";
+                else if (map[y][x] == spaseId) hogeMap[y][x] = "□";
+                else hogeMap[y][x] = "×";
+
+            }
+        }
+
+        return print(goal, hogeMap);
+    }
+
+    /**
      * 経路出力
      */
     public void print() {

@@ -132,7 +132,7 @@ public class StringViewModel extends GlViewModel implements GlObservable {
 
     @Override
     public void notify(Object o, String... params) {
-        Log.d("string", "aaa");
+
     }
 
     public void setTurn(int turn) {

@@ -89,6 +89,7 @@ public class GameScene extends SceneBase implements GlObservable {
         addBitmap(R.drawable.your_turn);
         addBitmap(R.drawable.com_turn);
         addBitmap(R.drawable.end_game);
+        addBitmap(R.drawable.carrot);
 
         // vmの追加
         NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
@@ -196,9 +197,9 @@ public class GameScene extends SceneBase implements GlObservable {
         glView.addViewModel(stringViewModel);
 
         // 通知に追加
-        environmentViewModel.addEnvGlObserver(statusViewModel);
+        environmentViewModel.addGlObserver(statusViewModel);
         environmentViewModel.addEnvGlObserver(stringViewModel);
-        environmentOtherPlayerViewModel.addEnvGlObserver(statusViewModel);
+        environmentOtherPlayerViewModel.addGlObserver(statusViewModel);
         environmentOtherPlayerViewModel.addEnvGlObserver(stringViewModel);
         glView.addViewModel(statusViewModel);
 
@@ -382,26 +383,60 @@ public class GameScene extends SceneBase implements GlObservable {
     public void hit(EnvironmentViewModel envVM) {
         // 自分の環境から
         if (envVM == environmentViewModel) {
-            Log.d("result", "lose");
 
-            MainActivity.showOKDialog( "決着", "あなたの負け",
-                    new UIListener() {
-                        @Override
-                        public void onClick(View view) {
-                            SceneManager.getInstance().setNextScene(new MenuScene());
-                        }
-                    });
+            // ダイアログ表示
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        Thread.sleep(1000);
+                    }
+                    catch(InterruptedException e){
+
+                    }
+
+                    Log.d("result", "lose");
+
+                    MainActivity.showOKDialog( "決着", "あなたの負け",
+                            new UIListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    SceneManager.getInstance().setNextScene(new MenuScene());
+                                }
+                            });
+                }
+            }).start();
+
+
         }
         // 相手から
         else {
-            Log.d("result", "win");
-            MainActivity.showOKDialog( "決着", "あなたの勝ち！",
-                    new UIListener() {
-                        @Override
-                        public void onClick(View view) {
-                            SceneManager.getInstance().setNextScene(new MenuScene());
-                        }
-                    });
+
+            // ダイアログ表示
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        Thread.sleep(1000);
+                    }
+                    catch(InterruptedException e){
+
+                    }
+
+                    Log.d("result", "win");
+                    MainActivity.showOKDialog( "決着", "あなたの勝ち！",
+                            new UIListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    SceneManager.getInstance().setNextScene(new MenuScene());
+                                }
+                            });
+                }
+            }).start();
+
+
         }
 
 
@@ -424,7 +459,6 @@ public class GameScene extends SceneBase implements GlObservable {
         // ターンを報告
         environmentViewModel.setTurn(turn == 0);
         environmentOtherPlayerViewModel.setTurn(turn == 1);
-        statusViewModel.setTurn(turn);
         stringViewModel.setTurn(turn);
 
     }

@@ -62,7 +62,7 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
         super.update(gl);
 
         if (isTurn()) {
-            if ((getCnt() - getTurnCnt()) >= 120 && (getCnt() - getTurnCnt()) % 60 == 0) {
+            if ((getCnt() - getTurnCnt()) >= 240 && (getCnt() - getTurnCnt()) % 60 == 0) {
 
 
                 if (!replay) {
