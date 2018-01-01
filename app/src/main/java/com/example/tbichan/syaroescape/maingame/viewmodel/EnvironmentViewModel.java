@@ -23,6 +23,8 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 
 import static com.example.tbichan.syaroescape.maingame.model.Environment.CARROT_ID;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.CREATE_RABBIT;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.MAP_SIZE;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_DESK;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_RABBIT;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_ADD_CUP;
@@ -146,26 +148,32 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     // 環境の変更時に実行されます。
     public void changeEnvironment(String... params) {
 
-        // 行動回数追加
-        actCnt++;
+        // プレイヤーの移動を確認
+        String param = contains(params, "move");
+        if (param != null) {
 
-        // プレイヤーモデルをロード
-        for (int y = 0; y < Environment.MAP_SIZE; y++) {
-            for (int x = 0; x < Environment.MAP_SIZE; x++) {
+            // プレイヤーモデルをロード
+            for (int y = 0; y < Environment.MAP_SIZE; y++) {
+                for (int x = 0; x < Environment.MAP_SIZE; x++) {
 
-                // id取得
-                int id = env.getPlayerMapID(y, x);
+                    // id取得
+                    int id = env.getPlayerMapID(y, x);
 
-                if (env.isMapID(y, x, Environment.PLAYER_ID)) {
-                    // 移動
-                    player.move(y, x, 10);
+                    if (env.isMapID(y, x, Environment.PLAYER_ID)) {
+                        // 移動
+                        player.move(y, x, 10);
+                    }
+
                 }
-
             }
+
+            // 行動回数追加
+            actCnt++;
+            Log.d("hoge", actCnt+"");
         }
 
         // 机の移動を確認
-        String param = contains(params, MOVE_DESK);
+        param = contains(params, MOVE_DESK);
         if (param != null) {
 
             // 移動元と移動先の机を取得
@@ -194,10 +202,42 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             // ウサギを取得
             Rabbit rabbit = getRabbit(oldIndex);
 
-            // 時間差で移動
-            rabbit.move(oldIndex / Environment.MAP_SIZE, oldIndex % Environment.MAP_SIZE, 15);
-            rabbit.move(nextIndex / Environment.MAP_SIZE, nextIndex % Environment.MAP_SIZE, 10);
+            Log.d("rabbit", oldIndex+"");
+
+            if (rabbit != null) {
+
+                // 時間差で移動
+                rabbit.move(oldIndex / Environment.MAP_SIZE, oldIndex % Environment.MAP_SIZE, 20);
+                rabbit.move(nextIndex / Environment.MAP_SIZE, nextIndex % Environment.MAP_SIZE, 10);
+            }
         }
+
+        for (int i = 0;; i++) {
+            // ウサギの追加
+            param = contains(params, CREATE_RABBIT, i);
+            if (param == null) break;
+
+            int rabbitIndex = Integer.parseInt(param.replace(CREATE_RABBIT + ":", ""));
+
+            // ウサギ作成
+            Rabbit rabbit = new Rabbit(this, "rabbit");
+
+            // 30カウント非表示
+            rabbit.hide(30);
+            rabbit.move(rabbitIndex / MAP_SIZE, rabbitIndex % MAP_SIZE);
+
+            // リストに追加
+            rabbitList.add(rabbit);
+
+            // VMに追加
+            addModel(rabbit);
+
+        }
+
+        Log.d("hoge", getName() + " " + actCnt);
+
+        // シーンに報告
+        GameScene nowScene = (GameScene)getScene();
 
         // カップの取得を確認
         param = contains(params, PARAM_ADD_CUP);
@@ -214,13 +254,14 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             // 移動
             cup.move(nextIndex / Environment.MAP_SIZE, nextIndex % Environment.MAP_SIZE, 10);
             cup.hide(45);
+
+            // シーンに報告
+            nowScene.notify(this, "add rabbit");
         }
 
-
-        // シーンに報告
-        GameScene nowScene = (GameScene) getScene();
-
         if (actCnt - preActCnt >= actInterval) {
+
+            Log.d("hoge", getName() + " " + "endddddddddd");
 
             // ターン交代を通知
             nowScene.notify(this, "turnend");
@@ -232,6 +273,8 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             param = contains(params, PARAM_END);
 
             if (param != null) {
+
+                Log.d("hoge", "endddddddddd2");
 
                 // ターン交代を通知
                 nowScene.notify(this, "turnend");
@@ -578,9 +621,10 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     public void setTurn(boolean turn) {
         if (turn) {
             turnCnt = getCnt();
-            preActCnt = actCnt;
+
         } else {
             turnCnt = -1;
+            preActCnt = actCnt;
         }
     }
 
@@ -693,4 +737,22 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         }
         return null;
     }
+
+    /**
+     * ウサギを環境に追加します。
+     */
+    public int addEnvRabbit() {
+
+        // パラメータ
+        ArrayList<String> params = new ArrayList<>();
+
+        int nextRabbit = env.createRabbit(5, params);
+
+        // 環境更新
+        changeEnvironment((String[])params.toArray(new String[params.size()]));
+
+        return nextRabbit;
+
+    }
+
 }

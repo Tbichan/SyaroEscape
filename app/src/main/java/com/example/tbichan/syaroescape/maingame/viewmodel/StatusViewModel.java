@@ -21,6 +21,9 @@ import com.example.tbichan.syaroescape.scene.SceneBase;
 
 public class StatusViewModel extends GlViewModel implements GlObservable {
 
+    // カップ数
+    private int cupNum = 0;
+
     // カップ数表示用
     private GlModel cafeStr;
 
@@ -42,9 +45,21 @@ public class StatusViewModel extends GlViewModel implements GlObservable {
             public void update() {
 
             }
+
+            /**
+             * テクスチャ読み込みが終わると実行されます。
+             */
+            @Override
+            public void endTexLoad() {
+                getBitmap().recycle();
+                Log.d("outbitmap", "recycle");
+            }
         };
 
         addModel(cafeStr);
+
+        Bitmap cafeBit = BitMapManager.createStrImage("カフェイン:" + 0, 50, 512, 1024, Color.GRAY);
+        cafeStr.setOutsideBitmapTexture(cafeBit);
     }
 
     @Override
@@ -67,8 +82,13 @@ public class StatusViewModel extends GlViewModel implements GlObservable {
 
                 // 獲得カップ数
                 final int caffeinePower = environmentViewModel.getCaffeinePower();
-                Bitmap cafeBit = BitMapManager.createStrImage("カフェイン:" + caffeinePower, 50, 512, 1024, Color.GRAY);
-                cafeStr.setOutsideBitmapTexture(cafeBit);
+
+                if (caffeinePower != cupNum) {
+
+                    Bitmap cafeBit = BitMapManager.createStrImage("カフェイン:" + caffeinePower, 50, 512, 1024, Color.GRAY);
+                    cafeStr.setOutsideBitmapTexture(cafeBit);
+                    cupNum = caffeinePower;
+                }
             }
         }
     }

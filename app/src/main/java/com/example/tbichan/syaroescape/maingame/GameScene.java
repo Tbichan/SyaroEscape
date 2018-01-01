@@ -254,9 +254,12 @@ public class GameScene extends SceneBase implements GlObservable {
                 // プレイヤー交代
                 setTurn(1 - turn);
             } else if (params[0].startsWith(Environment.PARAM_ADD_CUP)) {
+
+                /*
                 // カップに視点を合わせる
                 int cupIndex = Integer.parseInt(params[0].replace(Environment.PARAM_ADD_CUP + ":", "").split(",")[1]);
                 lookAtCup(cupIndex);
+                */
             }
             else if (params[0].startsWith("playerLook")) {
                 // プレイヤーに視点を合わせる。
@@ -268,6 +271,15 @@ public class GameScene extends SceneBase implements GlObservable {
             } else if (params[0].startsWith("hit")) {
                 // 衝突
                 hit((EnvironmentViewModel) o);
+            } else if (params[0].startsWith("add rabbit")) {
+                // 相手VMにウサギ追加
+                EnvironmentViewModel envVM = environmentViewModel;
+                if (envVM == o) envVM = environmentOtherPlayerViewModel;
+
+                // ウサギ作成
+                final int rabbitIndex = envVM.addEnvRabbit();
+
+                lookAt(envVM, rabbitIndex);
             }
 
             Log.d("params", params[0]);
@@ -492,6 +504,27 @@ public class GameScene extends SceneBase implements GlObservable {
             }
         }, null, timerInterval);
 
+    }
+
+    /**
+     * カメラを移動します。
+     */
+    public void lookAt(EnvironmentViewModel environmentViewModel, final int index) {
+
+        float lx = 0f; float ly = 0f;
+
+        if (environmentViewModel == this.environmentViewModel) {
+
+            lx = -(EnvSprite.parseX(index) - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f);
+
+        } else {
+            lx = -2400f - (EnvSprite.parseX(index) - (GlView.VIEW_WIDTH - Environment.MAP_SIZE) * 0.5f);
+        }
+
+        ly = -(EnvSprite.parseY(index) - (GlView.VIEW_HEIGHT - Environment.MAP_SIZE) * 0.5f);
+
+        this.environmentViewModel.move(lx, ly, 25);
+        environmentOtherPlayerViewModel.move(lx + 2400f, ly, 25);
 
     }
 

@@ -267,7 +267,16 @@ public abstract class GlModel {
             GLES20.glLinkProgram(shaderProgram);
 
             loadTex = true;
+
+            endTexLoad();
         }
+    }
+
+    /**
+     * テクスチャ読み込みが終わると実行されます。
+     */
+    public void endTexLoad() {
+
     }
 
     // テクスチャアンロード
@@ -641,6 +650,7 @@ public abstract class GlModel {
         textureNo = texture[0];
         //Log.e("CHECLK", "ID:" + texture[0]);
         //Log.e("CHECLK", "GLES20.GL_TEXTURE2:" + GLES20.GL_TEXTURE2);
+        //bitmap.recycle();
     }
 
     // 拡大、縮小を行います。
@@ -661,6 +671,10 @@ public abstract class GlModel {
         Matrix.translateM(worldMatrix, 0, worldMatrix, 0, (left + right) * 0.5f, (bottom + top) * 0.5f, 0f);
         Matrix.scaleM(worldMatrix, 0, worldMatrix, 0, sx, sy, 1f);
         Matrix.translateM(worldMatrix, 0, worldMatrix, 0, -(left + right) * 0.5f, -(bottom + top) * 0.5f, 0f);
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
     }
 
     /**

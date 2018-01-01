@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.tbichan.syaroescape.activity.MainActivity;
+import com.example.tbichan.syaroescape.opengl.bitmapnmanager.BitMapManager;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.renderer.GlRenderer;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
@@ -89,6 +90,8 @@ public abstract class GlViewModel {
 
     public void update(GL10 gl){
 
+        boolean texFlg = true;
+
         // 更新
         try {
             for (String key : modelMap.keySet()) {
@@ -103,6 +106,7 @@ public abstract class GlViewModel {
                     // テクスチャロード
                     if (!glModel.isLoadTex()) {
                         glModel.loadTexture(gl);
+                        texFlg = false;
                     }
 
                     // 更新
@@ -115,6 +119,9 @@ public abstract class GlViewModel {
         } catch (ConcurrentModificationException e) {
 
         }
+
+        // テクスチャアンロード
+        //if (!texFlg) BitMapManager.recycleAll();
 
         // 削除
         if (removeModelList.size() != 0) {
