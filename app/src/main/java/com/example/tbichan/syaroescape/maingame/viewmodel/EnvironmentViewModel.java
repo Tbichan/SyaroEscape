@@ -22,7 +22,6 @@ import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 
-import static com.example.tbichan.syaroescape.maingame.model.Environment.CARROT_ID;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.CREATE_RABBIT;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.MAP_SIZE;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_DESK;
@@ -309,7 +308,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         clearPlayerEnableMoveList();
     	
     	// 環境からプレイヤーの場所を取得
-        int playerIndex = env.getPlayerMapPlyaerIndex();
+        int playerIndex = env.getPlayerMapPlayerIndex();
     	
     	// 一覧を取得します。
     	final HashSet<Integer> enableList = getSpriteEnableMoveList(playerIndex, distance);

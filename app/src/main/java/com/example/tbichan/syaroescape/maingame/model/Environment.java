@@ -15,7 +15,7 @@ import java.util.Random;
  * Created by tbichan on 2017/10/16.
  */
 
-public class Environment implements GlObservable {
+public class Environment implements GlObservable, Cloneable {
 
 	// プレイヤー
 	public static final int PLAYER_ID = 1;
@@ -89,12 +89,17 @@ public class Environment implements GlObservable {
 	};
 
 
+	// シード値
+	int seed = -1;
 
 	// 乱数設定用
 	private Random r;
 
 	// Observserable
 	private HashSet<GlObservable> observableHashSet = new HashSet<>();
+
+	// 変更を通知するか
+	private boolean executeFlg = true;
 
 	// 行動回数
 	private int actionCnt = 0;
@@ -114,12 +119,12 @@ public class Environment implements GlObservable {
 
 	public Environment(String name) {
 
-		prePlayerIndex = getPlayerMapPlyaerIndex();
+		prePlayerIndex = getPlayerMapPlayerIndex();
 	}
 
 
 	// プレイヤーの位置(index)を取得します。
-	public int getPlayerMapPlyaerIndex() {
+	public int getPlayerMapPlayerIndex() {
 		for (int y = 0; y < MAP_SIZE; y++) {
 			for (int x = 0; x < MAP_SIZE; x++) {
 				if (isMapID(y, x, PLAYER_ID)) return y * MAP_SIZE + x;
@@ -149,7 +154,7 @@ public class Environment implements GlObservable {
 		paramList.add("move");
 
 		// プレイヤーを移動
-		prePlayerIndex = getPlayerMapPlyaerIndex();
+		prePlayerIndex = getPlayerMapPlayerIndex();
 		playerMap[oldY][oldX] = 0;
 
 		// プレイヤー位置更新
@@ -199,13 +204,8 @@ public class Environment implements GlObservable {
 		// 敵が通れる位置を取得
 		if ((actionCnt - lastActionCnt) % rabbitInterval == 0) moveEnemys(paramList);
 
-		// 敵を追加
-		//createRabbit(5, paramList);
+		execute((String[])paramList.toArray(new String[paramList.size()]));
 
-		// 変更を通知
-		for (GlObservable glObservable: observableHashSet) {
-			glObservable.notify(this, (String[])paramList.toArray(new String[paramList.size()]));
-		}
 	}
 
 	/**
@@ -229,7 +229,7 @@ public class Environment implements GlObservable {
 		ArrayList<Integer> carrotIndexList = new ArrayList<>();
 
 		// プレイヤーインデックス追加
-		//carrotIndexList.add(getPlayerMapPlyaerIndex());
+		//carrotIndexList.add(getPlayerMapPlayerIndex());
 
 		// ニンジン位置のみを取得
 		for (int y = 0; y < hogeMap.length; y++) {
@@ -239,7 +239,7 @@ public class Environment implements GlObservable {
 		}
 
 		// ニンジンがなければプレイヤー追跡
-		if (carrotIndexList.size() == 0) return getPlayerMapPlyaerIndex();
+		if (carrotIndexList.size() == 0) return getPlayerMapPlayerIndex();
 
 		int minCost = Integer.MAX_VALUE;
 		int minIndex = -1;
@@ -286,12 +286,79 @@ public class Environment implements GlObservable {
 	}
 
 	/**
+	 * インデックスと一番近いウサギとのインデックスとコストを求めます。
+	 */
+	public int[] getNearRabbitCost(int index) {
+
+		// 配列のコピー
+		int[][] hogeMap = new int[MAP_SIZE][MAP_SIZE];
+
+		// 机位置のみを取得
+		for (int y = 0; y < hogeMap.length; y++) {
+			for (int x = 0; x < hogeMap[y].length; x++) {
+				int map = playerMap[y][x];
+				if (map != DESK_ID) map = 0;
+				hogeMap[y][x] = map;
+			}
+		}
+
+		// スタート配置
+		hogeMap[index/MAP_SIZE][index%MAP_SIZE] = 100;
+
+		// ウサギインデックスリスト
+		ArrayList<Integer> rabbitIndexList = new ArrayList<>();
+
+		// ウサギ位置のみを取得
+		for (int y = 0; y < playerMap.length; y++) {
+			for (int x = 0; x < playerMap[y].length; x++) {
+				if (isMapID(playerMap, y, x, RABBIT_ID)) rabbitIndexList.add(y * MAP_SIZE + x);
+			}
+		}
+
+		int minCost = -1;
+		int minIndex = -1;
+
+		// ウサギをループで回す。
+		for (final int rabbitIndex : rabbitIndexList) {
+
+			if (rabbitIndex == index) {
+				return new int[]{index, 0};
+			}
+
+			// ウサギ設置
+			hogeMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = 200;
+
+			// A-starアルゴリズムによる最短経路探索
+			AStar aStar = new AStar(hogeMap);
+			aStar.setStartId(100);
+			aStar.setSpaseId(0);
+			aStar.setGoalId(200);
+
+			aStar.loadMap();
+			aStar.calc();
+
+			// コスト計算
+			int cost = aStar.getCost();
+
+			if (cost > 0 && (cost < minCost || minCost == -1)) {
+				minCost = cost;
+				minIndex = rabbitIndex;
+			}
+
+			// ウサギ配置戻す
+			hogeMap[rabbitIndex / MAP_SIZE][rabbitIndex % MAP_SIZE] = 0;
+		}
+
+		return new int[]{minIndex, minCost};
+	}
+
+	/**
 	 * 敵が移動します。
 	 */
 	public void moveEnemys(ArrayList<String> params) {
 
 		// プレイヤーの位置
-		final int playerIndex = getPlayerMapPlyaerIndex();
+		final int playerIndex = getPlayerMapPlayerIndex();
 
 		// 動いたウサギ管理用
 		boolean[][] moveMap = new boolean[MAP_SIZE][MAP_SIZE];
@@ -400,7 +467,7 @@ public class Environment implements GlObservable {
 
 					} else {
 						// プレイヤーインデックス
-						//final int playerIndex = getPlayerMapPlyaerIndex();
+						//final int playerIndex = getPlayerMapPlayerIndex();
 
 						// 横方向からプレイヤーに近づけるなら接近
 						int dx = (int) Math.signum(nearPlayerOrCarrotIndex % MAP_SIZE - rabbitIndex % MAP_SIZE);
@@ -456,7 +523,7 @@ public class Environment implements GlObservable {
 	public int createRabbit(int minCost, ArrayList<String> params) {
 
 		// プレイヤー
-		final int playerIndex = getPlayerMapPlyaerIndex();
+		final int playerIndex = getPlayerMapPlayerIndex();
 
 		// 机位置取得
 		int[][] deskAndPlyerMap = new int[MAP_SIZE][MAP_SIZE];
@@ -519,7 +586,7 @@ public class Environment implements GlObservable {
 	public boolean createRabbitFar(ArrayList<String> params) {
 
 		// プレイヤー
-		final int playerIndex = getPlayerMapPlyaerIndex();
+		final int playerIndex = getPlayerMapPlayerIndex();
 
 		// 机位置取得
 		int[][] deskAndPlyerMap = new int[MAP_SIZE][MAP_SIZE];
@@ -619,6 +686,74 @@ public class Environment implements GlObservable {
 		cupMap[cupY][cupX] = CUP_ID;
 	}
 
+	/**
+	 * インデックスと一番近いカップとのコストとインデックスを求めます。
+	 */
+	public int[] getNearCupCost(int index) {
+
+		// 配列のコピー
+		int[][] hogeMap = new int[MAP_SIZE][MAP_SIZE];
+
+		// 机位置のみを取得
+		for (int y = 0; y < hogeMap.length; y++) {
+			for (int x = 0; x < hogeMap[y].length; x++) {
+				int map = playerMap[y][x];
+				if (map != DESK_ID) map = 0;
+				hogeMap[y][x] = map;
+			}
+		}
+
+		// スタート配置
+		hogeMap[index/MAP_SIZE][index%MAP_SIZE] = 100;
+
+		// カップインデックスリスト
+		ArrayList<Integer> cupList = new ArrayList<>();
+
+		// ウサギ位置のみを取得
+		for (int y = 0; y < cupMap.length; y++) {
+			for (int x = 0; x < cupMap[y].length; x++) {
+				if (isMapID(cupMap, y, x, CUP_ID)) cupList.add(y * MAP_SIZE + x);
+			}
+		}
+
+		int minCost = -1;
+		int minIndex = -1;
+
+		// ウサギをループで回す。
+		for (final int cupIndex : cupList) {
+
+			if (cupIndex == index) {
+				return new int[]{cupIndex, 0};
+			}
+
+			// カップ設置
+			hogeMap[cupIndex / MAP_SIZE][cupIndex % MAP_SIZE] = 200;
+
+			// A-starアルゴリズムによる最短経路探索
+			AStar aStar = new AStar(hogeMap);
+			aStar.setStartId(100);
+			aStar.setSpaseId(0);
+			aStar.setGoalId(200);
+
+			aStar.loadMap();
+			aStar.calc();
+
+			// コスト計算
+			int cost = aStar.getCost();
+
+			if (cost > 0 && (cost < minCost || minCost == -1)) {
+				minCost = cost;
+				minIndex = cupIndex;
+			}
+
+			// カップ配置戻す
+			hogeMap[cupIndex / MAP_SIZE][cupIndex % MAP_SIZE] = 0;
+		}
+
+
+		return new int[]{minIndex, minCost};
+	}
+
 	public int getCupCnt() {
 		return getCupCnt;
 	}
@@ -646,22 +781,22 @@ public class Environment implements GlObservable {
 				nextParams.add(PARAM_END);
 
 				// プレイヤー位置保存
-				prePlayerIndex = getPlayerMapPlyaerIndex();
+				prePlayerIndex = getPlayerMapPlayerIndex();
 
 				// 敵移動
 				moveEnemys(nextParams);
 				lastActionCnt = actionCnt;
 
 				// 変更を通知
-				for (GlObservable glObservable: observableHashSet) {
-					glObservable.notify(this, (String[])nextParams.toArray(new String[nextParams.size()]));
-				}
+				execute((String[])nextParams.toArray(new String[nextParams.size()]));
+
 			} else if (query.startsWith("addEnemy")) {
 				// 敵を追加
 				//createRabbit(5, paramList);
 			} else if (query.startsWith("seed")) {
 				int seed = Integer.parseInt(query.replace("seed:", ""));
 				// シード値を設定
+				this.seed = seed;
 				r = new Random(seed);
 			}
 		}
@@ -670,6 +805,9 @@ public class Environment implements GlObservable {
 
 	// 移動可能か判定
 	public boolean isPlayerMove(int oldX, int oldY, int newX, int newY) {
+
+		if (newX < 0 || newX >= MAP_SIZE) return false;
+		if (newY < 0 || newY >= MAP_SIZE) return false;
 
 		// 移動量
 		int dy = newY - oldY;
@@ -694,6 +832,41 @@ public class Environment implements GlObservable {
 		if (playerMap[newY][newX] == RABBIT_ID) return false;
 
 		return true;
+	}
+
+	/**
+	 * 移動可能プレイヤーインデックスリストを取得します。
+	 */
+	public HashSet<Integer> getPlayerMoveList() {
+		HashSet<Integer> hashSet = new HashSet<>();
+
+		// プレイヤーインデックス
+		final int playerIndex = getPlayerMapPlayerIndex();
+		final int playerX = playerIndex % MAP_SIZE;
+		final int playerY = playerIndex / MAP_SIZE;
+
+		// 移動ベクトル(x,y)
+		final int[][] vecs = {{1, 0}, {0, -1}, {-1, 0}, {0, 1}};
+
+		for (int[] vec: vecs) {
+			int moveY = playerY + vec[1];
+			int moveX = playerX + vec[0];
+
+			// クリッピング
+			if (moveY < 0) continue;
+			if (moveX < 0) continue;
+
+			if (moveY >= Environment.MAP_SIZE) continue;
+			if (moveX >= Environment.MAP_SIZE) continue;
+
+			// Envに移動できるか確認
+			if (isPlayerMove(playerX, playerY, moveX, moveY)) {
+				final int nextIndex = moveY * MAP_SIZE + moveX;
+				hashSet.add(nextIndex);
+			}
+
+		}
+		return hashSet;
 	}
 
 	public void addGlObservable(GlObservable glObservable) {
@@ -730,10 +903,103 @@ public class Environment implements GlObservable {
 		}
 	}
 
+	public int getSeed() {
+		return seed;
+	}
+
 	/**
 	 * IDをセットします。
 	 */
 	public void setMapPostion(final int y, final int x, final int id) {
 		playerMap[y][x] |= id;
+	}
+
+	/**
+	 * プレイヤーマップをコピーして取得します。
+	 */
+	public int[][] getPlayerMapCopy() {
+
+		int[][] maps = new int[MAP_SIZE][MAP_SIZE];
+
+		// 机位置を取得
+		for (int y = 0; y < maps.length; y++) {
+			for (int x = 0; x < maps[y].length; x++) {
+
+				maps[y][x] = playerMap[y][x];
+			}
+		}
+
+		return maps;
+	}
+
+	/**
+	 * プレイヤーマップをコピーして取得します。
+	 */
+	public int[][] getCupMapCopy() {
+
+		int[][] maps = new int[MAP_SIZE][MAP_SIZE];
+
+		// 机位置を取得
+		for (int y = 0; y < maps.length; y++) {
+			for (int x = 0; x < maps[y].length; x++) {
+
+				maps[y][x] = cupMap[y][x];
+			}
+		}
+
+		return maps;
+	}
+
+	/**
+	 * 通知を有効にするか確認します。
+	 * @param executeFlg
+	 */
+	public void setExecuteFlg(boolean executeFlg) {
+		this.executeFlg = executeFlg;
+	}
+
+	/**
+	 * observerに通知します。
+	 */
+	public void execute(String... params) {
+
+		if (!executeFlg) return;
+
+		// 変更を通知
+		for (GlObservable glObservable: observableHashSet) {
+			glObservable.notify(this, params);
+		}
+	}
+
+	/**
+	 * observerをクリアします。
+	 */
+	public void clearObservser() {
+		observableHashSet.clear();
+	}
+
+
+	/**
+	 * 複製を行います。
+	 */
+	@Override
+	public Environment clone() {
+
+		Environment b = null;
+
+		try {
+			b = (Environment)super.clone();
+
+			b.playerMap = getPlayerMapCopy();
+			b.cupMap = getCupMapCopy();
+			// observerをクリア
+			b.observableHashSet = new HashSet<>();
+
+			//b.observableHashSet.clear();
+		} catch (Exception e){
+
+		}
+
+		return b;
 	}
 }

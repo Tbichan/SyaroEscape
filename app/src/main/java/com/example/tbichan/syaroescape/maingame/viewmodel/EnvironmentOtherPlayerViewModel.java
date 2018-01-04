@@ -1,26 +1,13 @@
 package com.example.tbichan.syaroescape.maingame.viewmodel;
 
-import android.content.Context;
-import android.util.Log;
-import android.view.MotionEvent;
-
-import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.activity.MainActivity;
-import com.example.tbichan.syaroescape.maingame.GameScene;
-import com.example.tbichan.syaroescape.maingame.model.EnableFloor;
-import com.example.tbichan.syaroescape.maingame.model.EnvSprite;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
-import com.example.tbichan.syaroescape.maingame.model.Player;
+import com.example.tbichan.syaroescape.maingame.model.ai.NormalAI;
 import com.example.tbichan.syaroescape.network.MyHttp;
-import com.example.tbichan.syaroescape.network.NetWorkManager;
-import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
-import com.example.tbichan.syaroescape.scene.SceneManager;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -43,6 +30,9 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
     // サーバ問い合わせ用
     private MyHttp myHttp = null;
 
+    // 乱数発生器
+    private Random r;
+
     public EnvironmentOtherPlayerViewModel(GlView glView, SceneBase sceneBase, String name, int id) {
         super(glView, sceneBase, name, id);
 
@@ -55,6 +45,9 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
         // ファイル読み込み
         String text = MainActivity.loadFile("replay_001.replay");
         querys = text.split("\n");
+
+        // シード値設定
+        r = new Random(getEnv().getSeed());
     }
 
     @Override
@@ -67,6 +60,27 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
 
                 if (!replay) {
                     // 移動
+                    final Environment env = getEnv();
+
+                    // AIに計算させる。
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            NormalAI normalAI = new NormalAI(r);
+                            int nextIndex = normalAI.calc(env);
+
+                            if (nextIndex == -1) {
+                                endTurn();
+                            } else {
+
+                                String query = "move:" + env.getPlayerMapPlayerIndex() + "," + nextIndex;
+                                queryEnv(query);
+                            }
+                        }
+                    }).start();
+
+
+                    /*
 
                     // プレイヤー位置取得
                     final int playerX = getPlayer().getMapX();
@@ -94,6 +108,7 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
                     } else  {
                         endTurn();
                     }
+                    */
 
                 } else {
                     // リプレイ
