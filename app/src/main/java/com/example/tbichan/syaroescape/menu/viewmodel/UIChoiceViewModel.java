@@ -16,6 +16,7 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.story.StoryScene;
 import com.example.tbichan.syaroescape.ui.UIListener;
 
 import java.util.ArrayList;
@@ -169,7 +170,8 @@ public class UIChoiceViewModel extends GlViewModel {
                 StoreManager.saveString("menu_actionbutton", String.valueOf(actId));
 
                 if (actId == 0) SceneManager.getInstance().setNextScene(new GameScene());
-                else SceneManager.getInstance().setNextScene(new FindBattleUserScene());
+                else if (actId == 1)  SceneManager.getInstance().setNextScene(new FindBattleUserScene());
+                else if (actId == 2)  SceneManager.getInstance().setNextScene(new StoryScene());
             }
         }
 

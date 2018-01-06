@@ -64,7 +64,7 @@ public class EnvironmentNetworkPlayerViewModel extends EnvironmentViewModel {
                     final int otherId = sceneBase.getOtherPlayerViewModel().getId();
 
                     Log.d("net", NetWorkManager.DOMAIN + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt);
-
+                    Log.d("net", NetWorkManager.DOMAIN_SECOND + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt);
                     // サーバから行動を取得する。
                     myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt) {
 

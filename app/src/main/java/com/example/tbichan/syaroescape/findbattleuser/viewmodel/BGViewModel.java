@@ -85,57 +85,98 @@ public class BGViewModel extends GlViewModel {
 
 			// プレイヤー名をよみこみ
 			playerId = StoreManager.restoreInteger("player_id");
+
+			// 接続
+			findUser(playerId);
 		}
 
-		MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/find/find.py?id=" + playerId) {
 
-            @Override
-            public void success() {
-                // 表示
-                try {
-                    Log.d("net", result());
+	}
 
+	/**
+	 * ユーザーを探します。
+	 */
+	public void findUser(final int playerId) {
+		MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/find/client.py?id=" + playerId) {
 
-					String otherId = result().replace("\n", "");
+			@Override
+			public void success() {
+				// 表示
+				try {
+					Log.d("net", result());
 
-					// 相手のIDを保存
-					StoreManager.save("other_id", otherId);
+					String res = result().replace("\n", "");
 
-					// 対戦モードに移行
-					SceneManager.getInstance().setNextScene(new NetworkGameScene());
+					if (!res.startsWith("timeout")) {
 
-                } catch (Exception e) {
+						// カンマで区切る
+						String[] hoge = res.split(",");
+						String otherId = hoge[0].replace("id:", "");
+						String globalSeed = hoge[1].replace("seed:", "");
 
-                }
-            }
+						// 相手のIDを保存
+						StoreManager.save("other_id", otherId);
+						StoreManager.save("globalSeed", globalSeed);
 
-            @Override
-            public void fail(Exception e) {
-            	bgStrErr.setVisible(true);
-                //Log.d("net", "接続エラー:" + e.toString());
-            	new Thread(new Runnable(){
+						// 対戦モードに移行
+						SceneManager.getInstance().setNextScene(new NetworkGameScene());
+					}
+					// タイムアウト時
+					else {
+						MainActivity.showOKCancelDialog(new UIListener() {
+							/**
+							 * OKをクリックしたとき
+							 * @param view
+							 */
+							@Override
+							public void onClick(View view) {
+								findUser(playerId);
+
+							}
+						}, new UIListener() {
+							/**
+							 * キャンセルを押したとき
+							 * @param view
+							 */
+							@Override
+							public void onClick(View view) {
+								SceneManager.getInstance().setNextScene(new MenuScene());
+							}
+						});
+					}
+
+				} catch (Exception e) {
+
+				}
+			}
+
+			@Override
+			public void fail(Exception e) {
+				bgStrErr.setVisible(true);
+				//Log.d("net", "接続エラー:" + e.toString());
+				new Thread(new Runnable(){
 
 					@Override
 					public void run() {
 
 						MainActivity.showOKDialog( "エラー", "ネットワークエラー",
 								new UIListener() {
-							@Override
-							public void onClick(View view) {
-								SceneManager.getInstance().setNextScene(new MenuScene());
-							}
-						});
+									@Override
+									public void onClick(View view) {
+										SceneManager.getInstance().setNextScene(new MenuScene());
+									}
+								});
 
 
 					}
 
-            	}).start();
+				}).start();
 
-            }
+			}
 
-        }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/find/find.py?id=" + playerId);
+		}.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/find/client.py?id=" + playerId);
 
-        myHttp.connect();
+		myHttp.connect();
 	}
 
 }

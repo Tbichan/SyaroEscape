@@ -23,15 +23,19 @@
         </activity>
         <activity
             android:name=".activity.EditTextDialogActivity"
+            android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Translucent" />
         <activity
             android:name=".activity.PlayerNameActivity"
+            android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Translucent" />
         <activity
             android:name=".activity.OKCancelActivity"
+            android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Translucent" />
         <activity
             android:name=".activity.OKActivity"
+            android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Dialog" />
 
     </application>

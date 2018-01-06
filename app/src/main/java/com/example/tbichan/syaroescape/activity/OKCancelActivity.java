@@ -80,6 +80,9 @@ public class OKCancelActivity extends Activity {
             dialog.findViewById(R.id.negative_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    // クリック伝達
+                    EditAlertListenerManager.getNegativeListener().onClick(null);
                     dismiss();
                     activity.finish();
                 }

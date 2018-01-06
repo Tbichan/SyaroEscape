@@ -4,6 +4,7 @@ package com.example.tbichan.syaroescape.maingame.model;
 
 import android.util.Log;
 
+import com.example.tbichan.syaroescape.maingame.model.level.LevelLoader;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
 
 import java.util.ArrayList;
@@ -59,11 +60,11 @@ public class Environment implements GlObservable, Cloneable {
 			{0, 1, 2, 2, 0, 0, 0, 0, 0, 2, 2, 0},
 			{2, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0},
 			{2, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 2},
-			{0, 0, 2, 0, 0, 2, 0, 0, 0, 2, 0, 0},
-			{2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0},
+			{0, 0, 2, 0, 4, 2, 0, 4, 0, 2, 0, 0},
+			{2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 4},
 			{0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2},
 			{0, 2, 0, 0, 2, 0, 2, 2, 2, 2, 0, 0},
-			{2, 0, 0, 0, 2, 2, 0, 0, 0, 2, 0, 2},
+			{2, 0, 0, 4, 2, 2, 0, 0, 0, 2, 0, 2},
 			{0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2},
 			{0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0},
 			{4, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 4},
@@ -117,9 +118,28 @@ public class Environment implements GlObservable, Cloneable {
 	private int prePlayerIndex = 0;
 
 
-	public Environment(String name) {
+	public Environment(String name, int seed, int globalSeed) {
 
+		// シード値を設定
+		this.seed = seed;
+		r = new Random(seed);
+
+		// 共通シード
+		Random rGlobal = new Random(globalSeed);
+
+		loadMap("level" + (rGlobal.nextInt(7) + 1) + ".level");
 		prePlayerIndex = getPlayerMapPlayerIndex();
+	}
+
+	/**
+	 * レベルを読み込みます。
+	 * @param levelName
+	 */
+	public void loadMap(String levelName) {
+		LevelLoader levelLoader = new LevelLoader();
+		levelLoader.loadLevel(levelName);
+		playerMap = levelLoader.getPlayerMap();
+		cupMap = levelLoader.getCupMap();
 	}
 
 
@@ -533,7 +553,10 @@ public class Environment implements GlObservable, Cloneable {
 		deskAndPlyerMap[playerIndex / MAP_SIZE][playerIndex % MAP_SIZE] = 100;
 
 		int tmpMinCost = Integer.MAX_VALUE;
-		int minIndex = -1;
+		ArrayList<Integer> minIndexList = new ArrayList<>();
+		//int minIndex = -1;
+
+		//
 
 		// コストが一番かかるところに追加
 		for (int y = 0; y < playerMap.length; y++) {
@@ -561,15 +584,23 @@ public class Environment implements GlObservable, Cloneable {
 					int cost = aStar.getCost();
 					if (cost > 0 && cost >= minCost && tmpMinCost > cost) {
 						tmpMinCost = cost;
-						minIndex = rabbitIndex;
+						//minIndex = rabbitIndex;
+						minIndexList = new ArrayList<>();
+						minIndexList.add(rabbitIndex);
 					}
-
+					// 同じならリストに追加
+					else if (cost > 0 && cost >= minCost && tmpMinCost == cost) {
+						minIndexList.add(rabbitIndex);
+					}
 				}
 			}
 		}
 
 		// 新たにウサギに設定
-		if (minIndex != -1) {
+		if (minIndexList.size() > 0) {
+
+			// 新たな出現位置を候補からランダムに決定
+			int minIndex = minIndexList.get(r.nextInt(minIndexList.size()));
 			playerMap[minIndex / MAP_SIZE][minIndex % MAP_SIZE] = RABBIT_ID;
 
 			if (params != null) params.add(CREATE_RABBIT + ":" + minIndex);
@@ -793,12 +824,13 @@ public class Environment implements GlObservable, Cloneable {
 			} else if (query.startsWith("addEnemy")) {
 				// 敵を追加
 				//createRabbit(5, paramList);
-			} else if (query.startsWith("seed")) {
+			}/*
+			else if (query.startsWith("seed")) {
 				int seed = Integer.parseInt(query.replace("seed:", ""));
 				// シード値を設定
 				this.seed = seed;
 				r = new Random(seed);
-			}
+			}*/
 		}
 
 	}

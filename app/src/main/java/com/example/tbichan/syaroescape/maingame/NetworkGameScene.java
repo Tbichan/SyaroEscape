@@ -36,6 +36,44 @@ import com.example.tbichan.syaroescape.ui.UIListener;
 
 public class NetworkGameScene extends GameScene implements GlObservable {
 
+    // シーンのロード
+    @Override
+    public void load(GlView glView) {
+        super.load(glView);
+        // サーバに送る
+        MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/send/deleter.py") {
+
+            // 接続成功時
+            @Override
+            public void success() {
+                // 表示
+                try {
+                    Log.d("net", result());
+                } catch (Exception e) {
+
+                }
+            }
+
+            // 接続失敗時
+            @Override
+            public void fail(Exception e) {
+                Log.d("net", "接続エラーss:" + e.toString());
+
+            }
+
+        }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/send/deleter.py");
+
+        myHttp.connect();
+    }
+
+    /**
+     * 共通シード作成
+     */
+    @Override
+    public int createGlobalSeed() {
+        return StoreManager.restoreInteger("globalSeed");
+    }
+
     /**
      * Player用VM作成
      */

@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.tbichan.syaroescape.activity.MainActivity;
@@ -46,7 +47,7 @@ public abstract class GlModel {
     private int imgId = -1;
 
     //テクスチャNo
-    public int textureNo;
+    public int textureNo = -1;
 
     // テクスチャをロードしたかどうか
     private boolean loadTex = false;
@@ -125,6 +126,9 @@ public abstract class GlModel {
 
     // カウントタイマー
     private GlCountTimer ct = null;
+
+    // 初回描画
+    private boolean initDraw = true;
 
 
     public float getAlpha() {
@@ -305,6 +309,8 @@ public abstract class GlModel {
 
         if (loadTex == false) return;
 
+        if (textureNo == -1) return;
+
         // verticesに座標を代入
         if (glView == null) glView = MainActivity.getGlView();
         float left = ((x + glViewModel.getX()) /  (float)glView.getViewWidth()) * glView.getWidth();
@@ -369,6 +375,7 @@ public abstract class GlModel {
         GLES20.glEnableVertexAttribArray(mPositionHandle);
         //シェーダーの準備（テクスチャ側）
         int mTexCoordLoc = GLES20.glGetAttribLocation(shaderProgram,"a_texCoord");
+
         // シェーダー:ON
         GLES20.glEnableVertexAttribArray(mTexCoordLoc);
 
@@ -419,12 +426,14 @@ public abstract class GlModel {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureNo);
 
         // 描画する。何で描くのかは、「関数内で登録してある」という暗黙の了解的な。
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 4);
+        if (initDraw == false) GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 4);
 
         //////////////////////////////////END
         // シェーダー:OFF
         GLES20.glDisableVertexAttribArray(mPositionHandle);
         GLES20.glDisableVertexAttribArray(mTexCoordLoc);
+
+        initDraw = false;
 
         /* 1.0
 

@@ -9,8 +9,7 @@
         android:layout_alignParentTop="true"
         android:layout_below="@+id/title"
         android:layout_marginTop="6dp"
-        android:layout_marginLeft="100dp"
-        android:layout_marginRight="100dp"
+
         android:paddingBottom="20dp"
         android:background="@drawable/bg_dialog"
         android:gravity="center_horizontal"
@@ -48,17 +47,20 @@
 
             <EditText
                 android:id="@+id/name_text"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="0.7"
                 android:layout_marginLeft="10dp"
+
                 android:text="とびちゃん"
                 />
             <Button
                 android:id="@+id/name_button"
-                android:layout_width="30dp"
+                android:layout_width="0dp"
                 android:layout_height="30dp"
+                android:layout_weight="0.05"
+                android:layout_marginLeft="2dp"
                 android:layout_alignParentRight="true"
-                android:layout_marginLeft="10dp"
                 android:background="@drawable/pen"
                 />
 

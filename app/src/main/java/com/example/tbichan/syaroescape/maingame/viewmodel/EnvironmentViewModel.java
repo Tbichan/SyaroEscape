@@ -95,8 +95,17 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
         this.id = id;
 
+
+
+        // 共通シード値
+        int globalSeed = ((GameScene)sceneBase).getGlobalSeed();
+
+        // シード値
+        int seed = Math.abs(globalSeed - id);
+
         // 環境を作成
-        env = new Environment("env_1");
+        env = new Environment("env_1", seed, globalSeed);
+        queryEnv("seed:" + seed);
 
         // VMを追加
         env.addGlObservable(this);
@@ -140,7 +149,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         loadMap();
 
         // シード値設定
-        queryEnv("seed:20171228");
+        //queryEnv("seed:20171228");
 
     }
     
@@ -745,7 +754,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         // パラメータ
         ArrayList<String> params = new ArrayList<>();
 
-        int nextRabbit = env.createRabbit(5, params);
+        int nextRabbit = env.createRabbit(4, params);
 
         // 環境更新
         changeEnvironment((String[])params.toArray(new String[params.size()]));

@@ -60,6 +60,9 @@ public class GameScene extends SceneBase implements GlObservable {
     // カップに視点を置いているかどうか
     private boolean cupLook = false;
 
+    // 共通シード値
+    private int globalSeed;
+
 
     // シーンのロード
     @Override
@@ -91,6 +94,9 @@ public class GameScene extends SceneBase implements GlObservable {
         addBitmap(R.drawable.end_game);
         addBitmap(R.drawable.carrot);
 
+        // 共通シードの決定
+        setGlobalSeed(createGlobalSeed());
+
         // vmの追加
         NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
         nowLoadViewModel.setSceneImgLoadedDraw(false);
@@ -100,30 +106,6 @@ public class GameScene extends SceneBase implements GlObservable {
         particleViewModel.setSceneImgLoadedDraw(false);
         glView.addViewModel(particleViewModel);
 
-        // サーバに送る
-        MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/send/deleter.py") {
-
-            // 接続成功時
-            @Override
-            public void success() {
-                // 表示
-                try {
-                    Log.d("net", result());
-                } catch (Exception e) {
-
-                }
-            }
-
-            // 接続失敗時
-            @Override
-            public void fail(Exception e) {
-                Log.d("net", "接続エラーss:" + e.toString());
-
-            }
-
-        }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/send/deleter.py");
-
-        myHttp.connect();
 
 
     }
@@ -216,6 +198,13 @@ public class GameScene extends SceneBase implements GlObservable {
         // 自分を移動可能に
         setTurn(initTurn());
 
+    }
+
+    /**
+     * 共通シード作成
+     */
+    public int createGlobalSeed() {
+        return (int)(Math.random() * 25535);
     }
 
     /**
@@ -588,5 +577,13 @@ public class GameScene extends SceneBase implements GlObservable {
         } else {
             return environmentViewModel.getId();
         }
+    }
+
+    public int getGlobalSeed() {
+        return globalSeed;
+    }
+
+    public void setGlobalSeed(int globalSeed) {
+        this.globalSeed = globalSeed;
     }
 }
