@@ -1,6 +1,5 @@
 package com.example.tbichan.syaroescape.common.viewmodel;
 
-import android.content.Context;
 import android.view.MotionEvent;
 
 import com.example.tbichan.syaroescape.activity.MainActivity;
@@ -55,7 +54,7 @@ public class ParticleViewModel extends GlViewModel {
 
             if (particleModel == null) {
                 particleModel = new ParticleModel(this, "particle");
-                particleModel.setTexture(R.drawable.particle);
+                particleModel.setTextureId(R.drawable.particle);
 
                 // 追加
                 addModel(particleModel);

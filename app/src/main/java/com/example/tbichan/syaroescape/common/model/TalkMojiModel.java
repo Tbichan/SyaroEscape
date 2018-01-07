@@ -16,7 +16,7 @@ import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
  * Created by tbichan on 2018/01/07.
  */
 
-public class TalkModel extends GlModel {
+public class TalkMojiModel extends GlModel {
 
     private String text = "ほげー";
 
@@ -31,7 +31,7 @@ public class TalkModel extends GlModel {
     // 表示間隔
     private int interval = 2;
 
-    public TalkModel(GlViewModel glViewModel, String name, String text) {
+    public TalkMojiModel(GlViewModel glViewModel, String name, String text) {
         super(glViewModel, name);
         this.text = text;
     }
@@ -47,14 +47,21 @@ public class TalkModel extends GlModel {
 
     @Override
     public void awake() {
-        Bitmap strBit = BitMapManager.createStrImage(text, 80, 2048, 1024, Color.GRAY);
 
-        // 文字列の幅を取得
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setTextSize(80);
-        strWidth = (int)paint.measureText(text);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap strBit = BitMapManager.createStrImage(text, 80, 2048, 1024, Color.GRAY);
 
-        setOutsideBitmapTexture(strBit);
+                // 文字列の幅を取得
+                Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                paint.setTextSize(80);
+                strWidth = (int) paint.measureText(text);
+
+                setOutsideBitmapTexture(strBit);
+            }
+        }).start();
+
         setSize(2048, 1024);
         setVisible(false);
     }

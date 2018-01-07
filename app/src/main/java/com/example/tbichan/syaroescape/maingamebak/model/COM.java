@@ -26,7 +26,7 @@ public class COM extends LMoveSprite {
     @Override
     public void awake() {
         setTag("COM");
-        setTexture(R.drawable.com);
+        setTextureId(R.drawable.com);
     }
 
     // 初期処理(別インスタンス登録)

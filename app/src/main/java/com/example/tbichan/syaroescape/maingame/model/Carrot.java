@@ -12,7 +12,7 @@ public class Carrot extends EnvSprite {
 
     public Carrot(GlViewModel glViewModel, String name) {
         super(glViewModel, name);
-        setTexture(R.drawable.carrot);
+        setTextureId(R.drawable.carrot);
         //setTag("cup");
 
     }

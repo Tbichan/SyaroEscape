@@ -1,12 +1,10 @@
 package com.example.tbichan.syaroescape.maingame.viewmodel;
 
-import android.util.Log;
 import android.view.View;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.common.model.GlButton;
-import com.example.tbichan.syaroescape.findbattleuser.FindBattleUserScene;
 import com.example.tbichan.syaroescape.menu.MenuScene;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
@@ -49,7 +47,7 @@ public class StringViewModel extends GlViewModel implements GlObservable {
             }
         };
 
-        yourTurnModel.setTexture(R.drawable.your_turn);
+        yourTurnModel.setTextureId(R.drawable.your_turn);
         yourTurnModel.setPosition(GlView.VIEW_WIDTH * 0.5f - 400, 100);
         yourTurnModel.setSize(800, 100);
         addModel(yourTurnModel);
@@ -68,7 +66,7 @@ public class StringViewModel extends GlViewModel implements GlObservable {
             }
         };
 
-        comTurnModel.setTexture(R.drawable.com_turn);
+        comTurnModel.setTextureId(R.drawable.com_turn);
         comTurnModel.setPosition(GlView.VIEW_WIDTH * 0.5f - 400, 100);
         comTurnModel.setSize(800, 100);
         addModel(comTurnModel);
@@ -118,7 +116,7 @@ public class StringViewModel extends GlViewModel implements GlObservable {
             }
         };
 
-        endGameButton.setTexture(R.drawable.end_game);
+        endGameButton.setTextureId(R.drawable.end_game);
         endGameButton.setPosition(0f, GlView.VIEW_HEIGHT - 70);
         endGameButton.setSize(500, 70);
         addModel(endGameButton);

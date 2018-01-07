@@ -14,6 +14,8 @@ import com.example.tbichan.syaroescape.opengl.renderer.GlRenderer;
 import com.example.tbichan.syaroescape.opengl.shader.ShaderSource;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
+import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.scene.SceneManager;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -152,9 +154,19 @@ public abstract class GlModel {
 
         // verticesに座標を代入
         if (glView == null) glView = MainActivity.getGlView();
-        float left = ((x + glViewModel.getX()) / (float) glView.getViewWidth()) * glView.getWidth();
+
+        // シーン取得
+        SceneBase nowScene = SceneManager.getInstance().getNowScene();
+        float sceneX = 0f;
+        float sceneY = 0f;
+        if (nowScene != null) {
+            sceneX = nowScene.getX();
+            sceneY = nowScene.getY();
+        }
+
+        float left = ((x + glViewModel.getX() + sceneX) / (float) glView.getViewWidth()) * glView.getWidth();
         float right = left + width / (float) glView.getViewWidth() * glView.getWidth();
-        float bottom = ((y + glViewModel.getY()) / (float) glView.getViewHeight()) * glView.getHeight();
+        float bottom = ((y + glViewModel.getY() + sceneY) / (float) glView.getViewHeight()) * glView.getHeight();
         float top = bottom + height / (float) glView.getViewHeight() * glView.getHeight();
 
         left = left / glView.getWidth() * 2.0f - 1.0f;
@@ -188,11 +200,15 @@ public abstract class GlModel {
     }
 
     // テクスチャをセット
-    public void setTexture(int id){
+    public void setTextureId(int id){
         this.imgId = id;
 
         loadTex = false;
 
+    }
+
+    public final int getTextureId() {
+        return imgId;
     }
 
     // 外部画像をセット
@@ -200,6 +216,7 @@ public abstract class GlModel {
 
         outImg = b;
         loadTex = false;
+        initDraw = true;
     }
 
     // テクスチャをロード
@@ -226,41 +243,8 @@ public abstract class GlModel {
             if (imgWidth == 0) imgWidth = bitmap.getWidth();
             if (imgHeight == 0) imgHeight = bitmap.getHeight();
 
-            /*
-
-            gl.glEnable(GL10.GL_ALPHA_TEST);
-            gl.glEnable(GL10.GL_BLEND);
-            gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-            gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE);
-            //テクスチャIDを割り当てる
-            int[] textureID = new int[1];
-            gl.glGenTextures(1, textureID, 0);
-            textureNo = textureID[0];
-
-            //テクスチャIDのバインド
-            gl.glBindTexture(GL10.GL_TEXTURE_2D, textureNo);
-            //OpenGL ES用のメモリ領域に画像データを渡す。上でバインドされたテクスチャIDと結び付けられる。
-            GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-            //テクスチャ座標が1.0fを超えたときの、テクスチャを繰り返す設定
-            gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_REPEAT);
-            gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_REPEAT);
-            //テクスチャを元のサイズから拡大、縮小して使用したときの色の使い方を設定
-            gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-            gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
-
-            */
-
-            // GLES 2.0
 
             setupImage(bitmap);
-
-            //頂点座標をバッファーに変換
-            /*
-            ByteBuffer bb = ByteBuffer.allocateDirect(vertices.length * 4);
-            bb.order(ByteOrder.nativeOrder());
-            vertexBuffer = bb.asFloatBuffer();
-            vertexBuffer.put(vertices);
-            vertexBuffer.position(0);*/
 
             //ここからシェーダーを使うっていう、定形
             int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, ShaderSource.VERTEX_SHADER_CODE_TEX);
@@ -271,7 +255,7 @@ public abstract class GlModel {
             GLES20.glLinkProgram(shaderProgram);
 
             loadTex = true;
-
+            initDraw = true;
             endTexLoad();
         }
     }
@@ -313,10 +297,20 @@ public abstract class GlModel {
 
         // verticesに座標を代入
         if (glView == null) glView = MainActivity.getGlView();
-        float left = ((x + glViewModel.getX()) /  (float)glView.getViewWidth()) * glView.getWidth();
-        float right = left + width / (float)glView.getViewWidth() * glView.getWidth();
-        float bottom = ((y + glViewModel.getY()) / (float)glView.getViewHeight()) * glView.getHeight();
-        float top = bottom + height / (float)glView.getViewHeight() * glView.getHeight();
+
+        // シーン取得
+        SceneBase nowScene = SceneManager.getInstance().getNowScene();
+        float sceneX = 0f;
+        float sceneY = 0f;
+        if (nowScene != null) {
+            sceneX = nowScene.getX();
+            sceneY = nowScene.getY();
+        }
+
+        float left = ((x + glViewModel.getX() + sceneX) / (float) glView.getViewWidth()) * glView.getWidth();
+        float right = left + width / (float) glView.getViewWidth() * glView.getWidth();
+        float bottom = ((y + glViewModel.getY() + sceneY) / (float) glView.getViewHeight()) * glView.getHeight();
+        float top = bottom + height / (float) glView.getViewHeight() * glView.getHeight();
 
         left = left / glView.getWidth() * 2.0f - 1.0f;
         right = right / glView.getWidth() * 2.0f - 1.0f;
@@ -426,6 +420,7 @@ public abstract class GlModel {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureNo);
 
         // 描画する。何で描くのかは、「関数内で登録してある」という暗黙の了解的な。
+        // 最初の一回を書くとちらつく？
         if (initDraw == false) GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 4);
 
         //////////////////////////////////END
@@ -433,34 +428,11 @@ public abstract class GlModel {
         GLES20.glDisableVertexAttribArray(mPositionHandle);
         GLES20.glDisableVertexAttribArray(mTexCoordLoc);
 
-        initDraw = false;
+        if (initDraw == true) {
+            initDraw = false;
+            draw(glRenderer);
+        }
 
-        /* 1.0
-
-        gl.glDisable(GL10.GL_DEPTH_TEST);
-        // 背景色を白色で塗りつぶし
-        gl.glColor4x(0x10000, 0x10000, 0x10000, 0x10000);
-        // テクスチャ0番をアクティブにする
-        gl.glActiveTexture(GL10.GL_TEXTURE0);
-        // テクスチャIDに対応するテクスチャをバインドする
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textureNo);
-        //テクスチャの座標と幅と高さを指定
-        int rect[] = {(int)(imgWidth * u1), (int)(imgHeight * (1.0f - v1)), (int)(imgWidth * (u2 - u1))-1, -(int)(imgHeight * (v2 - v1))+1};
-        // int rect[] = {texX, texY, texWidth, texHeight};
-        // テクスチャ画像のどの部分を使うかを指定
-        ((GL11)gl).glTexParameteriv(GL10.GL_TEXTURE_2D, GL11Ext.GL_TEXTURE_CROP_RECT_OES, rect, 0);
-
-        if (glView == null) glView = MainActivity.getGlView();
-        // 描画
-        ((GL11Ext)gl).glDrawTexfOES(
-                ((x + glViewModel.getX()) /  (float)glView.getViewWidth()) * glView.getWidth(),
-                ((y + glViewModel.getY()) / (float)glView.getViewHeight()) * glView.getHeight(),
-                0,
-                width / (float)glView.getViewWidth() * glView.getWidth(),
-                height / (float)glView.getViewHeight() * glView.getHeight());
-
-        gl.glEnable(GL10.GL_DEPTH_TEST);
-        */
     }
 
     // 削除
@@ -665,11 +637,18 @@ public abstract class GlModel {
     // 拡大、縮小を行います。
     public void setGlScale(float sx, float sy) {
 
-        // verticesに座標を代入
-        if (glView == null) glView = MainActivity.getGlView();
-        float left = ((x + glViewModel.getX()) / (float) glView.getViewWidth()) * glView.getWidth();
+        // シーン取得
+        SceneBase nowScene = SceneManager.getInstance().getNowScene();
+        float sceneX = 0f;
+        float sceneY = 0f;
+        if (nowScene != null) {
+            sceneX = nowScene.getX();
+            sceneY = nowScene.getY();
+        }
+
+        float left = ((x + glViewModel.getX() + sceneX) / (float) glView.getViewWidth()) * glView.getWidth();
         float right = left + width / (float) glView.getViewWidth() * glView.getWidth();
-        float bottom = ((y + glViewModel.getY()) / (float) glView.getViewHeight()) * glView.getHeight();
+        float bottom = ((y + glViewModel.getY() + sceneY) / (float) glView.getViewHeight()) * glView.getHeight();
         float top = bottom + height / (float) glView.getViewHeight() * glView.getHeight();
 
         left = left / glView.getWidth() * 2.0f - 1.0f;

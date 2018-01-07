@@ -1,7 +1,5 @@
 package com.example.tbichan.syaroescape.findbattleuser.viewmodel;
 
-import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
@@ -44,7 +42,7 @@ public class BGViewModel extends GlViewModel {
 			}
 		};
 
-		bgStr.setTexture(R.drawable.tushin);
+		bgStr.setTextureId(R.drawable.tushin);
 		bgStr.setSize(1500, 300);
 
 		// ���S�ɏo��
@@ -65,7 +63,7 @@ public class BGViewModel extends GlViewModel {
 			}
 		};
 
-		bgStrErr.setTexture(R.drawable.tushin_err);
+		bgStrErr.setTextureId(R.drawable.tushin_err);
 		bgStrErr.setSize(1500, 300);
 
 		// ���S�ɏo��

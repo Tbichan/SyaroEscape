@@ -25,7 +25,7 @@ public class Cup extends LMoveSprite {
     // 初期処理(別インスタンス登録)
     @Override
     public void start() {
-        setTexture(R.drawable.cup);
+        setTextureId(R.drawable.cup);
     }
 
     // 更新

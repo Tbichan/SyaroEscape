@@ -1,6 +1,5 @@
 package com.example.tbichan.syaroescape.common.viewmodel;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.example.tbichan.syaroescape.R;
@@ -52,7 +51,7 @@ public class NowLoadViewModel extends GlViewModel {
             }
         };
         bgModel.setSize(GlView.VIEW_WIDTH, GlView.VIEW_HEIGHT);
-        bgModel.setTexture(R.drawable.load_bg);
+        bgModel.setTextureId(R.drawable.load_bg);
 
         GlModel strModel = new GlModel(this, "load_str") {
             @Override
@@ -66,7 +65,7 @@ public class NowLoadViewModel extends GlViewModel {
             }
         };
 
-        strModel.setTexture(R.drawable.load_str);
+        strModel.setTextureId(R.drawable.load_str);
         strModel.setPosition(2000, 25);
 
         // barの左
@@ -82,7 +81,7 @@ public class NowLoadViewModel extends GlViewModel {
             }
         };
 
-        barLeft.setTexture(R.drawable.bar);
+        barLeft.setTextureId(R.drawable.bar);
         barLeft.setPosition(200, 25);
         barLeft.setSize(65, 100);
         barLeft.setU2(0.054f);
@@ -100,7 +99,7 @@ public class NowLoadViewModel extends GlViewModel {
             }
         };
 
-        barMiddle.setTexture(R.drawable.bar);
+        barMiddle.setTextureId(R.drawable.bar);
         barMiddle.setPosition(200+65, 25);
         barMiddle.setSize(0.1f, 100);
         barMiddle.setU1(0.054f);
@@ -119,7 +118,7 @@ public class NowLoadViewModel extends GlViewModel {
             }
         };
 
-        barRight.setTexture(R.drawable.bar);
+        barRight.setTextureId(R.drawable.bar);
         barRight.setPosition(200+65+0.1f, 25);
         barRight.setSize(65, 100);
         barRight.setU1(1.0f - 0.054f);
@@ -137,7 +136,7 @@ public class NowLoadViewModel extends GlViewModel {
             }
         };
 
-        barFrameLeft.setTexture(R.drawable.bar_frame);
+        barFrameLeft.setTextureId(R.drawable.bar_frame);
         barFrameLeft.setPosition(200, 25);
         barFrameLeft.setSize(65, 100);
         barFrameLeft.setU2(0.054f);
@@ -155,7 +154,7 @@ public class NowLoadViewModel extends GlViewModel {
             }
         };
 
-        barFrameMiddle.setTexture(R.drawable.bar_frame);
+        barFrameMiddle.setTextureId(R.drawable.bar_frame);
         barFrameMiddle.setPosition(200 + 65, 25);
         barFrameMiddle.setSize(1600, 100);
         barFrameMiddle.setU1(0.054f);
@@ -174,7 +173,7 @@ public class NowLoadViewModel extends GlViewModel {
             }
         };
 
-        barFrameRight.setTexture(R.drawable.bar_frame);
+        barFrameRight.setTextureId(R.drawable.bar_frame);
         barFrameRight.setPosition(200 + 65 + 1600, 25);
         barFrameRight.setSize(65, 100);
         barFrameRight.setU1(1.0f - 0.054f);

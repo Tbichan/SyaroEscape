@@ -1,6 +1,5 @@
 package com.example.tbichan.syaroescape.title.viewmodel;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,7 +43,7 @@ public class UIViewModel extends GlViewModel {
             @Override
             public void start() {
                 super.start();
-                setTexture(R.drawable.sentaku);
+                setTextureId(R.drawable.sentaku);
                 //setTexWidth(getTexWidth() / 2);
                 Log.d("hoge", "startImg");
 

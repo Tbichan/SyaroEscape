@@ -1,6 +1,5 @@
 package com.example.tbichan.syaroescape.common.model;
 
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.tbichan.syaroescape.activity.MainActivity;
@@ -23,7 +22,7 @@ public abstract class GlButton extends GlModel {
 
     public GlButton(GlViewModel glViewModel, String name) {
         super(glViewModel, name);
-        setTexture(R.drawable.button);
+        setTextureId(R.drawable.button);
         setSize(GlView.TILE_SIZE * 1.5f * 1.618033988749895f, GlView.TILE_SIZE * 1.5f);   // 黄金比
         // 離したときのテクスチャ変更
         upTex();

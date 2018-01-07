@@ -75,7 +75,6 @@ public class GameScene extends SceneBase implements GlObservable {
         addBitmap(R.drawable.load_str);
         addBitmap(R.drawable.bar_frame);
         addBitmap(R.drawable.bar);
-
         addBitmap(R.drawable.menu_bg);
 
         addBitmap(R.drawable.tile_0);
@@ -463,6 +462,8 @@ public class GameScene extends SceneBase implements GlObservable {
         stringViewModel.setTurn(turn);
 
     }
+
+    ///////////////////////// 敵出現とプレイヤー交代時にまれにおかしくなる？
 
     /**
      * カメラを移動します。

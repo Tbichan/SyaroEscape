@@ -18,7 +18,7 @@ public class Table extends LMoveSprite {
     @Override
     public void awake() {
         setTag("Table");
-        setTexture(R.drawable.desk);
+        setTextureId(R.drawable.desk);
 
         setId(StageModel.TABLE);
 

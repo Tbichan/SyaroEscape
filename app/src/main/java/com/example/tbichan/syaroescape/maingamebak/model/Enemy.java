@@ -27,7 +27,7 @@ public class Enemy extends LMoveSprite {
         super.awake();
         setId(StageModel.ENEMY);
         setKickTable(false);
-        setTexture(R.drawable.player);
+        setTextureId(R.drawable.player);
     }
 
     // 初期処理(別インスタンス登録)

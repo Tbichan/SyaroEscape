@@ -130,7 +130,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             }
 
         };
-        tile.setTexture(R.drawable.tile_0);
+        tile.setTextureId(R.drawable.tile_0);
         tile.setSize(GlView.VIEW_WIDTH / 16f * 12f, GlView.VIEW_WIDTH / 16f * 12f);
         tile.setY(INIT_Y);
         tile.setUV(0.0f, 0.0f, 3.0f, 3.0f);
@@ -140,7 +140,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
         // player
         player = new Player(this, "player");
-        player.setTexture(R.drawable.syaro_icon);
+        player.setTextureId(R.drawable.syaro_icon);
         // vm追加
         player.setEnviromentViewModel(this);
         addModel(player);
@@ -335,7 +335,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             // プレイヤー登録
             enableFloor.setPlayer(player);
 			enableFloor.move(mapY, mapX);
-			enableFloor.setTexture(R.drawable.enable);
+			enableFloor.setTextureId(R.drawable.enable);
 			
 			// 環境VMを追加
 			enableFloor.setEnviromentViewModel(this);
@@ -415,7 +415,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                         // 机作成
                         EnvSprite desk = new EnvSprite(this, "desk");
                         desk.move(y, x);
-                        desk.setTexture(R.drawable.desk);
+                        desk.setTextureId(R.drawable.desk);
 
                         // リストに追加
                         deskList.add(desk);
@@ -446,7 +446,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                         // カップ作成
                         Cup cup = new Cup(this, "cup_" + cupCnt);
                         cup.move(y, x);
-                        cup.setTexture(R.drawable.cups);
+                        cup.setTextureId(R.drawable.cups);
 
                         // リストに追加
                         cupList.add(cup);

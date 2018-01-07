@@ -1,14 +1,9 @@
 package com.example.tbichan.syaroescape.menu.viewmodel;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 
 import com.example.tbichan.syaroescape.R;
-import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.menu.model.CharaModel;
 import com.example.tbichan.syaroescape.menu.model.Fukidashi;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.BitMapManager;
@@ -16,7 +11,6 @@ import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
-import com.example.tbichan.syaroescape.ui.UIListener;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -57,7 +51,7 @@ public class CharaViewModel extends GlViewModel {
         // 吹き出し作成
         fukidashi = new Fukidashi(this, "fukidashi");
 
-        fukidashi.setTexture(R.drawable.fukidashi);
+        fukidashi.setTextureId(R.drawable.fukidashi);
         fukidashi.setSize(800, 525); // 300->700
         fukidashi.setPosition(0.0f, 900.0f);
 
@@ -69,7 +63,7 @@ public class CharaViewModel extends GlViewModel {
         final int[] imgIds = {R.drawable.chino_menu, R.drawable.syaro_menu};
 
         charaModel = new CharaModel(this, names[charaId]);
-        charaModel.setTexture(imgIds[charaId]);
+        charaModel.setTextureId(imgIds[charaId]);
         charaModel.setSize(510, 1000);
         charaModel.setY(-12f);
         //charaModel.setAngle(45f);

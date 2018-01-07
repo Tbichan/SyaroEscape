@@ -64,7 +64,7 @@ public class TestModel extends GlModel {
             GlViewModel glViewModel = getGlViewModel();
             // モデル読み込み
             TestModel testModel = new TestModel(glViewModel, "TestModel2");
-            testModel.setTexture(R.drawable.particle);
+            testModel.setTextureId(R.drawable.particle);
             testModel.setVx(0.5f);
             // サイズ変更
             //testModel.setSize(glViewModel.getGlView().getWidth(), glViewModel.getGlView().getHeight());

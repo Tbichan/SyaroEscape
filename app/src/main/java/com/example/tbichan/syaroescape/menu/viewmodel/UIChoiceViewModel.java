@@ -1,11 +1,8 @@
 package com.example.tbichan.syaroescape.menu.viewmodel;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 
-import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.findbattleuser.FindBattleUserScene;
@@ -17,7 +14,6 @@ import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
 import com.example.tbichan.syaroescape.story.StoryScene;
-import com.example.tbichan.syaroescape.ui.UIListener;
 
 import java.util.ArrayList;
 
@@ -96,7 +92,7 @@ public class UIChoiceViewModel extends GlViewModel {
                 }
             };
 
-            menuButton.setTexture(imgIds[i]);
+            menuButton.setTextureId(imgIds[i]);
             menuButton.setSize(1300, 250);
             menuButton.setPosition(2800.0f, 1100 - i * 250);
             menuButton.setDefultPosition(1266, 1100 - i * 250);

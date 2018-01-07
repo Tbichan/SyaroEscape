@@ -33,6 +33,30 @@ public abstract class SceneBase {
     // 画像をロード具合
     private float sceneImgLoadPersent = 0.0f;
 
+    // 座標
+    private float x, y;
+
+    public final float getX() {
+        return x;
+    }
+
+    public final void setX(float x) {
+        this.x = x;
+    }
+
+    public final float getY() {
+        return y;
+    }
+
+    public final void setY(float y) {
+        this.y = y;
+    }
+
+    public final void setPostion(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     // 画像読み込み終了時の処理
     public void imgLoadEnd(GlView glView) {
 

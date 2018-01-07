@@ -1,6 +1,5 @@
 package com.example.tbichan.syaroescape.maingamebak.viewmodel;
 
-import android.content.Context;
 import android.view.MotionEvent;
 
 import com.example.tbichan.syaroescape.opengl.view.GlView;
@@ -43,7 +42,7 @@ public class BackGroundViewModel extends GlViewModel {
             }
 
         };
-        sprite.setTexture(R.drawable.sand);
+        sprite.setTextureId(R.drawable.sand);
         sprite.setSize(getGlView().getViewWidth(), getGlView().getViewHeight());
 
         // 追加

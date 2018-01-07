@@ -28,7 +28,7 @@ public class Player extends LMoveSprite {
         setTag("Player");
         setId(StageModel.PLAYER);
         setKickTable(true);
-        setTexture(R.drawable.com);
+        setTextureId(R.drawable.com);
     }
 
     // 初期処理(別インスタンス登録)

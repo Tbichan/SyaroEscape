@@ -1,21 +1,22 @@
 package com.example.tbichan.syaroescape.story;
 
-import android.util.Log;
-
 import com.example.tbichan.syaroescape.R;
+import com.example.tbichan.syaroescape.common.VibrationScene;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.NowLoadViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.ParticleViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.TalkViewModel;
+import com.example.tbichan.syaroescape.maingame.GameScene;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
-import com.example.tbichan.syaroescape.story.model.BGViewModel;
+import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.story.viewmodel.BGViewModel;
 
 /**
  * Created by tbichan on 2017/12/09.
  */
 
-public class StoryScene extends SceneBase {
+public class StoryScene extends VibrationScene {
 
     // パーティクル
     private ParticleViewModel particleViewModel;
@@ -28,11 +29,15 @@ public class StoryScene extends SceneBase {
         addBitmap(R.drawable.load_str);
         addBitmap(R.drawable.bar_frame);
         addBitmap(R.drawable.bar);
+        addBitmap(R.drawable.load_bg);
+
         addBitmap(R.drawable.particle);
 
         addBitmap(R.drawable.flower_button);
-        addBitmap(R.drawable.menu_bg);
-
+        addBitmap(R.drawable.story1_bg);
+        addBitmap(R.drawable.syaro_menu);
+        addBitmap(R.drawable.chino_menu);
+        addBitmap(R.drawable.cocoa_menu);
 
         NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
         nowLoadViewModel.setSceneImgLoadedDraw(false);
@@ -48,6 +53,7 @@ public class StoryScene extends SceneBase {
     // シーンの更新
     @Override
     public void update(){
+        super.update();
 
     }
 
@@ -59,13 +65,32 @@ public class StoryScene extends SceneBase {
         BGViewModel bgViewModel = new BGViewModel(glView, this, "BGViewModel");
         glView.addViewModel(bgViewModel);
 
-        // ボタン部分
-        glView.addViewModel(new TalkViewModel(glView, this, "TalkViewModel"));
-
         // fadein
-        FadeViewModel fadeViewModel = new FadeViewModel(glView, this, "FadeViewModel");
+        final FadeViewModel fadeViewModel = new FadeViewModel(glView, this, "FadeViewModel"){
+            @Override
+            // フェードアウト終了時の処理
+            public void endFadeOut() {
+                SceneManager.getInstance().setNextScene(new GameScene());
+            }
+        };
         fadeViewModel.setInSpeed(1.0f);
         fadeViewModel.startFadeIn();
+
+        // ボタン部分
+        glView.addViewModel(new TalkViewModel(glView, this, "TalkViewModel", "story1.txt"){
+
+            /**
+             * 会話が終了したときの処理です。
+             */
+            @Override
+            public void endStory(){
+                // フェードアウト
+                if (fadeViewModel != null) {
+                    fadeViewModel.startFadeOut();
+                }
+            }
+        });
+
         glView.addViewModel(fadeViewModel);
 
         // パーティクルを最前面に

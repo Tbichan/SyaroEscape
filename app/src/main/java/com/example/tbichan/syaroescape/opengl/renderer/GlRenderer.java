@@ -70,11 +70,11 @@ public class GlRenderer implements GLSurfaceView.Renderer {
 
         gl.glDepthFunc(GL10.GL_LEQUAL);
 
-        //faceSprite.setTexture(gl,context.getResources(), R.drawable.face);
-        //faceSprite2.setTexture(gl,context.getResources(), R.drawable.face2);
+        //faceSprite.setTextureId(gl,context.getResources(), R.drawable.face);
+        //faceSprite2.setTextureId(gl,context.getResources(), R.drawable.face2);
         //spriteList.add(faceSprite);
         //spriteList.add(faceSprite2);
-        //face_img.setTexture(gl,context.getResources(), R.drawable.face);
+        //face_img.setTextureId(gl,context.getResources(), R.drawable.face);
         */
 
         // 黒で塗りつぶし

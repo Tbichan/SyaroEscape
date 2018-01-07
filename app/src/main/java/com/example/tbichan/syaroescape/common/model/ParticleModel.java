@@ -29,7 +29,7 @@ public class ParticleModel extends GlModel {
     @Override
     public void start() {
         setSize(320, 320);
-        //setTexture(R.drawable.particle);
+        //setTextureId(R.drawable.particle);
         // UV
         setU1(0.0f);
         setU2(1.0f/8.0f);

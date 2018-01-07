@@ -85,7 +85,7 @@ public class FadePlane extends GlModel {
 
     @Override
     public void start(){
-        //setTexture(R.drawable.black);
+        //setTextureId(R.drawable.black);
         //setSize(GlView.VTEW_WIDTH, GlView.VTEW_HEIGHT);
     }
 

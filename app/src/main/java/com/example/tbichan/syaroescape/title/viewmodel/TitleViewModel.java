@@ -1,7 +1,5 @@
 package com.example.tbichan.syaroescape.title.viewmodel;
 
-import android.content.Context;
-
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.R;
@@ -28,7 +26,7 @@ public class TitleViewModel extends GlViewModel {
 
         // モデル読み込み
         TestModel testModel = new TestModel(this, "TestModel");
-        testModel.setTexture(R.drawable.particle);
+        testModel.setTextureId(R.drawable.particle);
         testModel.setPosition(640,0);
         testModel.setVx(1.0f);
         // 追加

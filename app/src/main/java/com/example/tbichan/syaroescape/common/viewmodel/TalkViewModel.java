@@ -6,12 +6,15 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.tbichan.syaroescape.R;
-import com.example.tbichan.syaroescape.common.model.TalkModel;
+import com.example.tbichan.syaroescape.activity.MainActivity;
+import com.example.tbichan.syaroescape.common.VibrationScene;
+import com.example.tbichan.syaroescape.common.model.TalkMojiModel;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.BitMapManager;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.common.model.TalkCharaModel;
 import com.example.tbichan.syaroescape.scene.SceneManager;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -20,14 +23,31 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by tbichan on 2017/12/10.
  */
 
-public class TalkViewModel extends GlViewModel {
+public abstract class TalkViewModel extends GlViewModel {
 
-    private TalkModel[] talkModels;
+    // キャラ名表示モデル
+    private GlModel nameModel;
 
-    private Bitmap[] strBits;
+    // キャラモデル
+    private TalkCharaModel leftTalkCharaModel, rightTalkCharaModel, centerTalkCharaModel;
 
-    public TalkViewModel(GlView glView, SceneBase sceneBase, String name){
+    // 会話文表示用モデル
+    private TalkMojiModel[] talkModels;
+
+    // 会話文の文字列配列
+    private String[] storyStrs;
+
+    // 表示キャラ
+    final int[] imgIds = {R.drawable.syaro_menu, R.drawable.chino_menu, R.drawable.cocoa_menu};
+
+    // 今の表示数
+    private int nowIndex = 0;
+
+    public TalkViewModel(GlView glView, SceneBase sceneBase, String name, String storyFile){
         super(glView, sceneBase, name);
+
+        // ファイル読み込み
+        storyStrs = MainActivity.loadFile(storyFile).split("\n");
     }
 
     // 読み込み
@@ -39,6 +59,25 @@ public class TalkViewModel extends GlViewModel {
     // 初期処理(別インスタンス登録)
     @Override
     public void start() {
+
+        // キャラ表示
+        leftTalkCharaModel = new TalkCharaModel(this, "chara1");
+        leftTalkCharaModel.setTextureId(R.drawable.syaro_menu);
+        leftTalkCharaModel.setPosition(400, 300);
+        leftTalkCharaModel.setSize(510, 1000);
+        addModel(leftTalkCharaModel);
+
+        rightTalkCharaModel = new TalkCharaModel(this, "chara2");
+        rightTalkCharaModel.setTextureId(R.drawable.chino_menu);
+        rightTalkCharaModel.setPosition(1500, 300);
+        rightTalkCharaModel.setSize(510, 1000);
+        addModel(rightTalkCharaModel);
+
+        centerTalkCharaModel = new TalkCharaModel(this, "chara3");
+        centerTalkCharaModel.setTextureId(R.drawable.chino_menu);
+        centerTalkCharaModel.setPosition(1000, 300);
+        centerTalkCharaModel.setSize(510, 1000);
+        addModel(centerTalkCharaModel);
 
         GlModel bgModel = new GlModel(this, "load_bg") {
             @Override
@@ -53,28 +92,13 @@ public class TalkViewModel extends GlViewModel {
         };
         bgModel.setSize(GlView.VIEW_WIDTH - 500, 500);
         bgModel.setX(250);
-        bgModel.setTexture(R.drawable.flower_button);
+        bgModel.setTextureId(R.drawable.flower_button);
 
         addModel(bgModel);
 
-        // 会話文
-        setTalk("こんにちはー\nココアいるー？");
-        /*
-        talkModels = new TalkModel[2];
-        talkModels[0] = new TalkModel(this, "talkModel", "こんにちはー！こんにちはー！こんにちはー！こんに"){
-            @Override
-            public void allShow() {
-                talkModels[1].setStop(false);
-            }
-        };
-        talkModels[0].setPosition(300f, -560f);
-        addModel(talkModels[0]);
 
-        talkModels[1] = new TalkModel(this, "talkModel", "ラビットハウスはここ？");
-        talkModels[1].setPosition(300f, -660f);
-        talkModels[1].setStop(true);
-        addModel(talkModels[1]);
-        */
+        // 会話文
+        nextTalk();
 
     }
 
@@ -91,33 +115,125 @@ public class TalkViewModel extends GlViewModel {
 
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             if (isAllShow()) {
-                setTalk("こんにちはー\nココアいるー？あ");
+
+                // 次の文章表示
+                if (nowIndex < storyStrs.length && nowIndex != -1) {
+                    nextTalk();
+                } else {
+                    nowIndex = -1;
+                    endStory();
+                }
             }
         }
         return true;
     }
 
     /**
+     * 次の文章を表示します。
+     */
+    public void nextTalk() {
+
+        String[] hoges = storyStrs[nowIndex].split(":");
+        String name = hoges[0];
+        String text = hoges[1];
+        int leftId = Integer.parseInt(hoges[2].replace("id,", ""));
+        int leftAction = Integer.parseInt(hoges[3].replace("action,", ""));
+        int rightId = Integer.parseInt(hoges[4].replace("id,", ""));
+        int rightAction = Integer.parseInt(hoges[5].replace("action,", ""));
+        int centerId = Integer.parseInt(hoges[6].replace("id,", ""));
+        int centerAction = Integer.parseInt(hoges[7].replace("action,", ""));
+
+        // 振動させるかどうか
+        int allAction = Integer.parseInt(hoges[8].replace("allAction,", ""));
+        if (allAction == 1) ((VibrationScene)getScene()).setVibration(true);
+        else ((VibrationScene)getScene()).setVibration(false);
+
+        setTalk(name, text, leftId, leftAction, rightId, rightAction, centerId, centerAction);
+        nowIndex++;
+    }
+
+
+    /**
      * テキストを表示させます。
      * @param text
      */
-    public void setTalk(String text) {
-        String[] lines = text.split("\n");
+    public void setTalk(String name, String text, int leftId, int leftAction, int rightId, int rightAction, int centerId, int centerAction) {
+
+        // 前の名前から変更
+        if (nameModel == null) {
+            nameModel = new GlModel(this, "nameModel") {
+                @Override
+                public void start() {
+
+                }
+
+                @Override
+                public void update() {
+
+                }
+
+                /**
+                 * テクスチャ読み込みが終わると実行されます。
+                 */
+                @Override
+                public void endTexLoad() {
+                    getBitmap().recycle();
+                    Log.d("outbitmap", "recycle");
+                }
+            };
+
+            nameModel.setPosition(300f, -460f);
+            addModel(nameModel);
+        }
+
+        // キャラにアクションさせる。
+        if (leftId != -1) {
+
+            if (leftTalkCharaModel.getTextureId() != imgIds[leftId])leftTalkCharaModel.setTextureId(imgIds[leftId]);
+            leftTalkCharaModel.setVisible(true);
+        } else {
+            leftTalkCharaModel.setVisible(false);
+        }
+        leftTalkCharaModel.action(leftAction);
+
+        // キャラにアクションさせる。
+        if (rightId != -1) {
+            if (rightTalkCharaModel.getTextureId() != imgIds[rightId])rightTalkCharaModel.setTextureId(imgIds[rightId]);
+            rightTalkCharaModel.setVisible(true);
+        } else {
+            rightTalkCharaModel.setVisible(false);
+        }
+        rightTalkCharaModel.action(rightAction);
+
+        // キャラにアクションさせる。
+        if (centerId != -1) {
+            if (centerTalkCharaModel.getTextureId() != imgIds[centerId])centerTalkCharaModel.setTextureId(imgIds[centerId]);
+            centerTalkCharaModel.setVisible(true);
+        } else {
+            centerTalkCharaModel.setVisible(false);
+        }
+        centerTalkCharaModel.action(centerAction);
+
+        // キャラ名画像作成
+        Bitmap strBit = BitMapManager.createStrImage(name, 80, 2048, 1024, Color.GRAY);
+        nameModel.setOutsideBitmapTexture(strBit);
+
+        String[] lines = text.split(",");
 
         // 前の会話を削除
         if (talkModels != null) {
-            for (TalkModel talkModel: talkModels) {
+            for (TalkMojiModel talkModel: talkModels) {
                 talkModel.delete();
             }
         }
 
-        talkModels = new TalkModel[lines.length];
+        talkModels = new TalkMojiModel[lines.length];
 
         for (int i = 0; i < lines.length; i++) {
 
             final int tmp = i;
 
-            talkModels[i] = new TalkModel(this, "talkModel_" + i, lines[i]){
+            talkModels[i] = new TalkMojiModel(this, "talkModel_" + i, lines[i]){
                 @Override
                 public void allShow() {
                     if (tmp + 1 < talkModels.length) talkModels[tmp + 1].setStop(false);
@@ -136,4 +252,9 @@ public class TalkViewModel extends GlViewModel {
     public boolean isAllShow() {
         return talkModels[talkModels.length - 1].isAllShow();
     }
+
+    /**
+     * 会話が終了したときの処理です。
+     */
+    public abstract void endStory();
 }

@@ -12,6 +12,6 @@ public class Rabbit extends EnvSprite {
 
     public Rabbit(GlViewModel glViewModel, String name) {
         super(glViewModel, name);
-        setTexture(R.drawable.anko);
+        setTextureId(R.drawable.anko);
     }
 }

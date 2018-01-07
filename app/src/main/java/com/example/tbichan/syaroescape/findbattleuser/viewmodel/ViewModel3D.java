@@ -1,10 +1,7 @@
 package com.example.tbichan.syaroescape.findbattleuser.viewmodel;
 
-import android.content.Context;
-
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.opengl.model.GlModel3D;
-import com.example.tbichan.syaroescape.opengl.model.GlModel3DCube;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
@@ -36,7 +33,7 @@ public class ViewModel3D extends GlViewModel {
             }
         };
 
-        bgStr.setTexture(R.drawable.tushin);
+        bgStr.setTextureId(R.drawable.tushin);
         bgStr.setSize(1500, 300);
 
         // ���S�ɏo��

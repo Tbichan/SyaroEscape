@@ -1,15 +1,8 @@
 package com.example.tbichan.syaroescape.maingame.viewmodel;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.example.tbichan.syaroescape.R;
-import com.example.tbichan.syaroescape.common.model.GlButton;
 import com.example.tbichan.syaroescape.maingame.GameScene;
-import com.example.tbichan.syaroescape.maingame.model.ArrowUI;
-import com.example.tbichan.syaroescape.maingame.model.Environment;
 import com.example.tbichan.syaroescape.maingame.model.MainGameButton;
-import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
@@ -59,7 +52,7 @@ public class ActButtonUIViewModel extends GlViewModel {
         moveButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-500);
         moveButton.setSize(600, 300);
         moveButton.setAlpha(0.75f);
-        moveButton.setTexture(R.drawable.move_button);
+        moveButton.setTextureId(R.drawable.move_button);
         addModel(moveButton);
 
         // ターン終了ボタン
@@ -84,7 +77,7 @@ public class ActButtonUIViewModel extends GlViewModel {
         turnEndButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-900);
         turnEndButton.setSize(600, 300);
         turnEndButton.setAlpha(0.75f);
-        turnEndButton.setTexture(R.drawable.turnend_button);
+        turnEndButton.setTextureId(R.drawable.turnend_button);
         addModel(turnEndButton);
 
         // キャンセルボタン
@@ -102,7 +95,7 @@ public class ActButtonUIViewModel extends GlViewModel {
         cancelButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-1300);
         cancelButton.setSize(600, 300);
         cancelButton.setAlpha(0.75f);
-        cancelButton.setTexture(R.drawable.cancel_button);
+        cancelButton.setTextureId(R.drawable.cancel_button);
         addModel(cancelButton);
 
 

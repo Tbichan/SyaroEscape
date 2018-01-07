@@ -1,7 +1,5 @@
 package com.example.tbichan.syaroescape.maingame.viewmodel;
 
-import android.content.Context;
-
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
@@ -39,7 +37,7 @@ public class BGViewModel extends GlViewModel {
             }
         };
 
-        bgModel.setTexture(R.drawable.menu_bg);
+        bgModel.setTextureId(R.drawable.menu_bg);
         bgModel.setSize(GlView.VIEW_WIDTH, GlView.VIEW_HEIGHT);
         bgModel.setPosition(0, 0);
 
