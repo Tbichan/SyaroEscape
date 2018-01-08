@@ -149,46 +149,52 @@ public class GameScene extends SceneBase implements GlObservable {
     public void imgLoadEnd(GlView glView) {
         super.imgLoadEnd(glView);
 
-        // 背景
-        glView.addViewModel(new BGViewModel(glView, this, "BG"));
+
 
 
         environmentViewModel = createPlayerViewModel(glView);
-        glView.addViewModel(environmentViewModel);
+
 
         // 環境を作成33146
         environmentOtherPlayerViewModel = createOtherViewModel(glView);
 
         environmentOtherPlayerViewModel.setX(2400);
         //environmentOtherPlayerViewModel.setDefaultX(2400);
-        glView.addViewModel(environmentOtherPlayerViewModel);
+
 
         // UI作成
         ActButtonUIViewModel uiViewModel = new ActButtonUIViewModel(glView, this, "ActButtonUIViewModel");
         uiViewModel.addEnvironmentViewModel(environmentViewModel);
         uiViewModel.addEnvironmentViewModel(environmentOtherPlayerViewModel);
         environmentViewModel.setUiViewModel(uiViewModel);
-        glView.addViewModel(uiViewModel);
+
 
         // ステータス
         statusViewModel = new StatusViewModel(glView, this, "StatusViewModel");
 
         // 文字VM
         stringViewModel = new StringViewModel(glView, this, "StringViewModel");
-        glView.addViewModel(stringViewModel);
+
 
         // 通知に追加
         environmentViewModel.addGlObserver(statusViewModel);
         environmentViewModel.addEnvGlObserver(stringViewModel);
         environmentOtherPlayerViewModel.addGlObserver(statusViewModel);
         environmentOtherPlayerViewModel.addEnvGlObserver(stringViewModel);
-        glView.addViewModel(statusViewModel);
+
 
         // fadein
         FadeViewModel fadeViewModel = new FadeViewModel(glView, this, "FadeViewModel");
         fadeViewModel.setInSpeed(1.2f);
         fadeViewModel.startFadeIn();
 
+        // 背景
+        glView.addViewModel(new BGViewModel(glView, this, "BG"));
+        glView.addViewModel(environmentViewModel);
+        glView.addViewModel(environmentOtherPlayerViewModel);
+        glView.addViewModel(uiViewModel);
+        glView.addViewModel(stringViewModel);
+        glView.addViewModel(statusViewModel);
         glView.addViewModel(fadeViewModel);
 
         // パーティクルを最前面に

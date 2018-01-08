@@ -28,6 +28,9 @@ public class TalkMojiModel extends GlModel {
 
     private boolean stop = false;
 
+    private int bitMapWidth = 512;
+    private int modelWidth = 2048;
+
     // 表示間隔
     private int interval = 2;
 
@@ -51,18 +54,18 @@ public class TalkMojiModel extends GlModel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Bitmap strBit = BitMapManager.createStrImage(text, 80, 2048, 1024, Color.GRAY);
+                Bitmap strBit = BitMapManager.createStrImage(text, 20, bitMapWidth, 128, Color.GRAY);
 
                 // 文字列の幅を取得
                 Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                paint.setTextSize(80);
+                paint.setTextSize(20);
                 strWidth = (int) paint.measureText(text);
 
                 setOutsideBitmapTexture(strBit);
             }
         }).start();
 
-        setSize(2048, 1024);
+        setSize(modelWidth, 512);
         setVisible(false);
     }
 
@@ -81,8 +84,8 @@ public class TalkMojiModel extends GlModel {
 
             if (num >= textNum) num = textNum - 1;
 
-            setSize((num + 1.0f) / textNum * (strWidth / 2048f) * 2048f, getHeight());
-            setUV((num) / textNum * (strWidth / 2048f), 0f, (num + 1.0f) / textNum * (strWidth / 2048f), 1.0f);
+            setSize((num + 1.0f) / textNum * (strWidth / (float)bitMapWidth) * (float)modelWidth, getHeight());
+            setUV((num) / textNum * (strWidth / (float)bitMapWidth), 0f, (num + 1.0f) / textNum * (strWidth / (float)bitMapWidth), 1.0f);
             numShowNum++;
             if (numShowNum == textNum) {
                 allShowCnt = getCnt();
@@ -118,8 +121,8 @@ public class TalkMojiModel extends GlModel {
     public final void allShowBefore() {
         int textNum = text.length();
         int num = textNum - 1;
-        setSize((num + 1.0f) / textNum * (strWidth / 2048f) * 2048f, getHeight());
-        setUV((num) / textNum * (strWidth / 2048f), 0f, (num + 1.0f) / textNum * (strWidth / 2048f), 1.0f);
+        setSize((num + 1.0f) / textNum * (strWidth / (float)bitMapWidth) * (float)modelWidth, getHeight());
+        setUV((num) / textNum * (strWidth / (float)bitMapWidth), 0f, (num + 1.0f) / textNum * (strWidth / (float)bitMapWidth), 1.0f);
         numShowNum = -1;
         allShowCnt = getCnt();
     }

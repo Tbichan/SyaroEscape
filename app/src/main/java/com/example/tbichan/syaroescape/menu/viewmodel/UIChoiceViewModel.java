@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.tbichan.syaroescape.R;
+import com.example.tbichan.syaroescape.choicestory.ChoiceStoryScene;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.findbattleuser.FindBattleUserScene;
 import com.example.tbichan.syaroescape.maingame.GameScene;
@@ -168,6 +169,7 @@ public class UIChoiceViewModel extends GlViewModel {
                 if (actId == 0) SceneManager.getInstance().setNextScene(new GameScene());
                 else if (actId == 1)  SceneManager.getInstance().setNextScene(new FindBattleUserScene());
                 else if (actId == 2)  SceneManager.getInstance().setNextScene(new StoryScene());
+                else if (actId == 3)  SceneManager.getInstance().setNextScene(new ChoiceStoryScene());
             }
         }
 

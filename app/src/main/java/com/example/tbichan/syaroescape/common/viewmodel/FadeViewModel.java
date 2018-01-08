@@ -43,6 +43,7 @@ public class FadeViewModel extends GlViewModel {
         //fadePlane.setAlpha(1.0f);
         fadePlane.setSize(GlView.VIEW_WIDTH, GlView.VIEW_HEIGHT);
         fadePlane.setRGBA(0.01f, 0.01f, 0.01f, 1.0f);
+        fadePlane.setAlpha(1.0f);
 
         addModel(fadePlane);
 

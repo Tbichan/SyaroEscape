@@ -182,7 +182,8 @@ public abstract class TalkViewModel extends GlViewModel {
                 }
             };
 
-            nameModel.setPosition(300f, -460f);
+            nameModel.setPosition(300f, 60f);
+            nameModel.setSize(2048, 512);
             addModel(nameModel);
         }
 
@@ -215,7 +216,7 @@ public abstract class TalkViewModel extends GlViewModel {
         centerTalkCharaModel.action(centerAction);
 
         // キャラ名画像作成
-        Bitmap strBit = BitMapManager.createStrImage(name, 80, 2048, 1024, Color.GRAY);
+        Bitmap strBit = BitMapManager.createStrImage(name, 20, 512, 128, Color.GRAY);
         nameModel.setOutsideBitmapTexture(strBit);
 
         String[] lines = text.split(",");
@@ -239,7 +240,7 @@ public abstract class TalkViewModel extends GlViewModel {
                     if (tmp + 1 < talkModels.length) talkModels[tmp + 1].setStop(false);
                 }
             };
-            talkModels[i].setPosition(300f, -560f - i * 100f);
+            talkModels[i].setPosition(300f, -50f - i * 100f);
             if (i != 0) talkModels[i].setStop(true);
             addModel(talkModels[i]);
         }
