@@ -39,33 +39,17 @@ public class TalkMojiModel extends GlModel {
         this.text = text;
     }
 
-    /**
-     * テクスチャ読み込みが終わると実行されます。
-     */
-    @Override
-    public void endTexLoad() {
-        getBitmap().recycle();
-        Log.d("outbitmap", "recycle");
-    }
-
     @Override
     public void awake() {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Bitmap strBit = BitMapManager.createStrImage(text, 20, bitMapWidth, 128, Color.GRAY);
-
-                // 文字列の幅を取得
-                Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                paint.setTextSize(20);
-                strWidth = (int) paint.measureText(text);
-
-                setOutsideBitmapTexture(strBit);
-            }
-        }).start();
-
+        setTextureText(text);
         setSize(modelWidth, 512);
+
+        // 文字列の幅を取得
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setTextSize(20);
+        strWidth = (int)paint.measureText(text);
+
         setVisible(false);
     }
 

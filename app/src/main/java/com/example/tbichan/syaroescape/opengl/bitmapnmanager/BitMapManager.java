@@ -24,6 +24,9 @@ public class BitMapManager {
     // 画像のリスト
     private static HashMap<Integer, Bitmap> bitHashMap = new HashMap<>();
 
+    // 文字型画像のリスト
+    private static HashMap<String, Bitmap> stringBitHashMap = new HashMap<>();
+
     // 外部画像個数
     private static int outBitMapNum = -1;
 
@@ -33,6 +36,14 @@ public class BitMapManager {
 
     public static Bitmap getBitmap(int key) {
         return bitHashMap.get(key);
+    }
+
+    public static void addStringBitMap(String key, Bitmap bitmap){
+        stringBitHashMap.put(key, bitmap);
+    }
+
+    public static Bitmap getStringBitmap(String key) {
+        return stringBitHashMap.get(key);
     }
 
     public static boolean isBitmap(int key) {
@@ -47,7 +58,14 @@ public class BitMapManager {
         paint.setColor(color);
 
         // フォントをよみこむ
-        paint.setTypeface( Typeface.DEFAULT );
+        try {
+            Typeface typeface = Typeface.createFromAsset(
+                    MainActivity.getContext().getAssets(), "uzura.ttf");
+            paint.setTypeface( typeface );
+        } catch( Exception e ) {
+            paint.setTypeface( Typeface.DEFAULT );
+            Log.e("font", "error");
+        }
 
         paint.setTextSize(fontSize);
 
@@ -55,7 +73,7 @@ public class BitMapManager {
 
         // ②文字列が収まる大きさのBitmapを生成
         Bitmap bitmap = Bitmap.createBitmap(
-                width, height, Bitmap.Config.ARGB_8888);
+                width, height, Bitmap.Config.ARGB_4444);
 
         // ③生成したBitmapにひも付けたCanvasを用意
         Canvas canvas = new Canvas(bitmap);
@@ -94,7 +112,7 @@ public class BitMapManager {
 
         // ②文字列が収まる大きさのBitmapを生成
         Bitmap bitmap = Bitmap.createBitmap(
-                width, height, Bitmap.Config.ARGB_8888);
+                width, height, Bitmap.Config.ARGB_4444);
 
         // ③生成したBitmapにひも付けたCanvasを用意
         Canvas canvas = new Canvas(bitmap);
@@ -149,7 +167,7 @@ public class BitMapManager {
 
         // ②文字列が収まる大きさのBitmapを生成
         Bitmap bitmap = Bitmap.createBitmap(
-                width, height, Bitmap.Config.ARGB_8888);
+                width, height, Bitmap.Config.ARGB_4444);
 
         // ③生成したBitmapにひも付けたCanvasを用意
         Canvas canvas = new Canvas(bitmap);
@@ -184,11 +202,22 @@ public class BitMapManager {
     public static void recycleAll() {
 
         final Set<Integer> keySet = bitHashMap.keySet();
+        final Set<String> keySetString = stringBitHashMap.keySet();
+
 
         // 画像をアンロード
         try {
             for (int key : keySet) {
                 Bitmap bitmap = bitHashMap.get(key);
+
+                if (bitmap != null) {
+                    bitmap.recycle();
+                    bitmap = null;
+                }
+            }
+
+            for (String key : keySetString) {
+                Bitmap bitmap = stringBitHashMap.get(key);
 
                 if (bitmap != null) {
                     bitmap.recycle();

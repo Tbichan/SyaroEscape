@@ -172,14 +172,6 @@ public abstract class TalkViewModel extends GlViewModel {
 
                 }
 
-                /**
-                 * テクスチャ読み込みが終わると実行されます。
-                 */
-                @Override
-                public void endTexLoad() {
-                    getBitmap().recycle();
-                    Log.d("outbitmap", "recycle");
-                }
             };
 
             nameModel.setPosition(300f, 60f);
@@ -215,9 +207,8 @@ public abstract class TalkViewModel extends GlViewModel {
         }
         centerTalkCharaModel.action(centerAction);
 
-        // キャラ名画像作成
-        Bitmap strBit = BitMapManager.createStrImage(name, 20, 512, 128, Color.GRAY);
-        nameModel.setOutsideBitmapTexture(strBit);
+        // キャラ名画像
+        nameModel.setTextureText(name);
 
         String[] lines = text.split(",");
 
@@ -251,6 +242,7 @@ public abstract class TalkViewModel extends GlViewModel {
      * 会話文が全表示されているかを判定します。
      */
     public boolean isAllShow() {
+        if (talkModels == null) return false;
         return talkModels[talkModels.length - 1].isAllShow();
     }
 

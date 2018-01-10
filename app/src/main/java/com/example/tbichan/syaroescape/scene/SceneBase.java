@@ -1,9 +1,11 @@
 package com.example.tbichan.syaroescape.scene;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.timer.SceneTimer;
 
@@ -24,8 +26,14 @@ public abstract class SceneBase {
     // カウンタ
     private int cnt = 0;
 
+    // 読みこむ音IDリスト
+    private ArrayList<Integer> seIdList = new ArrayList<>();
+
     // 読み込む画像IDリスト
     private ArrayList<Integer> imgIdList = new ArrayList<>();
+
+    // 読み込む文字画像リスト
+    private ArrayList<GlStringBitmap> imgList = new ArrayList<>();
 
     // 画像をロードし終わったかどうか
     private boolean sceneImgLoaded = false;
@@ -99,6 +107,10 @@ public abstract class SceneBase {
     // シーンのロード
     public abstract void load(GlView glView);
 
+    public void start() {
+
+    }
+
     // シーンの更新
     public abstract void update();
 
@@ -118,14 +130,34 @@ public abstract class SceneBase {
         cnt++;
     }
 
+    // 音をを別スレッドで読み込む用
+    public void addSE(int id) {
+        seIdList.add(id);
+    }
+
     // 画像を別スレッドで読み込む用
     public void addBitmap(int id) {
         imgIdList.add(id);
     }
 
+    // 画像を別スレッドで読み込む用
+    public void addBitmap(GlStringBitmap bitmap) {
+        imgList.add(bitmap);
+    }
+
+    // 音ID一覧を取得
+    public ArrayList<Integer> getSeIdList() {
+        return seIdList;
+    }
+
     // 画像ID一覧を取得
     public ArrayList<Integer> getImgIdList() {
         return imgIdList;
+    }
+
+    // 画像一覧を取得
+    public ArrayList<GlStringBitmap> getImgList() {
+        return imgList;
     }
 
     // タイマーを設定(別スレッド)

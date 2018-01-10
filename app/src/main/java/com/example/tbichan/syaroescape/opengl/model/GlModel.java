@@ -129,6 +129,9 @@ public abstract class GlModel {
     // カウントタイマー
     private GlCountTimer ct = null;
 
+    // ロード用bitmapkey
+    private String bitmapText;
+
     // 初回描画
     private boolean initDraw = true;
 
@@ -207,11 +210,20 @@ public abstract class GlModel {
 
     }
 
+    // テクスチャをセット
+    public void setTextureText(String text){
+        bitmapText = text;
+
+        loadTex = false;
+
+    }
+
     public final int getTextureId() {
         return imgId;
     }
 
     // 外部画像をセット
+    @Deprecated
     public void setOutsideBitmapTexture(Bitmap b){
 
         outImg = b;
@@ -224,7 +236,16 @@ public abstract class GlModel {
 
         // 一度読み込んだ画像を取得
         if (outImg == null) {
-            bitmap = BitMapManager.getBitmap(imgId);
+
+            // keyから参照
+            if (bitmapText != null) {
+                bitmap = BitMapManager.getStringBitmap(bitmapText);
+                Log.d("img", (bitmap == null) + " " + bitmapText);
+
+            } else {
+                bitmap = BitMapManager.getBitmap(imgId);
+            }
+
         } else {
             bitmap = outImg;
         }

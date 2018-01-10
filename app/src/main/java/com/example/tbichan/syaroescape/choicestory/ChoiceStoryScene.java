@@ -2,6 +2,7 @@ package com.example.tbichan.syaroescape.choicestory;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.choicestory.viewmodel.RoadViewModel;
+import com.example.tbichan.syaroescape.choicestory.viewmodel.RoadViewModel2;
 import com.example.tbichan.syaroescape.common.VibrationScene;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.NowLoadViewModel;
@@ -34,7 +35,12 @@ public class ChoiceStoryScene extends VibrationScene {
 
         addBitmap(R.drawable.story_choice_bg2);
         addBitmap(R.drawable.road_circle);
+        addBitmap(R.drawable.road_circle_enable);
         addBitmap(R.drawable.road);
+        addBitmap(R.drawable.road_enable);
+
+        addBitmap(R.drawable.syaro_sd);
+        addBitmap(R.drawable.choice_story);
 
         NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
         nowLoadViewModel.setSceneImgLoadedDraw(false);
@@ -74,7 +80,8 @@ public class ChoiceStoryScene extends VibrationScene {
         fadeViewModel.startFadeIn();
 
         RoadViewModel roadViewModel = new RoadViewModel(glView, this, "RoadViewModel");
-        roadViewModel.setPosition(200, GlView.VIEW_HEIGHT * 0.5f - 100f);
+        roadViewModel.setPosition(200, GlView.VIEW_HEIGHT * 0.5f - 100f + 200f);
+        roadViewModel.setBgViewModel(bgViewModel);
         glView.addViewModel(roadViewModel);
         glView.addViewModel(fadeViewModel);
 

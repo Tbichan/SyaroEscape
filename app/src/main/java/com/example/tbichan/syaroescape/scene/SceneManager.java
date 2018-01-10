@@ -7,7 +7,9 @@ import android.util.Log;
 
 import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.BitMapManager;
+import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
+import com.example.tbichan.syaroescape.sound.SEManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +56,9 @@ public class SceneManager {
         // 最初のシーンをロード
         mNowScene.load(MainActivity.getGlView());
 
+        // 効果音を別スレッドから読み込み
+        loadSoundAll();
+
         // 画像を別スレッドから読み込み
         loadTextureAll();
 
@@ -64,6 +69,7 @@ public class SceneManager {
         while (thread != null) {
             long oldTime = System.currentTimeMillis();
             // 今のシーンを更新
+            if (mNowScene.getCnt() == 0) mNowScene.start();
             mNowScene.update();
             mNowScene.addCnt();
 
@@ -117,6 +123,9 @@ public class SceneManager {
         // 読み込み
         mNowScene.load(glView);
 
+        // 効果音を別スレッドから読み込み
+        loadSoundAll();
+
         // 画像を別スレッドから読み込み
         loadTextureAll();
 
@@ -130,6 +139,12 @@ public class SceneManager {
         return load;
     }
 
+    // 別スレッドで音を読み込みます。
+    public void loadSoundAll() {
+        SEManager.getInstance().loadAll(mNowScene.getSeIdList());
+
+    }
+
     // 別スレッドで画像を読み込みます。
     public void loadTextureAll() {
         // テクスチャロード(別スレッド)
@@ -137,6 +152,7 @@ public class SceneManager {
 
         // テクスチャ登録
         imgLoad.setImgIdList(mNowScene.getImgIdList());
+        imgLoad.setGlStringBitmapList(mNowScene.getImgList());
 
         Thread thread = new Thread(imgLoad);
         thread.start();
@@ -146,6 +162,8 @@ public class SceneManager {
     public static class ImgLoadThread implements Runnable {
 
         private ArrayList<Integer> imgIdList;
+
+        private ArrayList<GlStringBitmap> glStringBitmapList;
 
         // 読み込んでいるシーン
         private SceneBase nowScene;
@@ -158,9 +176,14 @@ public class SceneManager {
         public void run() {
 
             // 画像数
-            int len = imgIdList.size();
+            int len1 = imgIdList.size();
+            int len2 = glStringBitmapList.size();
 
             int i = 0;
+
+            // 読み込みオプション(メモリ節約)
+            BitmapFactory.Options imageOptions = new BitmapFactory.Options();
+            imageOptions.inPreferredConfig = Bitmap.Config.RGB_565;
 
             for (int id: imgIdList) {
                 Log.d("bitmap", id + "を読み込み");
@@ -168,7 +191,7 @@ public class SceneManager {
                 Resources res = MainActivity.getContext().getResources();
                 InputStream is = res.openRawResource(id);
                 try {
-                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                    Bitmap bitmap = BitmapFactory.decodeStream(is, null, imageOptions);
 
                     // マネージャに登録
                     BitMapManager.addBitMap(id, bitmap);
@@ -183,7 +206,7 @@ public class SceneManager {
                 }
 
                 try{
-                    Thread.sleep(5);
+                    Thread.sleep(1);
                 } catch (InterruptedException e){
 
                 }
@@ -191,7 +214,25 @@ public class SceneManager {
                 i++;
 
                 // ロード進行を報告
-                nowScene.setSceneImgLoadPersent(((float)i / len));
+                nowScene.setSceneImgLoadPersent(((float)i / (len1 + len2)));
+            }
+
+            for (GlStringBitmap glStringBitmap: glStringBitmapList) {
+                Log.d("bitmap", "文字型 " + glStringBitmap.getText() + " を読み込み");
+                Bitmap bitmap =  glStringBitmap.loadImage();
+
+                // マネージャに登録
+                BitMapManager.addStringBitMap(glStringBitmap.getText(), bitmap);
+
+                try{
+                    Thread.sleep(1);
+                } catch (InterruptedException e){
+
+                }
+
+                i++;
+                // ロード進行を報告
+                nowScene.setSceneImgLoadPersent(((float)i / (len1 + len2)));
             }
 
             // シーンに終了を通知
@@ -202,6 +243,10 @@ public class SceneManager {
 
         public void setImgIdList(ArrayList<Integer> imgIdList) {
             this.imgIdList = imgIdList;
+        }
+
+        public void setGlStringBitmapList(ArrayList<GlStringBitmap> glStringBitmapList) {
+            this.glStringBitmapList = glStringBitmapList;
         }
     }
 }

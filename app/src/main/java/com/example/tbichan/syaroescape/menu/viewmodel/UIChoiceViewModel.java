@@ -14,6 +14,7 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.sound.SEManager;
 import com.example.tbichan.syaroescape.story.StoryScene;
 
 import java.util.ArrayList;
@@ -166,7 +167,7 @@ public class UIChoiceViewModel extends GlViewModel {
                 // 最後に選んだモードを記憶
                 StoreManager.saveString("menu_actionbutton", String.valueOf(actId));
 
-                if (actId == 0) SceneManager.getInstance().setNextScene(new GameScene());
+                if (actId == 0) SceneManager.getInstance().setNextScene(new ChoiceStoryScene());
                 else if (actId == 1)  SceneManager.getInstance().setNextScene(new FindBattleUserScene());
                 else if (actId == 2)  SceneManager.getInstance().setNextScene(new StoryScene());
                 else if (actId == 3)  SceneManager.getInstance().setNextScene(new ChoiceStoryScene());
@@ -196,7 +197,12 @@ public class UIChoiceViewModel extends GlViewModel {
             // 選択する
             actId = menuButton.getId();
             charaViewModel.appearFukidashi(actId);
+
+            // 効果音再生
+            SEManager.getInstance().playSE(R.raw.choice);
         }
+
+
     }
 
     // メニューボタンがタップされたときに呼ばれます。
@@ -213,6 +219,9 @@ public class UIChoiceViewModel extends GlViewModel {
             button.animStop();
             if (menuButton != button) button.retire();
         }
+
+        // 効果音再生
+        SEManager.getInstance().playSE(R.raw.decision);
 
         // 退場
         retire();

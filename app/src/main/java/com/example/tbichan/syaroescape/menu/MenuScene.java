@@ -1,6 +1,5 @@
 package com.example.tbichan.syaroescape.menu;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.example.tbichan.syaroescape.R;
@@ -14,9 +13,7 @@ import com.example.tbichan.syaroescape.menu.viewmodel.UIChoiceViewModel;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
-import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
-import com.example.tbichan.syaroescape.title.viewmodel.TitleViewModel;
 
 /**
  * Created by tbichan on 2017/12/09.
@@ -30,6 +27,10 @@ public class MenuScene extends SceneBase {
     // シーンのロード
     @Override
     public void load(GlView glView) {
+
+        // 効果音を指定
+        addSE(R.raw.choice);
+        addSE(R.raw.decision);
 
         // 画像を指定
         addBitmap(R.drawable.load_bg);
@@ -82,6 +83,11 @@ public class MenuScene extends SceneBase {
 
     }
 
+    @Override
+    public void start() {
+
+    }
+
     // シーンの更新
     @Override
     public void update(){
@@ -115,6 +121,8 @@ public class MenuScene extends SceneBase {
 
         // パーティクルを最前面に
         glView.moveFrontViewModel(particleViewModel);
+
+
 
     }
 

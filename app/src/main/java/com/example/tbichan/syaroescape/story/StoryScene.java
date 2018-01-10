@@ -2,15 +2,19 @@ package com.example.tbichan.syaroescape.story;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.common.VibrationScene;
+import com.example.tbichan.syaroescape.common.model.StoryLoader;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.NowLoadViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.ParticleViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.TalkViewModel;
 import com.example.tbichan.syaroescape.maingame.GameScene;
+import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
 import com.example.tbichan.syaroescape.story.viewmodel.BGViewModel;
+
+import java.util.HashSet;
 
 /**
  * Created by tbichan on 2017/12/09.
@@ -20,6 +24,9 @@ public class StoryScene extends VibrationScene {
 
     // パーティクル
     private ParticleViewModel particleViewModel;
+
+    // ストーリーid
+    private int storyId = 1;
 
     // シーンのロード
     @Override
@@ -38,6 +45,16 @@ public class StoryScene extends VibrationScene {
         addBitmap(R.drawable.syaro_menu);
         addBitmap(R.drawable.chino_menu);
         addBitmap(R.drawable.cocoa_menu);
+
+        // 読み込む必要のある文字列を取得
+        StoryLoader storyLoader = new StoryLoader("story" + storyId + ".txt");
+        storyLoader.load();
+
+        HashSet<String> needStrings = storyLoader.getLoadNeedStringList();
+
+        for (String text: needStrings) {
+            addBitmap(new GlStringBitmap(text));
+        }
 
         NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
         nowLoadViewModel.setSceneImgLoadedDraw(false);
@@ -77,7 +94,7 @@ public class StoryScene extends VibrationScene {
         fadeViewModel.startFadeIn();
 
         // ボタン部分
-        glView.addViewModel(new TalkViewModel(glView, this, "TalkViewModel", "story1.txt"){
+        glView.addViewModel(new TalkViewModel(glView, this, "TalkViewModel", "story" + storyId + ".txt"){
 
             /**
              * 会話が終了したときの処理です。
@@ -96,6 +113,10 @@ public class StoryScene extends VibrationScene {
         // パーティクルを最前面に
         glView.moveFrontViewModel(particleViewModel);
 
+    }
+
+    public void setStoryId(int id) {
+        storyId = id;
     }
 
 }
