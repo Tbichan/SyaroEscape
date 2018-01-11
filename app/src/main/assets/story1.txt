@@ -1,0 +1,10 @@
+﻿:ここは静かな喫茶店ラビットハウス:id,-1:action,1:id,-1:action,0:id,-1:action,0:allAction,0
+シャロ:助けてー！！！:id,0:action,1:id,-1:action,0:id,-1:action,0:allAction,0
+チノ:シャロさん,どうしたんですか？:id,0:action,0:id,1:action,2:id,-1:action,0:allAction,0
+シャロ:「うさぎ」が追いかけてきたの,私うさぎが苦手で．．．,お願い！かくまって欲しいの！:id,0:action,3:id,1:action,0:id,-1:action,0:allAction,0
+チノ:かまいませんよ。,どうぞおかけになって下さい。:id,0:action,0:id,1:action,3:id,-1:action,0:allAction,0
+シャロ:ありがとう。。。:id,0:action,0:id,1:action,0:id,-1:action,0:allAction,0
+ココア:チノちゃんただいまー！,ラビットハウスの前にいっぱいうさぎがいるよー！:id,-1:action,0:id,2:action,2:id,-1:action,0:allAction,0
+チノ＆シャロ:！！！:id,0:action,0:id,1:action,0:id,-1:action,0:allAction,0
+ココア:うさぎがいっぱい入ってくるー！:id,-1:action,0:id,2:action,0:id,-1:action,0:allAction,0
+シャロ:ぎゃあああああああああっーーーーー！！！:id,-1:action,0:id,-1:action,0:id,0:action,3:allAction,1

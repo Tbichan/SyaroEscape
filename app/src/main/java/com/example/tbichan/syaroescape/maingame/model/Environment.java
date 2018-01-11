@@ -127,7 +127,10 @@ public class Environment implements GlObservable, Cloneable {
 		// 共通シード
 		Random rGlobal = new Random(globalSeed);
 
-		loadMap("level" + (rGlobal.nextInt(7) + 1) + ".level");
+		int level = rGlobal.nextInt(19) + 1;
+
+		Log.d("level", "level" + level + ".level");
+		loadMap("level" + level + ".level");
 		prePlayerIndex = getPlayerMapPlayerIndex();
 	}
 

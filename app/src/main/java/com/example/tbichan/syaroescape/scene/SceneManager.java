@@ -120,6 +120,8 @@ public class SceneManager {
         // 画像をアンロード
         BitMapManager.recycleAll();
 
+        System.gc();
+
         // 読み込み
         mNowScene.load(glView);
 

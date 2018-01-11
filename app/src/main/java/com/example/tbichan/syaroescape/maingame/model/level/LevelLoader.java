@@ -32,7 +32,7 @@ public class LevelLoader {
                 String levelChar = levelStrs[i];
 
                 if (levelChar.equals("")) levelChar = "0";
-                Log.d("level " + j + " " + i, levelChar);
+                //Log.d("level " + j + " " + i, levelChar);
                 playerMap[j][i] = Integer.parseInt(levelChar);
 
 
@@ -45,7 +45,7 @@ public class LevelLoader {
             for (int i = 0; i < Environment.MAP_SIZE; i++) {
                 String levelChar = levelStrs[i];
                 if (levelChar.equals("")) levelChar = "0";
-                Log.d("level " + j + " " + i, levelChar);
+                //Log.d("level " + j + " " + i, levelChar);
                 cupMap[j - Environment.MAP_SIZE][i] = Integer.parseInt(levelChar);
 
 

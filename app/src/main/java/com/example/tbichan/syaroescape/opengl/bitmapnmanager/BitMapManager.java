@@ -229,6 +229,6 @@ public class BitMapManager {
         }
 
         bitHashMap.clear();
-
+        stringBitHashMap.clear();
     }
 }
