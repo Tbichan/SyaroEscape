@@ -16,6 +16,7 @@ import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.common.model.TalkCharaModel;
 import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.sound.SEManager;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -114,6 +115,9 @@ public abstract class TalkViewModel extends GlViewModel {
         super.onTouchEvent(ev);
 
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            // 効果音再生
+            SEManager.getInstance().playSE(R.raw.choice);
+
             if (isAllShow()) {
 
                 // 次の文章表示

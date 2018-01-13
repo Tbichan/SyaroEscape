@@ -32,6 +32,9 @@ public class StoryScene extends VibrationScene {
     @Override
     public void load(GlView glView) {
 
+        // 効果音を指定
+        addSE(R.raw.choice);
+
         // 画像を指定
         addBitmap(R.drawable.load_str);
         addBitmap(R.drawable.bar_frame);

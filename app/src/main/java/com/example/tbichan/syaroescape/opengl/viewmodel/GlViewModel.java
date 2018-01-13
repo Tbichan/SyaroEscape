@@ -88,6 +88,7 @@ public abstract class GlViewModel {
         x = y = 0;
     }
 
+
     public void update(GL10 gl){
 
         boolean texFlg = true;
@@ -97,7 +98,8 @@ public abstract class GlViewModel {
             for (String key : modelMap.keySet()) {
                 ArrayList<GlModel> modelList = modelMap.get(key);
 
-                for (GlModel glModel : modelList) {
+                for (int i = 0; i < modelList.size(); i++) {
+                    GlModel glModel = modelList.get(i);
                     if (glModel.getCnt() == 0) {
                         glModel.startBefore();
                         glModel.start();
@@ -135,6 +137,7 @@ public abstract class GlViewModel {
         }
     }
 
+
     public void draw(final GlRenderer glRenderer){
 
         if (sceneImgLoadedDraw && !SceneManager.getInstance().getNowScene().isSceneImgLoaded()) return;
@@ -144,7 +147,8 @@ public abstract class GlViewModel {
             for (String key : modelMap.keySet()) {
                 ArrayList<GlModel> modelList = modelMap.get(key);
 
-                for (GlModel glModel : modelList) {
+                for (int i = 0; i < modelList.size(); i++) {
+                    GlModel glModel = modelList.get(i);
 
                     if (glModel.isVisible()) {
                         glModel.setDrawFlg(true);
@@ -167,7 +171,8 @@ public abstract class GlViewModel {
         for (String key: modelMap.keySet()) {
             ArrayList<GlModel> modelList = modelMap.get(key);
 
-            for (GlModel glModel : modelList) {
+            for (int i = 0; i < modelList.size(); i++) {
+                GlModel glModel = modelList.get(i);
                 glModel.onTouchEvent(ev);
             }
         }

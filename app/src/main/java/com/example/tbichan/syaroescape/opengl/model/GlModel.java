@@ -12,6 +12,7 @@ import com.example.tbichan.syaroescape.opengl.bitmapnmanager.BitMapManager;
 import com.example.tbichan.syaroescape.opengl.model.timer.GlCountTimer;
 import com.example.tbichan.syaroescape.opengl.renderer.GlRenderer;
 import com.example.tbichan.syaroescape.opengl.shader.ShaderSource;
+import com.example.tbichan.syaroescape.opengl.textures.TextureManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
@@ -29,6 +30,14 @@ import javax.microedition.khronos.opengles.GL10;
  */
 
 public abstract class GlModel {
+
+    float[] vertices = new float[12];
+
+    // 画像の方の座標
+    float uvs[] = new float[8];
+
+    // Buffer
+    ByteBuffer bb1, bb2;
 
     // 名前
     private String name = "";
@@ -239,11 +248,10 @@ public abstract class GlModel {
 
             // keyから参照
             if (bitmapText != null) {
-                bitmap = BitMapManager.getStringBitmap(bitmapText);
-                Log.d("img", (bitmap == null) + " " + bitmapText);
+                bitmap = BitMapManager.getInstance().getStringBitmap(bitmapText);
 
             } else {
-                bitmap = BitMapManager.getBitmap(imgId);
+                bitmap = BitMapManager.getInstance().getBitmap(imgId);
             }
 
         } else {
@@ -251,6 +259,11 @@ public abstract class GlModel {
         }
 
         if (bitmap != null) {
+
+            // テクスチャIDを取得
+            //textureNo = TextureManager.getInstance().getTextureId(bitmap);
+
+            //if (textureNo == -1) return;
 
             texX = 0;
             texY = bitmap.getHeight();
@@ -264,8 +277,13 @@ public abstract class GlModel {
             if (imgWidth == 0) imgWidth = bitmap.getWidth();
             if (imgHeight == 0) imgHeight = bitmap.getHeight();
 
+            //setupImage(bitmap);
 
-            setupImage(bitmap);
+            // テクスチャID取得
+            textureNo = TextureManager.getInstance().getTextureId(bitmap);
+
+            // メモリになければロード
+            if (textureNo == -1) textureNo = TextureManager.getInstance().loadTexture(bitmap);
 
             //ここからシェーダーを使うっていう、定形
             int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, ShaderSource.VERTEX_SHADER_CODE_TEX);
@@ -316,6 +334,9 @@ public abstract class GlModel {
 
         if (textureNo == -1) return;
 
+        //if (true) return;
+
+
         // verticesに座標を代入
         if (glView == null) glView = MainActivity.getGlView();
 
@@ -340,6 +361,16 @@ public abstract class GlModel {
 
         final float zBuffer = glRenderer.getZBuffer();
 
+        vertices[0] = right; vertices[1] = top; vertices[2] = zBuffer;
+        vertices[3] = right; vertices[4] = bottom; vertices[5] = zBuffer;
+        vertices[6] = left; vertices[7] = bottom; vertices[8] = zBuffer;
+        vertices[9] = left; vertices[10] = top; vertices[11] = zBuffer;
+
+        uvs[0] = u2; uvs[1] = 1.0f - v2;
+        uvs[2] = u2; uvs[3] = 1.0f - v1;
+        uvs[4] = u1; uvs[5] = 1.0f - v1;
+        uvs[6] = u1; uvs[7] = 1.0f - v2;
+        /*
         final float[] vertices = {
                 right, top, zBuffer,    // 右上
                 right, bottom, zBuffer,   // 右下
@@ -354,19 +385,26 @@ public abstract class GlModel {
                 u1, 1.0f-v1,
                 u1, 1.0f-v2
         };
+        */
 
         // Vertex
-        ByteBuffer bb = ByteBuffer.allocateDirect(vertices.length * 4);
-        bb.order(ByteOrder.nativeOrder());
-        vertexBuffer = bb.asFloatBuffer();
+        if (bb1 == null) {
+            bb1 = ByteBuffer.allocateDirect(vertices.length * 4);
+            bb1.order(ByteOrder.nativeOrder());
+            vertexBuffer = bb1.asFloatBuffer();
+        }
+        vertexBuffer.clear();
         vertexBuffer.put(vertices);
         vertexBuffer.position(0);
 
         // UV
         //画像側の頂点座標をバッファーに変換
-        bb = ByteBuffer.allocateDirect(uvs.length * 4);
-        bb.order(ByteOrder.nativeOrder());
-        uvBuffer = bb.asFloatBuffer();
+        if (bb2 == null) {
+            bb2 = ByteBuffer.allocateDirect(uvs.length * 4);
+            bb2.order(ByteOrder.nativeOrder());
+            uvBuffer = bb2.asFloatBuffer();
+        }
+        uvBuffer.clear();
         uvBuffer.put(uvs);
         uvBuffer.position(0);
 
@@ -453,6 +491,13 @@ public abstract class GlModel {
             initDraw = false;
             draw(glRenderer);
         }
+
+    }
+
+    /**
+     * 位置変更時、UV変更時に呼ばれます。
+     */
+    public void changePostion() {
 
     }
 
@@ -684,6 +729,12 @@ public abstract class GlModel {
 
     public Bitmap getBitmap() {
         return bitmap;
+    }
+
+    public final void release() {
+        //bb1
+        int a =0;
+
     }
 
     /**

@@ -126,6 +126,10 @@ public class GlView extends GLSurfaceView {
         } catch (ConcurrentModificationException e) {
 
         }
+
+        catch (NullPointerException e) {
+
+        }
         // タップイベント終了
         touchEvent = false;
 

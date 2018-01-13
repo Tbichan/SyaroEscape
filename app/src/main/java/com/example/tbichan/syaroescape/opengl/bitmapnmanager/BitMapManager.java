@@ -21,33 +21,48 @@ import java.util.Set;
 
 public class BitMapManager {
 
+    // インスタンス
+    private static BitMapManager instance = new BitMapManager();
+
+    public static BitMapManager getInstance() {
+        return instance;
+    }
+
+    private BitMapManager(){
+
+    }
+
     // 画像のリスト
-    private static HashMap<Integer, Bitmap> bitHashMap = new HashMap<>();
+    private HashMap<Integer, Bitmap> bitHashMap = new HashMap<>();
 
     // 文字型画像のリスト
-    private static HashMap<String, Bitmap> stringBitHashMap = new HashMap<>();
+    private HashMap<String, Bitmap> stringBitHashMap = new HashMap<>();
 
     // 外部画像個数
     private static int outBitMapNum = -1;
 
-    public static void addBitMap(int key, Bitmap bitmap){
+    public void addBitMap(int key, Bitmap bitmap){
         bitHashMap.put(key, bitmap);
     }
 
-    public static Bitmap getBitmap(int key) {
+    public Bitmap getBitmap(int key) {
         return bitHashMap.get(key);
     }
 
-    public static void addStringBitMap(String key, Bitmap bitmap){
+    public void addStringBitMap(String key, Bitmap bitmap){
         stringBitHashMap.put(key, bitmap);
     }
 
-    public static Bitmap getStringBitmap(String key) {
+    public Bitmap getStringBitmap(String key) {
         return stringBitHashMap.get(key);
     }
 
-    public static boolean isBitmap(int key) {
+    public boolean isBitmap(int key) {
         return bitHashMap.containsKey(key);
+    }
+
+    public boolean isStringBitmap(String key) {
+        return stringBitHashMap.containsKey(key);
     }
 
     // 文字列の画像を作成します。
@@ -85,7 +100,7 @@ public class BitMapManager {
             canvas.drawText(lines[i], 0, (i + 1) * -fm.top, paint);
         }
 
-        addBitMap(outBitMapNum, bitmap);
+        instance.addBitMap(outBitMapNum, bitmap);
 
         outBitMapNum--;
 
@@ -136,7 +151,7 @@ public class BitMapManager {
         // リサイズ画像
         Bitmap bmpRsz = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
 
-        addBitMap(outBitMapNum, bitmap);
+        instance.addBitMap(outBitMapNum, bitmap);
         outBitMapNum--;
 
         // ⑤Bitmapデータを返す
@@ -191,7 +206,7 @@ public class BitMapManager {
         // リサイズ画像
         Bitmap bmpRsz = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
 
-        addBitMap(outBitMapNum, bitmap);
+        instance.addBitMap(outBitMapNum, bitmap);
         outBitMapNum--;
 
         // ⑤Bitmapデータを返す
@@ -199,7 +214,7 @@ public class BitMapManager {
     }
 
     // 画像をアンロードします。
-    public static void recycleAll() {
+    public void recycleAll() {
 
         final Set<Integer> keySet = bitHashMap.keySet();
         final Set<String> keySetString = stringBitHashMap.keySet();
@@ -211,6 +226,7 @@ public class BitMapManager {
                 Bitmap bitmap = bitHashMap.get(key);
 
                 if (bitmap != null) {
+
                     bitmap.recycle();
                     bitmap = null;
                 }

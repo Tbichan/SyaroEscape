@@ -8,6 +8,7 @@ import android.util.Log;
 import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.BitMapManager;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
+import com.example.tbichan.syaroescape.opengl.textures.TextureManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.sound.SEManager;
 
@@ -65,6 +66,7 @@ public class SceneManager {
         mNowScene.setLoad(true);
         //loadNextScene();
 
+
         // ループ
         while (thread != null) {
             long oldTime = System.currentTimeMillis();
@@ -118,7 +120,8 @@ public class SceneManager {
         glView.clearViewModel();
 
         // 画像をアンロード
-        BitMapManager.recycleAll();
+        //TextureManager.getInstance().deleteAll();
+        //BitMapManager.getInstance().recycleAll();
 
         System.gc();
 
@@ -177,6 +180,9 @@ public class SceneManager {
         @Override
         public void run() {
 
+            // テクスチャマネージャ
+            TextureManager tm = TextureManager.getInstance();
+
             // 画像数
             int len1 = imgIdList.size();
             int len2 = glStringBitmapList.size();
@@ -188,27 +194,32 @@ public class SceneManager {
             imageOptions.inPreferredConfig = Bitmap.Config.RGB_565;
 
             for (int id: imgIdList) {
-                Log.d("bitmap", id + "を読み込み");
 
-                Resources res = MainActivity.getContext().getResources();
-                InputStream is = res.openRawResource(id);
-                try {
-                    Bitmap bitmap = BitmapFactory.decodeStream(is, null, imageOptions);
+                if (!BitMapManager.getInstance().isBitmap(id)) {
 
-                    // マネージャに登録
-                    BitMapManager.addBitMap(id, bitmap);
-                } catch (Exception e) {
-                    Log.d("ImageError", "画像の読み込みに失敗");
+                    Log.d("bitmap", id + "を読み込み");
 
-                } finally {
+                    Resources res = MainActivity.getContext().getResources();
+                    InputStream is = res.openRawResource(id);
                     try {
-                        is.close();
-                    } catch (IOException e) {
+                        Bitmap bitmap = BitmapFactory.decodeStream(is, null, imageOptions);
+
+                        // マネージャに登録
+                        BitMapManager.getInstance().addBitMap(id, bitmap);
+                        //tm.loadTexture(bitmap);
+                    } catch (Exception e) {
+                        Log.d("ImageError", "画像の読み込みに失敗");
+
+                    } finally {
+                        try {
+                            is.close();
+                        } catch (IOException e) {
+                        }
                     }
                 }
 
                 try{
-                    Thread.sleep(1);
+                    Thread.sleep(10);
                 } catch (InterruptedException e){
 
                 }
@@ -220,14 +231,18 @@ public class SceneManager {
             }
 
             for (GlStringBitmap glStringBitmap: glStringBitmapList) {
-                Log.d("bitmap", "文字型 " + glStringBitmap.getText() + " を読み込み");
-                Bitmap bitmap =  glStringBitmap.loadImage();
 
-                // マネージャに登録
-                BitMapManager.addStringBitMap(glStringBitmap.getText(), bitmap);
+                if (!BitMapManager.getInstance().isStringBitmap(glStringBitmap.getText())) {
+
+                    Log.d("bitmap", "文字型 " + glStringBitmap.getText() + " を読み込み");
+                    Bitmap bitmap = glStringBitmap.loadImage();
+
+                    // マネージャに登録
+                    BitMapManager.getInstance().addStringBitMap(glStringBitmap.getText(), bitmap);
+                }
 
                 try{
-                    Thread.sleep(1);
+                    Thread.sleep(10);
                 } catch (InterruptedException e){
 
                 }

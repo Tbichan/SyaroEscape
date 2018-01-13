@@ -104,6 +104,8 @@ public class GlRenderer implements GLSurfaceView.Renderer {
         // 今のシーンをロードしたら
         if (!SceneManager.getInstance().isNowSceneLoad()) return;
 
+        //if (true) return;
+
         // 更新
         try {
             for (int i = 0; i < mViewmodelList.size(); i++) {
@@ -123,6 +125,8 @@ public class GlRenderer implements GLSurfaceView.Renderer {
         }
 
         //MainActivity.getGlView().waitTouch();
+
+        // 描画が怪しい
 
         draw = true;
 
