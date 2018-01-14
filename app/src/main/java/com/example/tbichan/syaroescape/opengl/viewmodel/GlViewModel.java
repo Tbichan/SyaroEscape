@@ -357,4 +357,12 @@ public abstract class GlViewModel {
 
         modelMap.get(newTag).add(model);
     }
+
+    public void frontModel(GlModel glModel) {
+        String tag = glModel.getTag();
+
+        ArrayList<GlModel> glModelArrayList = modelMap.get(tag);
+        glModelArrayList.remove(glModel);
+        glModelArrayList.add(glModel);
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.tbichan.syaroescape.maingame;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,13 +18,18 @@ import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.StatusViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.ActButtonUIViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.StringViewModel;
+import com.example.tbichan.syaroescape.maingame.viewmodel.WazaUIViewModel;
 import com.example.tbichan.syaroescape.menu.MenuScene;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
+import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
+import com.example.tbichan.syaroescape.opengl.store.StoreManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
 import com.example.tbichan.syaroescape.scene.timer.SceneTimer;
 import com.example.tbichan.syaroescape.ui.UIListener;
+
+import java.util.Random;
 
 /**
  * タイトルシーン
@@ -60,6 +66,9 @@ public class GameScene extends SceneBase implements GlObservable {
     // 共通シード値
     private int globalSeed;
 
+    // レベル
+    private int level = 0;
+
 
     // シーンのロード
     @Override
@@ -80,18 +89,39 @@ public class GameScene extends SceneBase implements GlObservable {
         addBitmap(R.drawable.anko);
         addBitmap(R.drawable.enable);
         addBitmap(R.drawable.desk);
+        addBitmap(R.drawable.powerup);
+        addBitmap(R.drawable.cup);
         addBitmap(R.drawable.cups);
         addBitmap(R.drawable.arrow);
         addBitmap(R.drawable.move_button);
+        addBitmap(R.drawable.waza_button);
         addBitmap(R.drawable.turnend_button);
+        addBitmap(R.drawable.fast_button);
         addBitmap(R.drawable.cancel_button);
         addBitmap(R.drawable.your_turn);
         addBitmap(R.drawable.com_turn);
         addBitmap(R.drawable.end_game);
         addBitmap(R.drawable.carrot);
+        addBitmap(R.drawable.maingame_bar);
+        addBitmap(R.drawable.number);
+
+        addBitmap(new GlStringBitmap(StoreManager.restoreString("menu_playername"))
+        .setColor(Color.WHITE));
+        addBitmap(new GlStringBitmap("ＣＯＭ")
+                .setColor(Color.WHITE));
+
+        addBitmap(new GlStringBitmap("あと３かい")
+                .setColor(Color.WHITE));
+        addBitmap(new GlStringBitmap("あと２かい")
+                .setColor(Color.WHITE));
+        addBitmap(new GlStringBitmap("あと１かい")
+                .setColor(Color.WHITE));
 
         // 共通シードの決定
         setGlobalSeed(createGlobalSeed());
+
+        // レベルの決定
+        level = createLevel();
 
         // vmの追加
         NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
@@ -161,9 +191,14 @@ public class GameScene extends SceneBase implements GlObservable {
 
         // UI作成
         ActButtonUIViewModel uiViewModel = new ActButtonUIViewModel(glView, this, "ActButtonUIViewModel");
+        WazaUIViewModel wazaUIViewModel = new WazaUIViewModel(glView, this, "WazaUIViewModel");
         uiViewModel.addEnvironmentViewModel(environmentViewModel);
         uiViewModel.addEnvironmentViewModel(environmentOtherPlayerViewModel);
+        uiViewModel.setWazaUIViewModel(wazaUIViewModel);
+
+
         environmentViewModel.setUiViewModel(uiViewModel);
+
 
 
         // ステータス
@@ -190,6 +225,7 @@ public class GameScene extends SceneBase implements GlObservable {
         glView.addViewModel(environmentViewModel);
         glView.addViewModel(environmentOtherPlayerViewModel);
         glView.addViewModel(uiViewModel);
+        glView.addViewModel(wazaUIViewModel);
         glView.addViewModel(stringViewModel);
         glView.addViewModel(statusViewModel);
         glView.addViewModel(fadeViewModel);
@@ -210,11 +246,25 @@ public class GameScene extends SceneBase implements GlObservable {
     }
 
     /**
+     * レベルを設定します。
+     */
+    public int createLevel() {
+        Random rGlobal = new Random(globalSeed);
+
+        //return rGlobal.nextInt(19) + 1;
+        return 1;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    /**
      * Player用VM作成
      */
     public EnvironmentViewModel createPlayerViewModel(GlView glView) {
         // 環境を作成26656
-        return new EnvironmentViewModel(glView, this, "Env_0", 33146);
+        return new EnvironmentViewModel(glView, this, "Env_0", 33146, level);
     }
 
     /**
@@ -222,7 +272,7 @@ public class GameScene extends SceneBase implements GlObservable {
      */
     public EnvironmentViewModel createOtherViewModel(GlView glView) {
         // 環境を作成26656
-        return new EnvironmentOtherPlayerViewModel(glView, this, "Env_1", 25565);
+        return new EnvironmentOtherPlayerViewModel(glView, this, "Env_1", 25565, level);
     }
 
     /**
@@ -519,6 +569,7 @@ public class GameScene extends SceneBase implements GlObservable {
         this.environmentViewModel.move(lx, ly, 25);
         environmentOtherPlayerViewModel.move(lx + 2400f, ly, 25);
 
+        Log.d("look", "lookat");
     }
 
     /**

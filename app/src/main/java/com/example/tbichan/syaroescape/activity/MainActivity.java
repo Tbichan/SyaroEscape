@@ -20,6 +20,7 @@ import com.example.tbichan.syaroescape.menu.MenuScene;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.*;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.title.TitleScene;
 import com.example.tbichan.syaroescape.ui.EditAlertListenerManager;
 import com.example.tbichan.syaroescape.ui.UIListener;
 
@@ -51,7 +52,7 @@ public class MainActivity extends Activity {
         instance = this;
 
         // 初期シーン
-        firstScene = new MenuScene();
+        firstScene = new TitleScene();
 
         // 初期ビュー
         glView = new GlView(this);

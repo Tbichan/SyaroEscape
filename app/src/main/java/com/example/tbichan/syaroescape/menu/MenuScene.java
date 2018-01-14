@@ -1,8 +1,10 @@
 package com.example.tbichan.syaroescape.menu;
 
+import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.example.tbichan.syaroescape.R;
+import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.NowLoadViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.ParticleViewModel;
@@ -14,6 +16,8 @@ import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.sound.BGMManager;
+import com.example.tbichan.syaroescape.sound.MyBGM;
 
 /**
  * Created by tbichan on 2017/12/09.
@@ -80,6 +84,11 @@ public class MenuScene extends SceneBase {
         }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "/sql/show/show.py");
 
         myHttp.connect();
+
+        // 音設定
+        MediaPlayer player = MediaPlayer.create(MainActivity.getContext(),R.raw.bgm_menu);
+        MyBGM myBGM = new MyBGM(player);
+        BGMManager.getInstance().addSE(myBGM);
 
     }
 

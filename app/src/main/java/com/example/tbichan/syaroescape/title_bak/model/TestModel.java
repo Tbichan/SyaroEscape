@@ -1,8 +1,7 @@
-package com.example.tbichan.syaroescape.title.model;
+package com.example.tbichan.syaroescape.title_bak.model;
 
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
-import com.example.tbichan.syaroescape.R;
 
 /**
  * Created by tbichan on 2017/10/16.

@@ -20,6 +20,9 @@ public class ActButtonUIViewModel extends GlViewModel {
     // 環境VMリスト
     private ArrayList<EnvironmentViewModel> environmentViewModelArrayList = new ArrayList<>();
 
+    // 技ViewModel
+    private WazaUIViewModel wazaUIViewModel;
+
     // 移動速度
     private final float VX = 100f;
     private float vx = VX;
@@ -49,11 +52,33 @@ public class ActButtonUIViewModel extends GlViewModel {
 
         };
 
-        moveButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-500);
-        moveButton.setSize(600, 300);
+        moveButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-300);
+        moveButton.setSize(500, 250);
         moveButton.setAlpha(0.75f);
         moveButton.setTextureId(R.drawable.move_button);
         addModel(moveButton);
+
+        // 技ボタン
+        MainGameButton wazaButton = new MainGameButton(this, "moveButton") {
+            @Override
+            public void onClick() {
+
+                // カメラ移動モードに
+                for (EnvironmentViewModel environmentViewModel: environmentViewModelArrayList) {
+                    environmentViewModel.cameraCanMoveMode();
+                }
+
+                wazaUIViewModel.appear();
+            }
+
+
+        };
+
+        wazaButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-600);
+        wazaButton.setSize(500, 250);
+        wazaButton.setAlpha(0.75f);
+        wazaButton.setTextureId(R.drawable.waza_button);
+        addModel(wazaButton);
 
         // ターン終了ボタン
         MainGameButton turnEndButton = new MainGameButton(this, "turnEndButton") {
@@ -65,7 +90,7 @@ public class ActButtonUIViewModel extends GlViewModel {
 
                     // 同時反応防止
                     if (environmentViewModel.isTurn() && environmentViewModel.getCnt() - environmentViewModel.getTurnCnt() > 0) {
-                        environmentViewModel.endTurn();
+                        environmentViewModel.endTurn(true);
                     }
 
                     // カメラ移動モードに
@@ -75,7 +100,7 @@ public class ActButtonUIViewModel extends GlViewModel {
         };
 
         turnEndButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-900);
-        turnEndButton.setSize(600, 300);
+        turnEndButton.setSize(500, 250);
         turnEndButton.setAlpha(0.75f);
         turnEndButton.setTextureId(R.drawable.turnend_button);
         addModel(turnEndButton);
@@ -92,8 +117,8 @@ public class ActButtonUIViewModel extends GlViewModel {
             }
         };
 
-        cancelButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-1300);
-        cancelButton.setSize(600, 300);
+        cancelButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-1200);
+        cancelButton.setSize(500, 250);
         cancelButton.setAlpha(0.75f);
         cancelButton.setTextureId(R.drawable.cancel_button);
         addModel(cancelButton);
@@ -162,5 +187,13 @@ public class ActButtonUIViewModel extends GlViewModel {
     public void hide() {
         vx = VX;
         show = false;
+    }
+
+    public WazaUIViewModel getWazaUIViewModel() {
+        return wazaUIViewModel;
+    }
+
+    public void setWazaUIViewModel(WazaUIViewModel wazaUIViewModel) {
+        this.wazaUIViewModel = wazaUIViewModel;
     }
 }

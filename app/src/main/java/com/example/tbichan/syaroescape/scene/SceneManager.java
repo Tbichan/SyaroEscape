@@ -10,6 +10,8 @@ import com.example.tbichan.syaroescape.opengl.bitmapnmanager.BitMapManager;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
 import com.example.tbichan.syaroescape.opengl.textures.TextureManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
+import com.example.tbichan.syaroescape.sound.BGMManager;
+import com.example.tbichan.syaroescape.sound.MyBGM;
 import com.example.tbichan.syaroescape.sound.SEManager;
 
 import java.io.IOException;
@@ -77,6 +79,9 @@ public class SceneManager {
 
             if (mTmpScene != null) loadNextScene();
 
+            // 音再生
+            BGMManager.getInstance().update();
+
             long newTime = System.currentTimeMillis();
             long sleepTime = 16 - (newTime - oldTime); // 休止できる時間
             if(sleepTime < 2) sleepTime = 2; // 最低でも2msは休止
@@ -118,6 +123,9 @@ public class SceneManager {
         GlView glView = MainActivity.getGlView();
         // ビューモデル削除
         glView.clearViewModel();
+
+        // BGMをアンロード
+        BGMManager.getInstance().releaseAll();
 
         // 画像をアンロード
         //TextureManager.getInstance().deleteAll();

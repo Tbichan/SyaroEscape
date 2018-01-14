@@ -48,7 +48,7 @@ public class StringViewModel extends GlViewModel implements GlObservable {
         };
 
         yourTurnModel.setTextureId(R.drawable.your_turn);
-        yourTurnModel.setPosition(GlView.VIEW_WIDTH * 0.5f - 400, 100);
+        yourTurnModel.setPosition(GlView.VIEW_WIDTH * 0.5f - 400, 300);
         yourTurnModel.setSize(800, 100);
         addModel(yourTurnModel);
 
@@ -67,7 +67,7 @@ public class StringViewModel extends GlViewModel implements GlObservable {
         };
 
         comTurnModel.setTextureId(R.drawable.com_turn);
-        comTurnModel.setPosition(GlView.VIEW_WIDTH * 0.5f - 400, 100);
+        comTurnModel.setPosition(GlView.VIEW_WIDTH * 0.5f - 400, 300);
         comTurnModel.setSize(800, 100);
         addModel(comTurnModel);
 

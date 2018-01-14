@@ -5,10 +5,12 @@ import android.util.Log;
 
 import com.example.tbichan.syaroescape.common.model.GlButton;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentViewModel;
+import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class EnvSprite extends GlButton {
 
@@ -37,6 +39,8 @@ public class EnvSprite extends GlButton {
 	// 消失インターバル
 	private int hideInterval = 30;
 	private int startHideCnt = -1;
+
+	private HashSet<GlObservable> glObservableHashSet = new HashSet<>();
 
 	public EnvSprite(GlViewModel glViewModel, String name) {
 		super(glViewModel, name);
@@ -98,7 +102,7 @@ public class EnvSprite extends GlButton {
 			if (getCnt() - startHideCnt >= hideInterval) {
 				setVisible(true);
 				startHideCnt = -1;
-
+				endHide();
 			}
 		}
 
@@ -159,14 +163,35 @@ public class EnvSprite extends GlButton {
 		return startMoveCnt != -1;
 	}
 
-	public final void hide(int hideInterval) {
+	public final void hide(int hideInterval, GlObservable glObservable) {
 		setVisible(false);
 		this.hideInterval = hideInterval;
 		startHideCnt = getCnt();
+
+		if (glObservable != null) glObservableHashSet.add(glObservable);
+	}
+
+	public final void hide(int hideInterval) {
+		hide(hideInterval, null);
+	}
+
+	public void endHide() {
+		for (GlObservable glObservable: glObservableHashSet) {
+			glObservable.notify(this);
+		}
+		glObservableHashSet.clear();
 	}
 
 	public void endMove() {
+		for (GlObservable glObservable: glObservableHashSet) {
+			glObservable.notify(this);
+		}
+		glObservableHashSet.clear();
+	}
 
+
+	public void addGlObservable(GlObservable glObservable) {
+		glObservableHashSet.add(glObservable);
 	}
 
 	@Override

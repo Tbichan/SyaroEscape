@@ -33,8 +33,8 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
     // 乱数発生器
     private Random r;
 
-    public EnvironmentOtherPlayerViewModel(GlView glView, SceneBase sceneBase, String name, int id) {
-        super(glView, sceneBase, name, id);
+    public EnvironmentOtherPlayerViewModel(GlView glView, SceneBase sceneBase, String name, int id, int level) {
+        super(glView, sceneBase, name, id, level);
 
     }
 
@@ -55,7 +55,7 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
         super.update(gl);
 
         if (isTurn()) {
-            if ((getCnt() - getTurnCnt()) >= 240 && (getCnt() - getTurnCnt()) % 60 == 0) {
+            if ((getCnt() - getTurnCnt()) >= 240 && (getCnt() - getTurnCnt()) % 120 == 0) {
 
 
                 if (!replay) {
@@ -70,11 +70,11 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
                             int nextIndex = normalAI.calc(env);
 
                             if (nextIndex == -1) {
-                                endTurn();
+                                endTurn(false);
                             } else {
 
                                 String query = "move:" + env.getPlayerMapPlayerIndex() + "," + nextIndex;
-                                queryEnv(query);
+                                queryEnv(query, false);
                             }
                         }
                     }).start();

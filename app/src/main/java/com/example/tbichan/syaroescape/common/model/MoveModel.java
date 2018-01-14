@@ -1,7 +1,10 @@
 package com.example.tbichan.syaroescape.common.model;
 
+import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
+
+import java.util.HashSet;
 
 /**
  * Created by tbichan on 2017/10/16.
@@ -20,6 +23,8 @@ public abstract class MoveModel extends GlButton {
 
     // 到達までの時間
     private int interval;
+
+    private HashSet<GlObservable> glObservableHashSet = new HashSet<>();
 
     public MoveModel(GlViewModel glViewModel, String name) {
         super(glViewModel, name);
@@ -66,6 +71,14 @@ public abstract class MoveModel extends GlButton {
 
     public void endMove(){
 
+        for (GlObservable glObservable: glObservableHashSet) {
+            glObservable.notify(this);
+        }
+        glObservableHashSet.clear();
+    }
+
+    public void addGlObservable(GlObservable glObservable) {
+        glObservableHashSet.add(glObservable);
     }
 
     @Override

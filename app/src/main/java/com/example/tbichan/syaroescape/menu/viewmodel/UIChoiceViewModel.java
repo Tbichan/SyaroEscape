@@ -170,7 +170,7 @@ public class UIChoiceViewModel extends GlViewModel {
                 if (actId == 0) SceneManager.getInstance().setNextScene(new ChoiceStoryScene());
                 else if (actId == 1)  SceneManager.getInstance().setNextScene(new FindBattleUserScene());
                 else if (actId == 2)  SceneManager.getInstance().setNextScene(new StoryScene());
-                else if (actId == 3)  SceneManager.getInstance().setNextScene(new ChoiceStoryScene());
+                else if (actId == 3)  SceneManager.getInstance().setNextScene(new GameScene());
             }
         }
 

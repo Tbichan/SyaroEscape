@@ -14,6 +14,7 @@ import com.example.tbichan.syaroescape.maingame.model.EnableFloor;
 import com.example.tbichan.syaroescape.maingame.model.EnvSprite;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
 import com.example.tbichan.syaroescape.maingame.model.Player;
+import com.example.tbichan.syaroescape.maingame.model.PowerEffect;
 import com.example.tbichan.syaroescape.maingame.model.Rabbit;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
@@ -56,6 +57,9 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
     // ニンジンリスト
     private ArrayList<Carrot> carrotList = new ArrayList<>();
+
+    // エフェクトモデル
+    private PowerEffect powerEffect;
     
     // 環境
     Environment env;
@@ -90,7 +94,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     // Observserable
     private ArrayList<GlObservable> glObservableList = new ArrayList<>();
 
-    public EnvironmentViewModel(GlView glView, SceneBase sceneBase, String name, int id) {
+    public EnvironmentViewModel(GlView glView, SceneBase sceneBase, String name, int id, int level) {
         super(glView, sceneBase, name);
 
         this.id = id;
@@ -104,7 +108,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         int seed = Math.abs(globalSeed - id);
 
         // 環境を作成
-        env = new Environment("env_1", seed, globalSeed);
+        env = new Environment("env_1", seed, level);
         queryEnv("seed:" + seed);
 
         // VMを追加
@@ -145,8 +149,15 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         player.setEnviromentViewModel(this);
         addModel(player);
 
+
+
         // ステージをロード
         loadMap();
+
+        // エフェクト
+        powerEffect = new PowerEffect(this, "Eff");
+        powerEffect.setPosition(player.getX(), player.getY());
+        addModel(powerEffect);
 
         // シード値設定
         //queryEnv("seed:20171228");
@@ -208,7 +219,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             int nextIndex = Integer.parseInt(hoge[1]);
 
             // ウサギを取得
-            Rabbit rabbit = getRabbit(oldIndex);
+            final Rabbit rabbit = getRabbit(oldIndex);
 
             Log.d("rabbit", oldIndex+"");
 
@@ -228,10 +239,18 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             int rabbitIndex = Integer.parseInt(param.replace(CREATE_RABBIT + ":", ""));
 
             // ウサギ作成
-            Rabbit rabbit = new Rabbit(this, "rabbit");
+            final Rabbit rabbit = new Rabbit(this, "rabbit");
 
             // 30カウント非表示
-            rabbit.hide(30);
+            rabbit.hide(30, new GlObservable() {
+                @Override
+                public void notify(Object o, String... param) {
+                    // エフェクト出現
+                    EnvironmentViewModel.this.frontModel(powerEffect);
+                    powerEffect.setPosition(rabbit.getX(), rabbit.getY() - 40f);
+                    powerEffect.appear();
+                }
+            });
             rabbit.move(rabbitIndex / MAP_SIZE, rabbitIndex % MAP_SIZE);
 
             // リストに追加
@@ -606,11 +625,11 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     }
 
     // 移動しないで終了します。
-    public void endTurn() {
+    public void endTurn(boolean net) {
 
         String query = "end";
 
-        queryEnv(query);
+        queryEnv(query, net);
 
     }
 
@@ -629,10 +648,14 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     public void setTurn(boolean turn) {
         if (turn) {
             turnCnt = getCnt();
+            // 移動回数を2かいに戻す
+            setActInterval(2, false);
 
         } else {
             turnCnt = -1;
             preActCnt = actCnt;
+
+
         }
     }
 
@@ -719,7 +742,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
      * 環境からカフェインパワーを取得します。
      */
     public int getCaffeinePower() {
-        return env.getCupCnt() * 3;
+        return env.getCupCnt() * 1;
     }
 
     /**
@@ -761,6 +784,34 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
         return nextRabbit;
 
+    }
+
+    /**
+     * 3回動けるようにする。
+     */
+    public void threeMove(boolean flg) {
+        setActInterval(3, flg);
+
+        // エフェクト出現
+        powerEffect.setPosition(player.getX(), player.getY() - 40f);
+        powerEffect.appear();
+    }
+
+    /**
+     * 交代間隔を設定します。
+     */
+    private void setActInterval(int interval, boolean flg) {
+        actInterval = interval;
+
+        // クエリ送信
+        queryEnv("fast:" + interval, flg);
+    }
+
+    /**
+     * 残り回数取得
+     */
+    public int lastCount() {
+        return actInterval - (actCnt - preActCnt);
     }
 
 }

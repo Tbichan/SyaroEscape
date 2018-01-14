@@ -29,6 +29,8 @@ import com.example.tbichan.syaroescape.scene.SceneManager;
 import com.example.tbichan.syaroescape.scene.timer.SceneTimer;
 import com.example.tbichan.syaroescape.ui.UIListener;
 
+import java.util.Random;
+
 /**
  * タイトルシーン
  * Created by tbichan on 2017/10/15.
@@ -75,6 +77,15 @@ public class NetworkGameScene extends GameScene implements GlObservable {
     }
 
     /**
+     * レベルを設定します。
+     */
+    public int createLevel() {
+        Random rGlobal = new Random(getGlobalSeed());
+
+        return rGlobal.nextInt(19) + 1;
+    }
+
+    /**
      * Player用VM作成
      */
     @Override
@@ -90,7 +101,7 @@ public class NetworkGameScene extends GameScene implements GlObservable {
         }
 
         // 環境を作成26656
-        return new EnvironmentViewModel(glView, this, "Env_0", playerId);
+        return new EnvironmentViewModel(glView, this, "Env_0", playerId, getLevel());
     }
 
     /**
@@ -109,7 +120,7 @@ public class NetworkGameScene extends GameScene implements GlObservable {
         }
 
         // 環境を作成26656
-        return new EnvironmentNetworkPlayerViewModel(glView, this, "Env_1", otherId);
+        return new EnvironmentNetworkPlayerViewModel(glView, this, "Env_1", otherId,  getLevel());
     }
 
 }

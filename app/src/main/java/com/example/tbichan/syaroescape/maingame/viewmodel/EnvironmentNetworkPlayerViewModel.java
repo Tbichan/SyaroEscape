@@ -34,8 +34,8 @@ public class EnvironmentNetworkPlayerViewModel extends EnvironmentViewModel {
     // サーバ問い合わせ用
     private MyHttp myHttp = null;
 
-    public EnvironmentNetworkPlayerViewModel(GlView glView, SceneBase sceneBase, String name, int id) {
-        super(glView, sceneBase, name, id);
+    public EnvironmentNetworkPlayerViewModel(GlView glView, SceneBase sceneBase, String name, int id, int level) {
+        super(glView, sceneBase, name, id, level);
 
     }
 
@@ -76,7 +76,14 @@ public class EnvironmentNetworkPlayerViewModel extends EnvironmentViewModel {
                                 String query = result().replace("\n", "");
                                 // ID情報を分割
 
-                                queryEnv(query, false);
+                                // end, fastだけ特別
+                                if (query.contains("fast")) {
+                                    threeMove(false);
+                                } else if (query.contains("end")) {
+                                    endTurn(false);
+                                } else {
+                                    queryEnv(query, false);
+                                }
                                 Log.d("net:" + queryCnt, query);
                                 queryCnt++;
                                 myHttp = null;

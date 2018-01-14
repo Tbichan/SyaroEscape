@@ -118,16 +118,16 @@ public class Environment implements GlObservable, Cloneable {
 	private int prePlayerIndex = 0;
 
 
-	public Environment(String name, int seed, int globalSeed) {
+	public Environment(String name, int seed, int level) {
 
 		// シード値を設定
 		this.seed = seed;
 		r = new Random(seed);
 
 		// 共通シード
-		Random rGlobal = new Random(globalSeed);
+		//Random rGlobal = new Random(globalSeed);
 
-		int level = rGlobal.nextInt(19) + 1;
+		//int level = rGlobal.nextInt(19) + 1;
 
 		Log.d("level", "level" + level + ".level");
 		loadMap("level" + level + ".level");
@@ -225,7 +225,10 @@ public class Environment implements GlObservable, Cloneable {
 		actionCnt++;
 
 		// 敵が通れる位置を取得
-		if ((actionCnt - lastActionCnt) % rabbitInterval == 0) moveEnemys(paramList);
+		if ((actionCnt - lastActionCnt) % rabbitInterval == 0) {
+			moveEnemys(paramList);
+			lastActionCnt = actionCnt;
+		}
 
 		execute((String[])paramList.toArray(new String[paramList.size()]));
 
@@ -821,19 +824,22 @@ public class Environment implements GlObservable, Cloneable {
 				moveEnemys(nextParams);
 				lastActionCnt = actionCnt;
 
+				Log.d("endd", lastActionCnt + "");
+
 				// 変更を通知
 				execute((String[])nextParams.toArray(new String[nextParams.size()]));
 
 			} else if (query.startsWith("addEnemy")) {
 				// 敵を追加
 				//createRabbit(5, paramList);
-			}/*
-			else if (query.startsWith("seed")) {
-				int seed = Integer.parseInt(query.replace("seed:", ""));
-				// シード値を設定
-				this.seed = seed;
-				r = new Random(seed);
-			}*/
+			} else if (query.startsWith("fast")) {
+				rabbitInterval = Integer.parseInt(query.replace("fast:", ""));
+
+				// 3回ならカフェインを減らす
+				if (rabbitInterval >= 3) {
+					getCupCnt--;
+				}
+			}
 		}
 
 	}

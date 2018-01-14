@@ -1,4 +1,4 @@
-package com.example.tbichan.syaroescape.title.viewmodel;
+package com.example.tbichan.syaroescape.title_bak.viewmodel;
 
 import android.util.Log;
 import android.view.MotionEvent;
