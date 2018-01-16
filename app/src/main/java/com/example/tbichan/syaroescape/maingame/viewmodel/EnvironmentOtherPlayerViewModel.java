@@ -2,6 +2,7 @@ package com.example.tbichan.syaroescape.maingame.viewmodel;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.activity.MainActivity;
+import com.example.tbichan.syaroescape.maingame.GameScene;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
 import com.example.tbichan.syaroescape.maingame.model.Player;
 import com.example.tbichan.syaroescape.maingame.model.ai.NormalAI;
@@ -68,7 +69,7 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
         super.update(gl);
 
         if (isTurn()) {
-            if ((getCnt() - getTurnCnt()) >= 240 && (getCnt() - getTurnCnt()) % 120 == 0) {
+            if ((getCnt() - getTurnCnt()) >= 240 && (getCnt() - getTurnCnt()) % 120 == 0 && !((GameScene)getScene()).isEnd()) {
 
 
                 if (!replay) {
