@@ -7,6 +7,7 @@ import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.common.viewmodel.NowLoadViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.ParticleViewModel;
 import com.example.tbichan.syaroescape.findbattleuser.viewmodel.BGViewModel;
+import com.example.tbichan.syaroescape.findbattleuser.viewmodel.TrampViewModel;
 import com.example.tbichan.syaroescape.findbattleuser.viewmodel.ViewModel3D;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
@@ -28,6 +29,7 @@ public class FindBattleUserScene extends SceneBase {
 
 		addBitmap(R.drawable.tushin);
 		addBitmap(R.drawable.tushin_err);
+		addBitmap(R.drawable.trump);
 
 		NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
 		nowLoadViewModel.setSceneImgLoadedDraw(false);
@@ -41,7 +43,7 @@ public class FindBattleUserScene extends SceneBase {
 
 	@Override
 	public void update() {
-		// TODO 自動生成されたメソッド・スタブ
+
 
 	}
 
@@ -52,7 +54,7 @@ public class FindBattleUserScene extends SceneBase {
 		BGViewModel bgViewModel = new BGViewModel(glView, this, "BGViewModel");
 
 		glView.addViewModel(bgViewModel);
-		glView.addViewModel(new ViewModel3D(glView, this, "3DViewModel"));
+		glView.addViewModel(new TrampViewModel(glView, this, "TrampViewModel"));
 
 		// パーティクルを最前面に
 		glView.moveFrontViewModel(particleViewModel);

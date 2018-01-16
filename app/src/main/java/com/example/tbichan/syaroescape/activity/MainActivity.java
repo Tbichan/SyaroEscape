@@ -20,6 +20,7 @@ import com.example.tbichan.syaroescape.menu.MenuScene;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.*;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 import com.example.tbichan.syaroescape.title.TitleScene;
 import com.example.tbichan.syaroescape.ui.EditAlertListenerManager;
 import com.example.tbichan.syaroescape.ui.UIListener;
@@ -50,6 +51,10 @@ public class MainActivity extends Activity {
         Log.d("mainactivity", "MainActivity作成");
 
         instance = this;
+
+        // データベース初期化
+        DataBaseHelper.init(this);
+        Log.d("sql", "init");
 
         // 初期シーン
         firstScene = new TitleScene();
@@ -88,7 +93,17 @@ public class MainActivity extends Activity {
 
 
         editText = new EditText(instance);
-        //showTextDialog("名前をおしえてね");
+
+        /*
+        String str = "";
+        try {
+            str = DataBaseHelper.getDataBaseHelper().read(1);
+        } catch (Exception e) {
+
+        }
+        Log.d("sql", str + " aaaaaa");
+        */
+
     }
 
     @Override

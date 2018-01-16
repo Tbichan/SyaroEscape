@@ -51,7 +51,7 @@ public class TitleScene extends SceneBase {
         glView.addViewModel(bgviewmodel);
 
         TitleViewModel titleviewmodel = new TitleViewModel(glView, this, "たいとる");
-        glView.addViewModel(titleviewmodel);
+
 
         // ロゴ表示用
         final TitleLogoViewModel titleLogoViewModel = new TitleLogoViewModel(glView, this, "logoViewModel");
@@ -74,16 +74,24 @@ public class TitleScene extends SceneBase {
 
             @Override
             public void endFadeOut() {
-                fadeOutEndCnt = getCnt();
-                titleLogoViewModel.setVisible(false);
-                bgviewmodel.setVisible(true);
+                if (fadeOutEndCnt == -1) {
+                    fadeOutEndCnt = getCnt();
+                    titleLogoViewModel.setVisible(false);
+                    bgviewmodel.setVisible(true);
+                } else {
+                    // 2週目はメインへ
+                    SceneManager.getInstance().setNextScene(new MenuScene());;
+                }
 
             }
         };
         fadeViewModel.setInSpeed(1.0f);
         fadeViewModel.startFadeIn();
 
+        glView.addViewModel(titleviewmodel);
+
         titleLogoViewModel.setFadeViewModel(fadeViewModel);
+        titleviewmodel.setFadeViewModel(fadeViewModel);
 
         glView.addViewModel(titleLogoViewModel);
 

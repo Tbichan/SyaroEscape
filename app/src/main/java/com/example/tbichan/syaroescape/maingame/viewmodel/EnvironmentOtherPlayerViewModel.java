@@ -112,7 +112,7 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
 
                 } else {
                     // リプレイ
-                    queryEnv(querys[queryCnt++]);
+                    queryEnv(querys[queryCnt++], false);
                 }
 
 

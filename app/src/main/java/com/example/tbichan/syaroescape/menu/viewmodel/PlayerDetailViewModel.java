@@ -3,6 +3,7 @@ package com.example.tbichan.syaroescape.menu.viewmodel;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -15,6 +16,7 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 import com.example.tbichan.syaroescape.ui.UIListener;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -49,24 +51,32 @@ public class PlayerDetailViewModel extends GlViewModel {
             }
         };
 
-        if (StoreManager.containsKey("menu_playername")) {
+        //if (StoreManager.containsKey("menu_playername")) {
 
-            // プレイヤー名をよみこみ
-            String playerName = StoreManager.restoreString("menu_playername");
+        // ID、プレイヤー名をよみこみ
+        String playerName = "";
+        try {
+            playerName = "ID:" + DataBaseHelper.getDataBaseHelper().read(DataBaseHelper.NETWORK_ID) + "　" + DataBaseHelper.getDataBaseHelper().read(DataBaseHelper.PLAYER_NAME);
+        } catch (Exception e) {
 
-            Bitmap strBit = BitMapManager.createStrImage(playerName, "uzura", 50, Color.YELLOW);
-            playerNameModel.setOutsideBitmapTexture(strBit);
-            playerNameModel.setVisible(true);
-
-            playerNameModel.setPosition(2000, 50);
-            playerNameModel.setSize(150 * 2, 75 * 2);
-
-        } else {
-
-            playerNameModel.setPosition(2000, 50);
-            playerNameModel.setSize(150 * 2, 75 * 2);
-            playerNameModel.setVisible(false);
         }
+
+        Log.d("name", playerName);
+
+        //Bitmap strBit = BitMapManager.createStrImage(playerName, "uzura", 50, Color.YELLOW);
+        playerNameModel.setTextureText(playerName);
+        playerNameModel.setVisible(true);
+
+        playerNameModel.setPosition(1800, -350);
+        playerNameModel.setSize(1800, 500);
+        //playerNameModel.setSize(150 * 2, 75 * 2);
+
+        //} else {
+
+        //    playerNameModel.setPosition(2000, 50);
+        //    playerNameModel.setSize(150 * 2, 75 * 2);
+        //    playerNameModel.setVisible(false);
+        //}
 
         addModel(playerNameModel);
     }
@@ -81,6 +91,7 @@ public class PlayerDetailViewModel extends GlViewModel {
         super.update(gl);
 
         // 名前を指定させる。
+        /*
         if (getCnt() == 2 && !StoreManager.containsKey("menu_playername")) {
             MainActivity.showNameDialog(new UIListener() {
                 @Override
@@ -101,5 +112,6 @@ public class PlayerDetailViewModel extends GlViewModel {
                 }
             });
         }
+        */
     }
 }

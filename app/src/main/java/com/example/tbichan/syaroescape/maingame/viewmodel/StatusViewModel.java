@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.maingame.GameScene;
+import com.example.tbichan.syaroescape.maingame.NetworkGameScene;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.BitMapManager;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
@@ -13,6 +14,7 @@ import com.example.tbichan.syaroescape.opengl.store.StoreManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -105,7 +107,12 @@ public class StatusViewModel extends GlViewModel implements GlObservable {
         addModel(playerNameModel);
 
         // プレイヤー名をよみこみ
-        String playerName = StoreManager.restoreString("menu_playername");
+        String playerName = "";
+        try {
+            playerName = DataBaseHelper.getDataBaseHelper().read(DataBaseHelper.PLAYER_NAME);
+        } catch (Exception e) {
+
+        }
         playerNameModel.setTextureText(playerName);
         playerNameModel.setX(50f);
         playerNameModel.setSize(2048, 600);
@@ -126,8 +133,15 @@ public class StatusViewModel extends GlViewModel implements GlObservable {
         };
 
         addModel(comNameModel);
+        String otherPlayerName = "ＣＯＭ";
 
-        comNameModel.setTextureText("ＣＯＭ");
+        // ネットワークの時のみ
+        if (getScene() instanceof NetworkGameScene) {
+
+            otherPlayerName = StoreManager.restoreString("other_name");
+        }
+
+        comNameModel.setTextureText(otherPlayerName);
         comNameModel.setX(GlView.VIEW_WIDTH*0.5f+50f);
         comNameModel.setSize(2048, 600);
         comNameModel.setX(GlView.VIEW_WIDTH*0.5f);

@@ -1,33 +1,16 @@
 package com.example.tbichan.syaroescape.maingame;
 
+import android.graphics.Color;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 
-import com.example.tbichan.syaroescape.R;
-import com.example.tbichan.syaroescape.activity.MainActivity;
-import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
-import com.example.tbichan.syaroescape.common.viewmodel.NowLoadViewModel;
-import com.example.tbichan.syaroescape.common.viewmodel.ParticleViewModel;
-import com.example.tbichan.syaroescape.maingame.model.EnvSprite;
-import com.example.tbichan.syaroescape.maingame.model.Environment;
-import com.example.tbichan.syaroescape.maingame.viewmodel.ActButtonUIViewModel;
-import com.example.tbichan.syaroescape.maingame.viewmodel.BGViewModel;
+import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentNetworkOtherPlayerViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentNetworkPlayerViewModel;
-import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentOtherPlayerViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentViewModel;
-import com.example.tbichan.syaroescape.maingame.viewmodel.StatusViewModel;
-import com.example.tbichan.syaroescape.maingame.viewmodel.StringViewModel;
-import com.example.tbichan.syaroescape.menu.MenuScene;
-import com.example.tbichan.syaroescape.network.MyHttp;
-import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
+import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
 import com.example.tbichan.syaroescape.opengl.store.StoreManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
-import com.example.tbichan.syaroescape.scene.SceneBase;
-import com.example.tbichan.syaroescape.scene.SceneManager;
-import com.example.tbichan.syaroescape.scene.timer.SceneTimer;
-import com.example.tbichan.syaroescape.ui.UIListener;
+import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 
 import java.util.Random;
 
@@ -38,11 +21,22 @@ import java.util.Random;
 
 public class NetworkGameScene extends GameScene implements GlObservable {
 
+    // 読み込むファイル名
+    private String fileName = "";
+
     // シーンのロード
     @Override
     public void load(GlView glView) {
         super.load(glView);
+
+        // 相手プレイヤー名をよみこみ
+        String otherPlayerName = StoreManager.restoreString("other_name");
+        addBitmap(new GlStringBitmap(otherPlayerName).setColor(Color.WHITE));
+
+
+
         // サーバに送る
+        /*
         MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/send/deleter.py") {
 
             // 接続成功時
@@ -66,6 +60,23 @@ public class NetworkGameScene extends GameScene implements GlObservable {
         }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/send/deleter.py");
 
         myHttp.connect();
+        */
+    }
+
+    // 画像読み込み終了時の処理
+    public void imgLoadEnd(GlView glView) {
+        super.imgLoadEnd(glView);
+
+        int id = getPlayerViewModel().getId();
+        int otherId = getOtherPlayerViewModel().getId();
+
+        if (id < otherId) {
+            fileName = id + "-" + otherId + "-" + getGlobalSeed() + ".replay";
+        } else {
+            fileName = otherId + "-" + id + "-" + getGlobalSeed() + ".replay";
+        }
+        Log.d("hoge", fileName);
+
     }
 
     /**
@@ -94,14 +105,27 @@ public class NetworkGameScene extends GameScene implements GlObservable {
         int playerId = -1;
 
         // 待ちリストに登録
+        /*
         if (StoreManager.containsKey("player_id")) {
 
             // プレイヤー名をよみこみ
             playerId = StoreManager.restoreInteger("player_id");
+        }*/
+
+        // 待ちリストに登録
+        // ID、プレイヤー名をよみこみ
+        String playerIdString = "";
+        try {
+            playerIdString = DataBaseHelper.getDataBaseHelper().read(DataBaseHelper.NETWORK_ID);
+        } catch (Exception e) {
+
         }
+        playerId = Integer.parseInt(playerIdString);
+
+        Log.d("playerid", playerId + "");
 
         // 環境を作成26656
-        return new EnvironmentViewModel(glView, this, "Env_0", playerId, getLevel());
+        return new EnvironmentNetworkPlayerViewModel(glView, this, "Env_0", playerId, getLevel());
     }
 
     /**
@@ -119,8 +143,13 @@ public class NetworkGameScene extends GameScene implements GlObservable {
             otherId = StoreManager.restoreInteger("other_id");
         }
 
+        Log.d("playerid", otherId + "");
+
         // 環境を作成26656
-        return new EnvironmentNetworkPlayerViewModel(glView, this, "Env_1", otherId,  getLevel());
+        return new EnvironmentNetworkOtherPlayerViewModel(glView, this, "Env_1", otherId,  getLevel());
     }
 
+    public String getFileName() {
+        return fileName;
+    }
 }

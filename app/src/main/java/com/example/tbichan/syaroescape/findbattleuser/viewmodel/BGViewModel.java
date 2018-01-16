@@ -15,6 +15,7 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 import com.example.tbichan.syaroescape.ui.UIListener;
 
 public class BGViewModel extends GlViewModel {
@@ -79,6 +80,17 @@ public class BGViewModel extends GlViewModel {
 		int playerId = -1;
 
 		// 待ちリストに登録
+		// ID、プレイヤー名をよみこみ
+		String playerIdString = "";
+		try {
+			playerIdString = DataBaseHelper.getDataBaseHelper().read(DataBaseHelper.NETWORK_ID);
+		} catch (Exception e) {
+
+		}
+
+		// 接続
+		findUser(Integer.parseInt(playerIdString));
+		/*
 		if (StoreManager.containsKey("player_id")) {
 
 			// プレイヤー名をよみこみ
@@ -86,7 +98,7 @@ public class BGViewModel extends GlViewModel {
 
 			// 接続
 			findUser(playerId);
-		}
+		}*/
 
 
 	}
@@ -109,21 +121,69 @@ public class BGViewModel extends GlViewModel {
 
 						// カンマで区切る
 						String[] hoge = res.split(",");
-						String otherId = hoge[0].replace("id:", "");
+						final String otherId = hoge[0].replace("id:", "");
 						String globalSeed = hoge[1].replace("seed:", "");
 
 						// 相手のIDを保存
 						StoreManager.save("other_id", otherId);
 						StoreManager.save("globalSeed", globalSeed);
 
-						// 対戦モードに移行
-						SceneManager.getInstance().setNextScene(new NetworkGameScene());
+						// 相手のIDから名前を取得
+
+						MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "/sql/regist/getname.py?id=" + otherId) {
+
+							@Override
+							public void success() {
+								try {
+
+									String otherName = result().replace("\n", "");
+
+									Log.d("netsss", otherName);
+
+									// 相手の名前を保存
+									StoreManager.save("other_name", otherName);
+
+									// 対戦モードに移行
+									SceneManager.getInstance().setNextScene(new NetworkGameScene());
+
+								} catch (Exception e) {
+
+								}
+
+							}
+
+							@Override
+							public void fail(Exception e) {
+								bgStrErr.setVisible(true);
+								//Log.d("net", "接続エラー:" + e.toString());
+								new Thread(new Runnable() {
+
+									@Override
+									public void run() {
+
+										MainActivity.showOKDialog("エラー", "ネットワークエラー",
+												new UIListener() {
+													@Override
+													public void onClick(View view) {
+														SceneManager.getInstance().setNextScene(new MenuScene());
+													}
+												});
+
+
+									}
+
+								}).start();
+
+							}
+						}.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "/sql/regist/getname.py?id=" + otherId);
+						myHttp.connect();
 					}
 					// タイムアウト時
 					else {
 						MainActivity.showOKCancelDialog(new UIListener() {
 							/**
 							 * OKをクリックしたとき
+							 *
 							 * @param view
 							 */
 							@Override
@@ -134,6 +194,7 @@ public class BGViewModel extends GlViewModel {
 						}, new UIListener() {
 							/**
 							 * キャンセルを押したとき
+							 *
 							 * @param view
 							 */
 							@Override
@@ -176,5 +237,6 @@ public class BGViewModel extends GlViewModel {
 
 		myHttp.connect();
 	}
+
 
 }

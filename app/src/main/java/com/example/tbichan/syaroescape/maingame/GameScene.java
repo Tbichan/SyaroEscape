@@ -27,6 +27,7 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
 import com.example.tbichan.syaroescape.scene.timer.SceneTimer;
+import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 import com.example.tbichan.syaroescape.ui.UIListener;
 
 import java.util.Random;
@@ -105,7 +106,15 @@ public class GameScene extends SceneBase implements GlObservable {
         addBitmap(R.drawable.maingame_bar);
         addBitmap(R.drawable.number);
 
-        addBitmap(new GlStringBitmap(StoreManager.restoreString("menu_playername"))
+        // プレイヤー名をよみこみ
+        String playerName = "";
+        try {
+            playerName = DataBaseHelper.getDataBaseHelper().read(DataBaseHelper.PLAYER_NAME);
+        } catch (Exception e) {
+
+        }
+
+        addBitmap(new GlStringBitmap(playerName)
         .setColor(Color.WHITE));
         addBitmap(new GlStringBitmap("ＣＯＭ")
                 .setColor(Color.WHITE));

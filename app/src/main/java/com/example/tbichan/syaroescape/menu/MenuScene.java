@@ -1,5 +1,6 @@
 package com.example.tbichan.syaroescape.menu;
 
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.util.Log;
 
@@ -14,10 +15,12 @@ import com.example.tbichan.syaroescape.menu.viewmodel.PlayerDetailViewModel;
 import com.example.tbichan.syaroescape.menu.viewmodel.UIChoiceViewModel;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
+import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.sound.BGMManager;
 import com.example.tbichan.syaroescape.sound.MyBGM;
+import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 
 /**
  * Created by tbichan on 2017/12/09.
@@ -50,6 +53,19 @@ public class MenuScene extends SceneBase {
         addBitmap(R.drawable.menu_2);
         addBitmap(R.drawable.menu_3);
         addBitmap(R.drawable.menu_bg);
+
+        // ID、プレイヤー名をよみこみ
+        String playerName = "";
+        try {
+            playerName = "ID:" + DataBaseHelper.getDataBaseHelper().read(DataBaseHelper.NETWORK_ID) + "　" + DataBaseHelper.getDataBaseHelper().read(DataBaseHelper.PLAYER_NAME);
+        } catch (Exception e) {
+
+        }
+
+        if (playerName.length() >= 1) {
+            addBitmap(new GlStringBitmap(playerName)
+                    .setColor(Color.WHITE));
+        }
 
         NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
         nowLoadViewModel.setSceneImgLoadedDraw(false);

@@ -109,7 +109,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
         // 環境を作成
         env = new Environment("env_1", seed, level);
-        queryEnv("seed:" + seed);
+        queryEnv("seed:" + seed, true);
 
         // VMを追加
         env.addGlObservable(this);
@@ -507,7 +507,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
             final EnableFloor enableFloor = (EnableFloor)o;
 
             String query = "move:" + player.getMapIndex() + "," + enableFloor.getMapIndex();
-            queryEnv(query);
+            queryEnv(query, true);
 
             if (uiViewModel != null) uiViewModel.movedPlayer();
 
@@ -541,43 +541,8 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
     }
     // 環境にクエリとして送ります。
-    public void queryEnv(String query) {
-        queryEnv(query, true);
-    }
-
-    // 環境にクエリとして送ります。
-    public final void queryEnv(String query, boolean network) {
+    public void queryEnv(String query, boolean net) {
         env.notify(query);
-
-        if (network == true) {
-
-            // クエリにIDを付加
-
-            // サーバに送る
-            MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/send/send.py?query=" + query + "&" + "id=" + id) {
-
-                // 接続成功時
-                @Override
-                public void success() {
-                    // 表示
-                    try {
-                        Log.d("net", result());
-                    } catch (Exception e) {
-
-                    }
-                }
-
-                // 接続失敗時
-                @Override
-                public void fail(Exception e) {
-                    Log.d("net", "接続エラーss:" + e.toString());
-
-                }
-
-            }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/send/send.py?query=" + query + "&" + "id=" + id);
-
-            myHttp.connect();
-        }
     }
 
 
@@ -629,7 +594,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
         String query = "end";
 
-        queryEnv(query, net);
+        queryEnv(query, true);
 
     }
 
@@ -800,8 +765,15 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     /**
      * 交代間隔を設定します。
      */
-    private void setActInterval(int interval, boolean flg) {
-        actInterval = interval;
+    protected void setActInterval(int interval) {
+        this.actInterval = interval;
+    }
+
+    /**
+     * 交代間隔を設定します。
+     */
+    protected void setActInterval(int interval, boolean flg) {
+        setActInterval(interval);
 
         // クエリ送信
         queryEnv("fast:" + interval, flg);

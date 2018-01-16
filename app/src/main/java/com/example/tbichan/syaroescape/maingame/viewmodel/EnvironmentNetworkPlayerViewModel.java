@@ -2,109 +2,85 @@ package com.example.tbichan.syaroescape.maingame.viewmodel;
 
 import android.util.Log;
 
-import com.example.tbichan.syaroescape.activity.MainActivity;
+import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.maingame.GameScene;
+import com.example.tbichan.syaroescape.maingame.NetworkGameScene;
+import com.example.tbichan.syaroescape.maingame.model.Carrot;
+import com.example.tbichan.syaroescape.maingame.model.Cup;
+import com.example.tbichan.syaroescape.maingame.model.EnableFloor;
+import com.example.tbichan.syaroescape.maingame.model.EnvSprite;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
+import com.example.tbichan.syaroescape.maingame.model.Player;
+import com.example.tbichan.syaroescape.maingame.model.PowerEffect;
+import com.example.tbichan.syaroescape.maingame.model.Rabbit;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
+import com.example.tbichan.syaroescape.opengl.GlObservable;
+import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
-import com.example.tbichan.syaroescape.scene.SceneManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
-import javax.microedition.khronos.opengles.GL10;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.CREATE_RABBIT;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.MAP_SIZE;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_DESK;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.MOVE_RABBIT;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_ADD_CUP;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_END;
+import static com.example.tbichan.syaroescape.maingame.model.Environment.PARAM_HIT;
 
 /**
- * 相手用の環境
  * Created by tbichan on 2017/12/10.
  */
 
-public class EnvironmentNetworkPlayerViewModel extends EnvironmentViewModel {
+public class EnvironmentNetworkPlayerViewModel extends EnvironmentViewModel implements GlObservable {
 
-    // クエリ全体
-    private String[] querys;
-
-    // クエリ行数
-    private int queryCnt = 0;
-
-    // リプレイモードか
-    private boolean replay = false;
-
-    // サーバ問い合わせ用
-    private MyHttp myHttp = null;
+    // Observserable
+    private ArrayList<GlObservable> glObservableList = new ArrayList<>();
 
     public EnvironmentNetworkPlayerViewModel(GlView glView, SceneBase sceneBase, String name, int id, int level) {
         super(glView, sceneBase, name, id, level);
 
     }
 
+    // 環境にクエリとして送ります。(ネットワーク送信)
     @Override
-    public void start() {
-        super.start();
+    public void queryEnv(String query, boolean net) {
+        super.queryEnv(query, net);
 
-        // ファイル読み込み
-        String text = MainActivity.loadFile("replay_001.replay");
-        querys = text.split("\n");
-    }
+        if (net == true) {
 
-    @Override
-    public void update(GL10 gl) {
-        super.update(gl);
+            // リプレイファイル取得
+            String fileName = ((NetworkGameScene) getScene()).getFileName();
 
-        if (isTurn()) {
-            if ((getCnt() - getTurnCnt()) >= 120 && (getCnt() - getTurnCnt()) % 60 == 0) {
+            // サーバに送る
+            MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/send/send.py?query=" + query + "&id=" + getId() + "&filename=" + fileName) {
 
-                if (myHttp == null) {
+                // 接続成功時
+                @Override
+                public void success() {
+                    // 表示
+                    try {
+                        Log.d("net", result());
+                    } catch (Exception e) {
 
-                    // 今のシ－ン
-                    GameScene sceneBase = (GameScene)getScene();
-
-                    // 相手のIDを取得
-                    final int otherId = sceneBase.getOtherPlayerViewModel().getId();
-
-                    Log.d("net", NetWorkManager.DOMAIN + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt);
-                    Log.d("net", NetWorkManager.DOMAIN_SECOND + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt);
-                    // サーバから行動を取得する。
-                    myHttp = new MyHttp(NetWorkManager.DOMAIN + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt) {
-
-                        // 接続成功時
-                        @Override
-                        public void success() {
-                            // 表示
-                            try {
-                                String query = result().replace("\n", "");
-                                // ID情報を分割
-
-                                // end, fastだけ特別
-                                if (query.contains("fast")) {
-                                    threeMove(false);
-                                } else if (query.contains("end")) {
-                                    endTurn(false);
-                                } else {
-                                    queryEnv(query, false);
-                                }
-                                Log.d("net:" + queryCnt, query);
-                                queryCnt++;
-                                myHttp = null;
-                            } catch (Exception e) {
-
-                            }
-                        }
-
-                        // 接続失敗時
-                        @Override
-                        public void fail(Exception e) {
-                            Log.d("net", "接続エラー:" + e.toString());
-
-                        }
-
-                    }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/send/receive.py?id=" + otherId + "&num=" + queryCnt);
-
-                    myHttp.connect();
+                    }
                 }
 
-            }
+                // 接続失敗時
+                @Override
+                public void fail(Exception e) {
+                    Log.d("net", "接続エラーss:" + e.toString());
+
+                }
+
+            }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "sql/send/send.py?query=" + query + "&id=" + getId() + "&filename=" + fileName);
+
+            myHttp.connect();
         }
     }
+
+
 }
