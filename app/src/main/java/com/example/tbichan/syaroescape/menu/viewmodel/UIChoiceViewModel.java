@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.choicestory.ChoiceStoryScene;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
+import com.example.tbichan.syaroescape.experience.ExperienceScene;
 import com.example.tbichan.syaroescape.findbattleuser.FindBattleUserScene;
 import com.example.tbichan.syaroescape.maingame.GameScene;
 import com.example.tbichan.syaroescape.menu.model.MenuButton;
@@ -49,6 +50,9 @@ public class UIChoiceViewModel extends GlViewModel {
     // FadeViewModel
     private FadeViewModel fadeViewModel = null;
 
+    // BGViewModel
+    private BGViewModel bgViewModel;
+
     public UIChoiceViewModel(GlView glView, SceneBase sceneBase, String name){
         super(glView, sceneBase, name);
 
@@ -57,9 +61,9 @@ public class UIChoiceViewModel extends GlViewModel {
     @Override
     public void awake() {
 
-        final int[] imgIds = {R.drawable.menu_0,R.drawable.menu_1,R.drawable.menu_2,R.drawable.menu_3};
+        final int[] imgIds = {R.drawable.menu_0,R.drawable.menu_1,R.drawable.menu_2};
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
 
             MenuButton menuButton = new MenuButton(this, "menu" + i, i) {
 
@@ -169,7 +173,7 @@ public class UIChoiceViewModel extends GlViewModel {
 
                 if (actId == 0) SceneManager.getInstance().setNextScene(new ChoiceStoryScene());
                 else if (actId == 1)  SceneManager.getInstance().setNextScene(new FindBattleUserScene());
-                else if (actId == 2)  SceneManager.getInstance().setNextScene(new StoryScene());
+                else if (actId == 2)  SceneManager.getInstance().setNextScene(new ExperienceScene());
                 else if (actId == 3)  SceneManager.getInstance().setNextScene(new GameScene());
             }
         }
@@ -209,6 +213,9 @@ public class UIChoiceViewModel extends GlViewModel {
     public void onMenuButtonTap(MenuButton menuButton) {
         Log.d("menuBtn", "メニューボタン:" + menuButton.getName() + "がタップ。");
 
+        // オプションボタン非表示
+        bgViewModel.hideGear();
+
         // 選択ボタンを代入
         activeButton = menuButton;
 
@@ -235,6 +242,10 @@ public class UIChoiceViewModel extends GlViewModel {
     // FadeViewModelを設定
     public void setFadeViewModel(FadeViewModel fadeViewModel) {
         this.fadeViewModel = fadeViewModel;
+    }
+
+    public void setBgViewModel(BGViewModel bgViewModel) {
+        this.bgViewModel = bgViewModel;
     }
 
     // 退場します。

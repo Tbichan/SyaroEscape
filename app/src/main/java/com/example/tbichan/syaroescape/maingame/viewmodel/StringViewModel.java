@@ -12,6 +12,7 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.sound.SEManager;
 import com.example.tbichan.syaroescape.ui.UIListener;
 
 /**
@@ -82,6 +83,9 @@ public class StringViewModel extends GlViewModel implements GlObservable {
 
             @Override
             public void onClick() {
+
+                // 効果音再生
+                SEManager.getInstance().playSE(R.raw.button_click);
 
                 MainActivity.showOKCancelDialog(new UIListener() {
                     /**

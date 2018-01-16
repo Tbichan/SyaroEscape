@@ -1,6 +1,9 @@
 package com.example.tbichan.syaroescape.choicestory;
 
+import android.media.MediaPlayer;
+
 import com.example.tbichan.syaroescape.R;
+import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.choicestory.viewmodel.RoadViewModel;
 import com.example.tbichan.syaroescape.choicestory.viewmodel.RoadViewModel2;
 import com.example.tbichan.syaroescape.common.VibrationScene;
@@ -8,9 +11,13 @@ import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.NowLoadViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.ParticleViewModel;
 import com.example.tbichan.syaroescape.maingame.GameScene;
+import com.example.tbichan.syaroescape.opengl.store.StoreManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneManager;
 import com.example.tbichan.syaroescape.choicestory.viewmodel.BGViewModel;
+import com.example.tbichan.syaroescape.sound.BGMManager;
+import com.example.tbichan.syaroescape.sound.MyBGM;
+import com.example.tbichan.syaroescape.story.StoryScene;
 
 /**
  * Created by tbichan on 2017/12/09.
@@ -24,6 +31,9 @@ public class ChoiceStoryScene extends VibrationScene {
     // シーンのロード
     @Override
     public void load(GlView glView) {
+
+        addSE(R.raw.button_click);
+        addSE(R.raw.decision);
 
         // 画像を指定
         addBitmap(R.drawable.load_str);
@@ -73,7 +83,13 @@ public class ChoiceStoryScene extends VibrationScene {
             @Override
             // フェードアウト終了時の処理
             public void endFadeOut() {
-                SceneManager.getInstance().setNextScene(new GameScene());
+
+                int story = StoreManager.restoreInteger("story");
+
+                // ストーリーに移動
+                StoryScene storyScene = new StoryScene();
+                storyScene.setStoryId(story);
+                SceneManager.getInstance().setNextScene(storyScene);
             }
         };
         fadeViewModel.setInSpeed(1.0f);
@@ -82,11 +98,18 @@ public class ChoiceStoryScene extends VibrationScene {
         RoadViewModel roadViewModel = new RoadViewModel(glView, this, "RoadViewModel");
         roadViewModel.setPosition(200, GlView.VIEW_HEIGHT * 0.5f - 100f + 200f);
         roadViewModel.setBgViewModel(bgViewModel);
+        roadViewModel.setFadeViewModel(fadeViewModel);
         glView.addViewModel(roadViewModel);
         glView.addViewModel(fadeViewModel);
 
         // パーティクルを最前面に
         glView.moveFrontViewModel(particleViewModel);
+
+        // 音設定
+        MediaPlayer player = MediaPlayer.create(MainActivity.getContext(),R.raw.bgm_choice);
+        MyBGM myBGM = new MyBGM(player);
+        myBGM.setLoop(true);
+        BGMManager.getInstance().addSE(myBGM);
 
     }
 

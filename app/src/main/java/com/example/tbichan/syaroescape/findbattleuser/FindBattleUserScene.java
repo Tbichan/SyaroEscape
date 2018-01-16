@@ -27,8 +27,9 @@ public class FindBattleUserScene extends SceneBase {
 		addBitmap(R.drawable.bar);
 		addBitmap(R.drawable.particle);
 
+		addBitmap(R.drawable.connect_bg);
 		addBitmap(R.drawable.tushin);
-		addBitmap(R.drawable.tushin_err);
+		//addBitmap(R.drawable.tushin_err);
 		addBitmap(R.drawable.trump);
 
 		NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");

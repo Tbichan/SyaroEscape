@@ -33,7 +33,7 @@ public class TrampViewModel extends GlViewModel {
 		// 表示する文字
 		GlModel bgStr = new GlModel(this, "bgStr_wait") {
 
-			private final float MAX_WIDTH = 500f;
+			private final float MAX_WIDTH = 432f;
 
 			private float initX;
 
@@ -47,7 +47,9 @@ public class TrampViewModel extends GlViewModel {
 			@Override
 			public void update() {
 
-				float nextWidth = (float)(Math.cos(getCnt() / 60f) * MAX_WIDTH);
+				float spd = (float)(Math.sin(getCnt() / 200f) * 12.6f * Math.PI);
+
+				float nextWidth = (float)(Math.cos(spd) * MAX_WIDTH);
 
 				setX(initX + MAX_WIDTH * 0.5f - nextWidth * 0.5f);
 				setSize(nextWidth, getHeight());
@@ -63,7 +65,7 @@ public class TrampViewModel extends GlViewModel {
 		};
 
 		bgStr.setTextureId(R.drawable.trump);
-		bgStr.setSize(500, 700);
+		bgStr.setSize(432f, 700f);
 
 		// ���S�ɏo��
 		bgStr.setPosition(GlView.VIEW_WIDTH*0.5f-bgStr.getWidth() * 0.5f, GlView.VIEW_HEIGHT*0.5f-bgStr.getHeight() * 0.5f);

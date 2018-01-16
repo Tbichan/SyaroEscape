@@ -113,6 +113,7 @@ public class GlRenderer implements GLSurfaceView.Renderer {
                 // awakeが行われていないvmは更新しない。
                 GlViewModel glViewModel = mViewmodelList.get(i);
                 if (!glViewModel.isAwakeFlg()) continue;
+                if (glViewModel.isPause()) continue;
                 if (glViewModel.getCnt() == 0) glViewModel.start();
                 else glViewModel.update(gl);
                 glViewModel.addCnt();

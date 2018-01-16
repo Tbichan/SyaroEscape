@@ -27,8 +27,8 @@ public class CharaViewModel extends GlViewModel {
 
     // 表示する文字
     private final String[][] strs = {
-            {"一人で遊びます。　　", "みんなで遊びます！　", "リプレイです。　　　", "設定です。　　　　　"},
-            {"一人で遊ぶモードよ　", "お友達と遊ぶモードよ", "リプレイよ　　　　　", "設定よっ!!　　　　　"}};
+            {"一人で遊びます。　　", "みんなで遊びます！　", "対戦履歴です。　　　", "設定です。　　　　　"},
+            {"一人で遊ぶモードよ　", "お友達と遊ぶモードよ", "対戦履歴よ　　　　　", "設定よっ!!　　　　　"}};
 
     private CharaModel charaModel;
 

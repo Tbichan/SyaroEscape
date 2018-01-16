@@ -10,6 +10,7 @@ import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.sound.SEManager;
 
 import java.util.ArrayList;
 
@@ -30,6 +31,9 @@ public class WazaUIViewModel extends MoveViewModel {
     // 表示か
     private boolean show = false;
 
+    // 高速ボタン
+    private MainGameButton fastButton;
+
     public WazaUIViewModel(GlView glView, SceneBase sceneBase, String name){
         super(glView, sceneBase, name);
 
@@ -39,19 +43,22 @@ public class WazaUIViewModel extends MoveViewModel {
     public void awake() {
 
         // 高速ボタン
-        MainGameButton fastButton = new MainGameButton(this, "fast_Button") {
+        fastButton = new MainGameButton(this, "fast_Button") {
             @Override
             public void onClick() {
-                /*
-
-                // 移動を通知
-                for (EnvironmentViewModel environmentViewModel: environmentViewModelArrayList) {
-                    environmentViewModel.moveButtonClick();
-                }*/
+                // 3回移動モードかどうか判定
+                if (((GameScene)getScene()).getPlayerViewModel().isThreeMode() || ((GameScene)getScene()).getPlayerViewModel().getCaffeinePower() == 0) {
+                    return;
+                }
 
                 // プレイヤーVM取得
                 EnvironmentViewModel environmentViewModel = ((GameScene)getScene()).getPlayerViewModel();
                 environmentViewModel.threeMove(true);
+
+                // 効果音再生
+                SEManager.getInstance().playSE(R.raw.hitension);
+
+
 
                 hide();
             }
@@ -62,11 +69,38 @@ public class WazaUIViewModel extends MoveViewModel {
         fastButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-300);
         fastButton.setSize(500, 250);
         fastButton.setAlpha(0.75f);
+        fastButton.setU1(0.0f);
+        fastButton.setU2(0.5f);
         fastButton.setTextureId(R.drawable.fast_button);
         addModel(fastButton);
 
+        // キャンセルボタン
+        MainGameButton cancelButton = new MainGameButton(this, "cancelButton") {
+            @Override
+            public void onClick() {
+
+                // プレイヤーVM取得
+                EnvironmentViewModel environmentViewModel = ((GameScene)getScene()).getPlayerViewModel();
+                environmentViewModel.cameraCanMoveMode();
+                environmentViewModel = ((GameScene)getScene()).getOtherPlayerViewModel();
+                environmentViewModel.cameraCanMoveMode();
+
+                // 効果音再生
+                SEManager.getInstance().playSE(R.raw.button_click);
+
+                hide();
+            }
+        };
+
+        cancelButton.setPosition(GlView.VIEW_WIDTH-750, GlView.VIEW_HEIGHT-600);
+        cancelButton.setSize(500, 250);
+        cancelButton.setAlpha(0.75f);
+        cancelButton.setTextureId(R.drawable.cancel_button);
+        addModel(cancelButton);
+
         // VMの位置を設定
         setX(1000);
+        show = false;
 
     }
 
@@ -90,6 +124,18 @@ public class WazaUIViewModel extends MoveViewModel {
     public void appear() {
         setVisible(true);
         startMove(0, 0f, 10);
+        show = true;
+
+        // 3回移動モードかどうか判定
+        if (((GameScene)getScene()).getPlayerViewModel().isThreeMode() || ((GameScene)getScene()).getPlayerViewModel().getCaffeinePower() == 0) {
+            // ボタン無効
+            fastButton.setU1(0.5f);
+            fastButton.setU2(1.0f);
+        } else {
+            // ボタン有効
+            fastButton.setU1(0.0f);
+            fastButton.setU2(0.5f);
+        }
     }
 
     // 隠します
@@ -101,5 +147,14 @@ public class WazaUIViewModel extends MoveViewModel {
             }
         });
         startMove(1000f, 0f, 10);
+        show = false;
+    }
+
+    // プレイヤーをタップした時の処理です。
+    public void tapPlayer() {
+
+        // 自分のターンのときのみ
+        if (((GameScene)getScene()).getTurn() == 1) return;
+        if (show) hide();
     }
 }

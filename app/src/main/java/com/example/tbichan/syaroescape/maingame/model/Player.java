@@ -3,6 +3,7 @@ package com.example.tbichan.syaroescape.maingame.model;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentViewModel;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
+import com.example.tbichan.syaroescape.scene.SceneManager;
 
 /**
  * Created by tbichan on 2017/12/10.
@@ -19,5 +20,6 @@ public class Player extends EnvSprite {
     @Override
     public void onClick() {
         getEnvironmentViewModel().notify(this);
+
     }
 }

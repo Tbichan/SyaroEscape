@@ -65,7 +65,7 @@ public class PlayerDetailViewModel extends GlViewModel {
 
         //Bitmap strBit = BitMapManager.createStrImage(playerName, "uzura", 50, Color.YELLOW);
         playerNameModel.setTextureText(playerName);
-        playerNameModel.setVisible(true);
+        playerNameModel.setVisible(false);
 
         playerNameModel.setPosition(1800, -350);
         playerNameModel.setSize(1800, 500);

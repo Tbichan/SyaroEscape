@@ -6,6 +6,8 @@ import android.util.Log;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentNetworkOtherPlayerViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentNetworkPlayerViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentViewModel;
+import com.example.tbichan.syaroescape.network.MyHttp;
+import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
 import com.example.tbichan.syaroescape.opengl.store.StoreManager;
@@ -152,4 +154,146 @@ public class NetworkGameScene extends GameScene implements GlObservable {
     public String getFileName() {
         return fileName;
     }
+
+    @Override
+    public void hit(EnvironmentViewModel envVM) {
+
+        if (isEnd()) return;
+        // フラグをtrueに
+        setEnd(true);
+
+        // ガス表示
+        setHitCnt(getCnt());
+        setCollisonEnvVM(envVM);
+
+        // 環境VM停止
+        //environmentViewModel.setPause(true);
+        //environmentOtherPlayerViewModel.setPause(true);
+
+        // 自分の環境から
+        if (envVM == getPlayerViewModel()) {
+
+            // 負け
+            MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "/sql/detail/add_result.py?id=" + getPlayerViewModel().getId() + "&res=0") {
+
+                // 接続成功時
+                @Override
+                public void success() {
+
+                    String res = "";
+                    // 表示
+                    try {
+                        res = result().replace("\n", "");
+                        Log.d("net", res);
+
+
+
+                    } catch (Exception e) {
+
+                    }
+                }
+
+                // 接続失敗時
+                @Override
+                public void fail(Exception e) {
+                    Log.d("net", "接続エラー:" + e.toString());
+                }
+
+            }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "/sql/detail/add_result.py?id=" + getPlayerViewModel().getId() + "&res=0");
+            myHttp.connect();
+
+            // ダイアログ表示
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        Thread.sleep(5000);
+                    }
+                    catch(InterruptedException e){
+
+                    }
+
+                    Log.d("result", "lose");
+
+                    getResultViewModel().showResult(false);
+
+                    /*
+                    MainActivity.showOKDialog( "決着", "あなたの負け",
+                            new UIListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    SceneManager.getInstance().setNextScene(new MenuScene());
+                                }
+                            });
+                            */
+                }
+            }).start();
+
+
+        }
+        // 相手から
+        else {
+
+            // 勝ち
+            MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "/sql/detail/add_result.py?id=" + getPlayerViewModel().getId() + "&res=1") {
+
+                // 接続成功時
+                @Override
+                public void success() {
+
+                    String res = "";
+                    // 表示
+                    try {
+                        res = result().replace("\n", "");
+                        Log.d("net", res);
+
+
+
+                    } catch (Exception e) {
+
+                    }
+                }
+
+                // 接続失敗時
+                @Override
+                public void fail(Exception e) {
+                    Log.d("net", "接続エラー:" + e.toString());
+                }
+
+            }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "/sql/detail/add_result.py?id=" + getPlayerViewModel().getId() + "&res=1");
+            myHttp.connect();
+
+            // ダイアログ表示
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        Thread.sleep(5000);
+                    }
+                    catch(InterruptedException e){
+
+                    }
+
+                    getResultViewModel().showResult(true);
+
+                    /*
+                    Log.d("result", "win");
+                    MainActivity.showOKDialog( "決着", "あなたの勝ち！",
+                            new UIListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    SceneManager.getInstance().setNextScene(new MenuScene());
+                                }
+                            });*/
+                }
+            }).start();
+
+
+        }
+
+
+    }
+
 }

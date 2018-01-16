@@ -2,10 +2,12 @@ package com.example.tbichan.syaroescape.maingame.viewmodel;
 
 import android.util.Log;
 
+import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.maingame.GameScene;
 import com.example.tbichan.syaroescape.maingame.NetworkGameScene;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
+import com.example.tbichan.syaroescape.maingame.model.Player;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
@@ -38,6 +40,17 @@ public class EnvironmentNetworkOtherPlayerViewModel extends EnvironmentViewModel
     public EnvironmentNetworkOtherPlayerViewModel(GlView glView, SceneBase sceneBase, String name, int id, int level) {
         super(glView, sceneBase, name, id, level);
 
+    }
+
+    /**
+     * プレイヤーを作成します。
+     */
+    @Override
+    public Player createPlayer() {
+        Player player = new Player(this, "player");
+        player.setTextureId(R.drawable.syaro_icon_com);
+
+        return player;
     }
 
     @Override

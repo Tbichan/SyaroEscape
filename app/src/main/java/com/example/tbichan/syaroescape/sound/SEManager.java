@@ -31,6 +31,9 @@ public class SEManager {
     // 読み込み終了フラグ
     private boolean load = false;
 
+    // 音量
+    private float vol = 1.0f;
+
     private SEManager() {
 
     }
@@ -103,7 +106,14 @@ public class SEManager {
 
             }
         }
-        soundPool.play(seId, 1.0f, 1.0f, 0, 0, 1.0f);
+        soundPool.play(seId, vol, vol, 0, 0, 1.0f);
 
+    }
+
+    /**
+     * 音量を設定します。
+     */
+    public void setVolume(float vol) {
+        this.vol = vol;
     }
 }

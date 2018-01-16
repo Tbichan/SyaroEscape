@@ -13,6 +13,7 @@ import com.example.tbichan.syaroescape.maingame.model.Cup;
 import com.example.tbichan.syaroescape.maingame.model.EnableFloor;
 import com.example.tbichan.syaroescape.maingame.model.EnvSprite;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
+import com.example.tbichan.syaroescape.maingame.model.GasEffect;
 import com.example.tbichan.syaroescape.maingame.model.Player;
 import com.example.tbichan.syaroescape.maingame.model.PowerEffect;
 import com.example.tbichan.syaroescape.maingame.model.Rabbit;
@@ -22,6 +23,7 @@ import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.sound.SEManager;
 
 import static com.example.tbichan.syaroescape.maingame.model.Environment.CREATE_RABBIT;
 import static com.example.tbichan.syaroescape.maingame.model.Environment.MAP_SIZE;
@@ -60,6 +62,9 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
     // エフェクトモデル
     private PowerEffect powerEffect;
+
+    // エフェクトモデル
+    private GasEffect gasEffect;
     
     // 環境
     Environment env;
@@ -75,6 +80,7 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
 
     // uiVM
     private ActButtonUIViewModel uiViewModel;
+    private WazaUIViewModel wazaUIViewModel;
 
     // デフォルト位置
     private float defaultX = 0f;
@@ -143,8 +149,8 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         addModel(tile);
 
         // player
-        player = new Player(this, "player");
-        player.setTextureId(R.drawable.syaro_icon);
+        player = createPlayer();
+        //player.setTextureId(R.drawable.syaro_icon);
         // vm追加
         player.setEnviromentViewModel(this);
         addModel(player);
@@ -159,9 +165,23 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         powerEffect.setPosition(player.getX(), player.getY());
         addModel(powerEffect);
 
+        gasEffect = new GasEffect(this, "Eff");
+        gasEffect.setPosition(player.getX(), player.getY());
+        addModel(gasEffect);
+
         // シード値設定
         //queryEnv("seed:20171228");
 
+    }
+
+    /**
+     * プレイヤーを作成します。
+     */
+    public Player createPlayer() {
+        Player player = new Player(this, "player");
+        player.setTextureId(R.drawable.syaro_icon);
+
+        return player;
     }
     
     // 環境の変更時に実行されます。
@@ -249,6 +269,9 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
                     EnvironmentViewModel.this.frontModel(powerEffect);
                     powerEffect.setPosition(rabbit.getX(), rabbit.getY() - 40f);
                     powerEffect.appear();
+
+                    // 効果音再生
+                    SEManager.getInstance().playSE(R.raw.rabbit);
                 }
             });
             rabbit.move(rabbitIndex / MAP_SIZE, rabbitIndex % MAP_SIZE);
@@ -499,7 +522,17 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
         // プレイヤークリック時
         if (o instanceof Player) {
 
-            if (uiViewModel != null) uiViewModel.tapPlayer();
+            if (uiViewModel != null && wazaUIViewModel != null && !((GameScene)getScene()).isEnd()) {
+
+                // 移動可能床クリア
+                clearPlayerEnableMoveList();
+
+                uiViewModel.tapPlayer();
+                wazaUIViewModel.tapPlayer();
+
+                // 効果音再生
+                SEManager.getInstance().playSE(R.raw.player_click);
+            }
         }
 
         // 移動可能床クリック時
@@ -543,11 +576,19 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
     // 環境にクエリとして送ります。
     public void queryEnv(String query, boolean net) {
         env.notify(query);
+
+        if (query.contains("move")) {
+            // 効果音再生
+            SEManager.getInstance().playSE(R.raw.player_click);
+        }
     }
 
 
     public void setUiViewModel(ActButtonUIViewModel uiViewModel) {
         this.uiViewModel = uiViewModel;
+    }
+    public void setWazaUIViewModel(WazaUIViewModel wazaUIViewModel) {
+        this.wazaUIViewModel = wazaUIViewModel;
     }
 
     // ボタン表示
@@ -784,6 +825,30 @@ public class EnvironmentViewModel extends MoveViewModel implements GlObservable 
      */
     public int lastCount() {
         return actInterval - (actCnt - preActCnt);
+    }
+
+    /**
+     * 衝突したかどうか
+     */
+    public boolean isHit() {
+        return env.isHit();
+    }
+
+    /**
+     * 3回移動モードかどうか
+     */
+    public boolean isThreeMode() {
+        return actInterval == 3;
+    }
+
+    /**
+     * 煙を表示させる
+     */
+    public void showGas() {
+        // エフェクト出現
+        frontModel(gasEffect);
+        gasEffect.setPosition(player.getX(), player.getY());
+        gasEffect.appear();
     }
 
 }

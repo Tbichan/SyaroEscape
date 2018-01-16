@@ -1,6 +1,7 @@
 package com.example.tbichan.syaroescape.maingame;
 
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,16 +11,20 @@ import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.NowLoadViewModel;
 import com.example.tbichan.syaroescape.common.viewmodel.ParticleViewModel;
+import com.example.tbichan.syaroescape.experience.ExperienceScene;
 import com.example.tbichan.syaroescape.maingame.model.EnvSprite;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
 import com.example.tbichan.syaroescape.maingame.viewmodel.BGViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentOtherPlayerViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.EnvironmentViewModel;
+import com.example.tbichan.syaroescape.maingame.viewmodel.ResultViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.StatusViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.ActButtonUIViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.StringViewModel;
 import com.example.tbichan.syaroescape.maingame.viewmodel.WazaUIViewModel;
 import com.example.tbichan.syaroescape.menu.MenuScene;
+import com.example.tbichan.syaroescape.network.MyHttp;
+import com.example.tbichan.syaroescape.network.NetWorkManager;
 import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
 import com.example.tbichan.syaroescape.opengl.store.StoreManager;
@@ -27,6 +32,9 @@ import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
 import com.example.tbichan.syaroescape.scene.timer.SceneTimer;
+import com.example.tbichan.syaroescape.sound.BGMManager;
+import com.example.tbichan.syaroescape.sound.MyBGM;
+import com.example.tbichan.syaroescape.sound.SEManager;
 import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 import com.example.tbichan.syaroescape.ui.UIListener;
 
@@ -52,6 +60,9 @@ public class GameScene extends SceneBase implements GlObservable {
     // 文字VM
     private StringViewModel stringViewModel;
 
+    // 結果表示用VM
+    private ResultViewModel resultViewModel;
+
     // 行動総回数
     private int actCnt = 0;
 
@@ -70,11 +81,26 @@ public class GameScene extends SceneBase implements GlObservable {
     // レベル
     private int level = 0;
 
+    // 決着がついたかどうか
+    private boolean endFlg = false;
+
+
+    // ぶつかったときのカウンタ
+    private int hitCnt = -1;
+    private EnvironmentViewModel collisonEnvVM;
+
 
     // シーンのロード
     @Override
     public void load(GlView glView) {
         System.out.println("game");
+
+        // 音を指定
+        addSE(R.raw.button_click);
+        addSE(R.raw.player_click);
+        addSE(R.raw.hitension);
+        addSE(R.raw.rabbit);
+        addSE(R.raw.hit);
 
         addBitmap(R.drawable.particle);
 
@@ -87,6 +113,7 @@ public class GameScene extends SceneBase implements GlObservable {
         addBitmap(R.drawable.tile_0);
         addBitmap(R.drawable.syaro_menu);
         addBitmap(R.drawable.syaro_icon);
+        addBitmap(R.drawable.syaro_icon_com);
         addBitmap(R.drawable.anko);
         addBitmap(R.drawable.enable);
         addBitmap(R.drawable.desk);
@@ -105,6 +132,9 @@ public class GameScene extends SceneBase implements GlObservable {
         addBitmap(R.drawable.carrot);
         addBitmap(R.drawable.maingame_bar);
         addBitmap(R.drawable.number);
+        addBitmap(R.drawable.win);
+        addBitmap(R.drawable.lose);
+        addBitmap(R.drawable.gas);
 
         // プレイヤー名をよみこみ
         String playerName = "";
@@ -149,6 +179,14 @@ public class GameScene extends SceneBase implements GlObservable {
     @Override
     public void update(){
 
+        if (hitCnt != -1) {
+            if (getCnt() - hitCnt == 60) {
+                // ガス表示
+                collisonEnvVM.showGas();
+
+                SEManager.getInstance().playSE(R.raw.hit);
+            }
+        }
     }
 
     // タップ処理
@@ -207,7 +245,7 @@ public class GameScene extends SceneBase implements GlObservable {
 
 
         environmentViewModel.setUiViewModel(uiViewModel);
-
+        environmentViewModel.setWazaUIViewModel(wazaUIViewModel);
 
 
         // ステータス
@@ -223,11 +261,22 @@ public class GameScene extends SceneBase implements GlObservable {
         environmentOtherPlayerViewModel.addGlObserver(statusViewModel);
         environmentOtherPlayerViewModel.addEnvGlObserver(stringViewModel);
 
+        // 結果用
+        resultViewModel = new ResultViewModel(glView, this, "ResultViewModel");
+        resultViewModel.setVisible(false);
 
         // fadein
-        FadeViewModel fadeViewModel = new FadeViewModel(glView, this, "FadeViewModel");
+        FadeViewModel fadeViewModel = new FadeViewModel(glView, this, "FadeViewModel"){
+            @Override
+            public void endFadeOut() {
+                // メニューに戻る。
+                SceneManager.getInstance().setNextScene(new MenuScene());
+            }
+        };
         fadeViewModel.setInSpeed(1.2f);
         fadeViewModel.startFadeIn();
+
+        resultViewModel.setFadeViewModel(fadeViewModel);
 
         // 背景
         glView.addViewModel(new BGViewModel(glView, this, "BG"));
@@ -237,6 +286,7 @@ public class GameScene extends SceneBase implements GlObservable {
         glView.addViewModel(wazaUIViewModel);
         glView.addViewModel(stringViewModel);
         glView.addViewModel(statusViewModel);
+        glView.addViewModel(resultViewModel);
         glView.addViewModel(fadeViewModel);
 
         // パーティクルを最前面に
@@ -244,6 +294,12 @@ public class GameScene extends SceneBase implements GlObservable {
 
         // 自分を移動可能に
         setTurn(initTurn());
+
+        // 音設定
+        MediaPlayer player = MediaPlayer.create(MainActivity.getContext(),R.raw.bgm_maingame);
+        MyBGM myBGM = new MyBGM(player);
+        myBGM.setLoop(true);
+        BGMManager.getInstance().addSE(myBGM);
 
     }
 
@@ -301,8 +357,12 @@ public class GameScene extends SceneBase implements GlObservable {
 
             // ターン終了
             if (params[0].equals("turnend")) {
-                // プレイヤー交代
-                setTurn(1 - turn);
+
+                // 衝突がなければ
+                if (!environmentViewModel.isHit() && !environmentOtherPlayerViewModel.isHit()) {
+                    // プレイヤー交代
+                    setTurn(1 - turn);
+                }
             } else if (params[0].startsWith(Environment.PARAM_ADD_CUP)) {
 
                 /*
@@ -312,24 +372,32 @@ public class GameScene extends SceneBase implements GlObservable {
                 */
             }
             else if (params[0].startsWith("playerLook")) {
-                // プレイヤーに視点を合わせる。
-                EnvironmentViewModel envVM = environmentViewModel;
-                if (turn == 1) envVM = environmentOtherPlayerViewModel;
 
-                lookAtPlayer(envVM.getId(), 0);
+                if (!environmentViewModel.isHit() && !environmentOtherPlayerViewModel.isHit()) {
+                    // プレイヤーに視点を合わせる。
+                    EnvironmentViewModel envVM = environmentViewModel;
+                    if (turn == 1) envVM = environmentOtherPlayerViewModel;
+
+                    lookAtPlayer(envVM.getId(), 0);
+                }
+
+                //Log.d("hoge", (!environmentViewModel.isHit() && !environmentOtherPlayerViewModel.isHit())+"");
 
             } else if (params[0].startsWith("hit")) {
                 // 衝突
                 hit((EnvironmentViewModel) o);
             } else if (params[0].startsWith("add rabbit")) {
-                // 相手VMにウサギ追加
-                EnvironmentViewModel envVM = environmentViewModel;
-                if (envVM == o) envVM = environmentOtherPlayerViewModel;
 
-                // ウサギ作成
-                final int rabbitIndex = envVM.addEnvRabbit();
+                if (!environmentViewModel.isHit() && !environmentOtherPlayerViewModel.isHit()) {
+                    // 相手VMにウサギ追加
+                    EnvironmentViewModel envVM = environmentViewModel;
+                    if (envVM == o) envVM = environmentOtherPlayerViewModel;
 
-                lookAt(envVM, rabbitIndex);
+                    // ウサギ作成
+                    final int rabbitIndex = envVM.addEnvRabbit();
+
+                    lookAt(envVM, rabbitIndex);
+                }
             }
 
             Log.d("params", params[0]);
@@ -443,8 +511,54 @@ public class GameScene extends SceneBase implements GlObservable {
     }
 
     public void hit(EnvironmentViewModel envVM) {
+
+        if (isEnd()) return;
+        // フラグをtrueに
+        setEnd(true);
+
+        // ガス表示
+        setHitCnt(getCnt());
+        setCollisonEnvVM(envVM);
+
+        // 環境VM停止
+        //environmentViewModel.setPause(true);
+        //environmentOtherPlayerViewModel.setPause(true);
+
+
         // 自分の環境から
         if (envVM == environmentViewModel) {
+
+            /*
+            // 負け
+            MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "/sql/detail/add_result.py?id=" + environmentViewModel.getId() + "&res=0") {
+
+                // 接続成功時
+                @Override
+                public void success() {
+
+                    String res = "";
+                    // 表示
+                    try {
+                        res = result().replace("\n", "");
+                        Log.d("net", res);
+
+
+
+                    } catch (Exception e) {
+
+                    }
+                }
+
+                // 接続失敗時
+                @Override
+                public void fail(Exception e) {
+                    Log.d("net", "接続エラー:" + e.toString());
+                }
+
+            }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "/sql/detail/add_result.py?id=" + environmentViewModel.getId() + "&res=0");
+
+            myHttp.connect();
+            */
 
             // ダイアログ表示
             new Thread(new Runnable() {
@@ -452,7 +566,7 @@ public class GameScene extends SceneBase implements GlObservable {
                 public void run() {
 
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(5000);
                     }
                     catch(InterruptedException e){
 
@@ -460,6 +574,9 @@ public class GameScene extends SceneBase implements GlObservable {
 
                     Log.d("result", "lose");
 
+                    resultViewModel.showResult(false);
+
+                    /*
                     MainActivity.showOKDialog( "決着", "あなたの負け",
                             new UIListener() {
                                 @Override
@@ -467,6 +584,7 @@ public class GameScene extends SceneBase implements GlObservable {
                                     SceneManager.getInstance().setNextScene(new MenuScene());
                                 }
                             });
+                            */
                 }
             }).start();
 
@@ -481,12 +599,15 @@ public class GameScene extends SceneBase implements GlObservable {
                 public void run() {
 
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(5000);
                     }
                     catch(InterruptedException e){
 
                     }
 
+                    resultViewModel.showResult(true);
+
+                    /*
                     Log.d("result", "win");
                     MainActivity.showOKDialog( "決着", "あなたの勝ち！",
                             new UIListener() {
@@ -494,7 +615,7 @@ public class GameScene extends SceneBase implements GlObservable {
                                 public void onClick(View view) {
                                     SceneManager.getInstance().setNextScene(new MenuScene());
                                 }
-                            });
+                            });*/
                 }
             }).start();
 
@@ -625,6 +746,10 @@ public class GameScene extends SceneBase implements GlObservable {
         return environmentViewModel;
     }
 
+    public ResultViewModel getResultViewModel() {
+        return resultViewModel;
+    }
+
     /**
      * 相手を取得します。
      */
@@ -649,5 +774,21 @@ public class GameScene extends SceneBase implements GlObservable {
 
     public void setGlobalSeed(int globalSeed) {
         this.globalSeed = globalSeed;
+    }
+
+    public boolean isEnd() {
+        return endFlg;
+    }
+
+    public void setEnd(boolean endFlg) {
+        this.endFlg = endFlg;
+    }
+
+    public void setHitCnt(int hitCnt) {
+        this.hitCnt = hitCnt;
+    }
+
+    public void setCollisonEnvVM(EnvironmentViewModel collisonEnvVM) {
+        this.collisonEnvVM = collisonEnvVM;
     }
 }

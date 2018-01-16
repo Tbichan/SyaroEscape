@@ -18,6 +18,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public final static int NETWORK_ID = 1;     // ネットワークID
     public final static int PLAYER_NAME = 2;     // プレイヤーネーム
+    public final static int BGM = 3;              // BGM音量
+    public final static int SE = 4;              // SE音量
 
     private static DataBaseHelper dataBaseHelper = null;
 

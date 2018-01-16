@@ -39,6 +39,10 @@
             android:name=".activity.OKActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".activity.OptionActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Dialog" />
 
     </application>
 

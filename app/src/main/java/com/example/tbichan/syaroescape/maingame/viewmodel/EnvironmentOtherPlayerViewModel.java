@@ -1,7 +1,9 @@
 package com.example.tbichan.syaroescape.maingame.viewmodel;
 
+import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.maingame.model.Environment;
+import com.example.tbichan.syaroescape.maingame.model.Player;
 import com.example.tbichan.syaroescape.maingame.model.ai.NormalAI;
 import com.example.tbichan.syaroescape.network.MyHttp;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
@@ -48,6 +50,17 @@ public class EnvironmentOtherPlayerViewModel extends EnvironmentViewModel {
 
         // シード値設定
         r = new Random(getEnv().getSeed());
+    }
+
+    /**
+     * プレイヤーを作成します。
+     */
+    @Override
+    public Player createPlayer() {
+        Player player = new Player(this, "player");
+        player.setTextureId(R.drawable.syaro_icon_com);
+
+        return player;
     }
 
     @Override

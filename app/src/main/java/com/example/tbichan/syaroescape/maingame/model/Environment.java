@@ -117,6 +117,9 @@ public class Environment implements GlObservable, Cloneable {
 	// ひとつ前のプレイヤーインデックス
 	private int prePlayerIndex = 0;
 
+	// 衝突したか
+	private boolean hitFlg = false;
+
 
 	public Environment(String name, int seed, int level) {
 
@@ -529,6 +532,7 @@ public class Environment implements GlObservable, Cloneable {
 		if (playerMap[nextIndex / MAP_SIZE][nextIndex % MAP_SIZE] == PLAYER_ID) {
 			// 衝突
 			//MainActivity.showOKDialog(null);
+			hitFlg = true;
 			// パラメータに追加
 			if (params != null) params.add(PARAM_HIT);
 		}
@@ -1042,5 +1046,9 @@ public class Environment implements GlObservable, Cloneable {
 		}
 
 		return b;
+	}
+
+	public boolean isHit() {
+		return hitFlg;
 	}
 }

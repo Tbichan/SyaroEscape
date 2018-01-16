@@ -142,9 +142,8 @@ public class StatusViewModel extends GlViewModel implements GlObservable {
         }
 
         comNameModel.setTextureText(otherPlayerName);
-        comNameModel.setX(GlView.VIEW_WIDTH*0.5f+50f);
         comNameModel.setSize(2048, 600);
-        comNameModel.setX(GlView.VIEW_WIDTH*0.5f);
+        comNameModel.setX(GlView.VIEW_WIDTH*0.5f + 50f);
         comNameModel.setY(-320f);
 
         // 残り回数表示用
@@ -165,7 +164,7 @@ public class StatusViewModel extends GlViewModel implements GlObservable {
 
         lastModel.setTextureText("あと２かい");
         lastModel.setSize(2048, 600);
-        lastModel.setX(600f);
+        lastModel.setX(800f);
         lastModel.setY(-320f);
 
         // 残り回数表示用
@@ -186,7 +185,7 @@ public class StatusViewModel extends GlViewModel implements GlObservable {
 
         comLastmodel.setTextureText("あと２かい");
         comLastmodel.setSize(2048, 600);
-        comLastmodel.setX(600f + GlView.VIEW_WIDTH*0.5f);
+        comLastmodel.setX(800f + GlView.VIEW_WIDTH*0.5f);
         comLastmodel.setY(-320f);
 
         // カフェイン数字表示用

@@ -38,6 +38,7 @@ public class MenuScene extends SceneBase {
         // 効果音を指定
         addSE(R.raw.choice);
         addSE(R.raw.decision);
+        addSE(R.raw.button_click);
 
         // 画像を指定
         addBitmap(R.drawable.load_bg);
@@ -53,6 +54,7 @@ public class MenuScene extends SceneBase {
         addBitmap(R.drawable.menu_2);
         addBitmap(R.drawable.menu_3);
         addBitmap(R.drawable.menu_bg);
+        addBitmap(R.drawable.gear);
 
         // ID、プレイヤー名をよみこみ
         String playerName = "";
@@ -77,6 +79,7 @@ public class MenuScene extends SceneBase {
         glView.addViewModel(particleViewModel);
 
         // ネット接続
+        /*
         MyHttp myHttp = new MyHttp(NetWorkManager.DOMAIN + "/sql/show/show.py") {
 
             // 接続成功時
@@ -100,11 +103,9 @@ public class MenuScene extends SceneBase {
         }.setSecondUrl(NetWorkManager.DOMAIN_SECOND + "/sql/show/show.py");
 
         myHttp.connect();
+        */
 
-        // 音設定
-        MediaPlayer player = MediaPlayer.create(MainActivity.getContext(),R.raw.bgm_menu);
-        MyBGM myBGM = new MyBGM(player);
-        BGMManager.getInstance().addSE(myBGM);
+
 
     }
 
@@ -127,6 +128,7 @@ public class MenuScene extends SceneBase {
         CharaViewModel charaViewModel = new CharaViewModel(glView, this, "CharaViewModel");
         PlayerDetailViewModel playerDetailViewModel = new PlayerDetailViewModel(glView, this, "PlayerDetailViewModel");
         UIChoiceViewModel uiChoiceViewModel = new UIChoiceViewModel(glView, this, "UIChoiceViewModel");
+        uiChoiceViewModel.setBgViewModel(bgViewModel);
 
         // キャラVMを登録
         uiChoiceViewModel.setCharaViewModel(charaViewModel);
@@ -147,7 +149,11 @@ public class MenuScene extends SceneBase {
         // パーティクルを最前面に
         glView.moveFrontViewModel(particleViewModel);
 
-
+        // 音設定
+        MediaPlayer player = MediaPlayer.create(MainActivity.getContext(),R.raw.bgm_menu);
+        MyBGM myBGM = new MyBGM(player);
+        myBGM.setLoop(true);
+        BGMManager.getInstance().addSE(myBGM);
 
     }
 

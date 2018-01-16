@@ -1,6 +1,8 @@
 package com.example.tbichan.syaroescape.choicestory.viewmodel;
 
 import com.example.tbichan.syaroescape.R;
+import com.example.tbichan.syaroescape.activity.MainActivity;
+import com.example.tbichan.syaroescape.common.model.GlButton;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
@@ -69,6 +71,28 @@ public class BGViewModel extends GlViewModel {
         choiceStrModel.setPosition(GlView.VIEW_WIDTH * 0.5f - 768f, 400f);
         choiceStrModel.setUV(0f, 0.75f, 1f, 1f);
         addModel(choiceStrModel);
+
+        GlButton optionButton = new GlButton(this, "option") {
+            @Override
+            public void onClick() {
+                if (isVisible()) MainActivity.showOptionDialog(null);
+            }
+
+
+            @Override
+            public void onTex() {
+
+            }
+
+            @Override
+            public void upTex() {
+
+            }
+        };
+
+        optionButton.setSize(128, 128);
+        optionButton.setPosition(0f, GlView.VIEW_HEIGHT - optionButton.getHeight());
+        optionButton.setTextureId(R.drawable.gear);
     }
 
     @Override

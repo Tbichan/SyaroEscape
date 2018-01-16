@@ -1,6 +1,10 @@
 package com.example.tbichan.syaroescape.story;
 
+import android.graphics.Color;
+import android.media.MediaPlayer;
+
 import com.example.tbichan.syaroescape.R;
+import com.example.tbichan.syaroescape.activity.MainActivity;
 import com.example.tbichan.syaroescape.common.VibrationScene;
 import com.example.tbichan.syaroescape.common.model.StoryLoader;
 import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
@@ -12,6 +16,8 @@ import com.example.tbichan.syaroescape.opengl.bitmapnmanager.GlStringBitmap;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.sound.BGMManager;
+import com.example.tbichan.syaroescape.sound.MyBGM;
 import com.example.tbichan.syaroescape.story.viewmodel.BGViewModel;
 
 import java.util.HashSet;
@@ -35,6 +41,7 @@ public class StoryScene extends VibrationScene {
         // 効果音を指定
         addSE(R.raw.choice);
 
+
         // 画像を指定
         addBitmap(R.drawable.load_str);
         addBitmap(R.drawable.bar_frame);
@@ -43,7 +50,9 @@ public class StoryScene extends VibrationScene {
 
         addBitmap(R.drawable.particle);
 
-        addBitmap(R.drawable.flower_button);
+        //addBitmap(R.drawable.flower_button);
+        addBitmap(R.drawable.ant1);
+        addBitmap(R.drawable.ant_mini1);
         addBitmap(R.drawable.story1_bg);
         addBitmap(R.drawable.syaro_menu);
         addBitmap(R.drawable.chino_menu);
@@ -56,7 +65,7 @@ public class StoryScene extends VibrationScene {
         HashSet<String> needStrings = storyLoader.getLoadNeedStringList();
 
         for (String text: needStrings) {
-            addBitmap(new GlStringBitmap(text));
+            addBitmap(new GlStringBitmap(text).setColor(Color.WHITE));
         }
 
         NowLoadViewModel nowLoadViewModel = new NowLoadViewModel(glView, this, "NowLoadViewModel");
@@ -115,6 +124,12 @@ public class StoryScene extends VibrationScene {
 
         // パーティクルを最前面に
         glView.moveFrontViewModel(particleViewModel);
+
+        // 音設定
+        MediaPlayer player = MediaPlayer.create(MainActivity.getContext(),R.raw.bgm_story);
+        MyBGM myBGM = new MyBGM(player);
+        myBGM.setLoop(true);
+        BGMManager.getInstance().addSE(myBGM);
 
     }
 

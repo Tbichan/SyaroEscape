@@ -121,7 +121,7 @@ public class GlView extends GLSurfaceView {
         try {
             // vmにタップイベントを渡す
             for (GlViewModel glViewModel : viewmodelList) {
-                glViewModel.onTouchEvent(ev);
+                if (!glViewModel.isPause()) glViewModel.onTouchEvent(ev);
             }
         } catch (ConcurrentModificationException e) {
 

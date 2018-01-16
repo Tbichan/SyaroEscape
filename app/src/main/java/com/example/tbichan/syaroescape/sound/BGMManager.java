@@ -66,6 +66,31 @@ public class BGMManager {
 
         seWaitList.clear();
     }
-	
-	
+
+	/**
+	 * 再生中のBGMを止めます
+	 */
+	public void pause() {
+
+		for (int i = 0; i < seWaitList.size(); i++) {
+			MyBGM se = seWaitList.get(i);
+
+			// 削除
+			se.pause();
+		}
+	}
+
+	/**
+	 * とまっているBGMを再生させます。
+	 */
+	public void resume() {
+
+		for (int i = 0; i < seWaitList.size(); i++) {
+			MyBGM se = seWaitList.get(i);
+
+			// 削除
+			se.resume();
+		}
+	}
+
 }

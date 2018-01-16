@@ -55,6 +55,9 @@ public abstract class GlViewModel {
     // 名前
     private String name = "";
 
+    // 更新するか
+    private boolean pause = false;
+
     // 表示するか
     private boolean visible = true;
 
@@ -340,6 +343,14 @@ public abstract class GlViewModel {
 
     public final int getCnt() {
         return cnt;
+    }
+
+    public boolean isPause() {
+        return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 
     // タグの変更の通知用

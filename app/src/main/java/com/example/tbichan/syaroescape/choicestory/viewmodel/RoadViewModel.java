@@ -3,11 +3,14 @@ package com.example.tbichan.syaroescape.choicestory.viewmodel;
 import com.example.tbichan.syaroescape.R;
 import com.example.tbichan.syaroescape.common.model.GlButton;
 import com.example.tbichan.syaroescape.common.model.MoveModel;
+import com.example.tbichan.syaroescape.common.viewmodel.FadeViewModel;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
+import com.example.tbichan.syaroescape.opengl.store.StoreManager;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
 import com.example.tbichan.syaroescape.scene.SceneManager;
+import com.example.tbichan.syaroescape.sound.SEManager;
 import com.example.tbichan.syaroescape.story.StoryScene;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -36,8 +39,14 @@ public class RoadViewModel extends GlViewModel {
     // 背景VM
     private BGViewModel bgViewModel;
 
+    // FadeViewModel
+    private FadeViewModel fadeViewModel;
+
     // 選択ストーリーId
     private int choiceId = 0;
+
+    // 選択したかどうか
+    private boolean select = false;
 
     public RoadViewModel(GlView glView, SceneBase sceneBase, String name){
         super(glView, sceneBase, name);
@@ -56,11 +65,18 @@ public class RoadViewModel extends GlViewModel {
 
             @Override
             public void onClick() {
-                if (!isMove() && choiceId > 0) {
-                    // ストーリーに移動
-                    StoryScene storyScene = new StoryScene();
-                    storyScene.setStoryId(1);
-                    SceneManager.getInstance().setNextScene(storyScene);
+                if (!isMove() && choiceId > 0 && !select) {
+
+                    // 効果音再生
+                    SEManager.getInstance().playSE(R.raw.decision);
+
+                    StoreManager.save("story", 1);
+
+                    fadeViewModel.startFadeOut();
+
+                    select = true;
+
+
                 }
             }
 
@@ -69,7 +85,7 @@ public class RoadViewModel extends GlViewModel {
         charaModel.setPosition(0, 80);
         charaModel.setSize(250, 300);
 
-        createRoad(1 + 1);
+        createRoad(0 + 1);
         addModel(charaModel);
 
     }
@@ -153,13 +169,19 @@ public class RoadViewModel extends GlViewModel {
                 @Override
                 public void onClick() {
 
-                    choiceId = num;
+                    if (choiceId != num) {
 
-                    // キャラ移動
-                    charaModel.startMove(num * 500, 80f, 10);
+                        choiceId = num;
 
-                    // 背景に通知
-                    bgViewModel.choiceStoryId(choiceId);
+                        // キャラ移動
+                        charaModel.startMove(num * 500, 80f, 10);
+
+                        // 背景に通知
+                        bgViewModel.choiceStoryId(choiceId);
+
+                        // 効果音再生
+                        SEManager.getInstance().playSE(R.raw.button_click);
+                    }
                 }
 
 
@@ -207,5 +229,9 @@ public class RoadViewModel extends GlViewModel {
 
     public void setBgViewModel(BGViewModel bgViewModel) {
         this.bgViewModel = bgViewModel;
+    }
+
+    public void setFadeViewModel(FadeViewModel fadeViewModel) {
+        this.fadeViewModel = fadeViewModel;
     }
 }

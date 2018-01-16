@@ -19,6 +19,7 @@ import com.example.tbichan.syaroescape.opengl.GlObservable;
 import com.example.tbichan.syaroescape.opengl.model.GlModel;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.sound.SEManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -49,6 +50,12 @@ public class EnvironmentNetworkPlayerViewModel extends EnvironmentViewModel impl
     @Override
     public void queryEnv(String query, boolean net) {
         super.queryEnv(query, net);
+
+        /*
+        if (query.contains("move")) {
+            // 効果音再生
+            SEManager.getInstance().playSE(R.raw.player_click);
+        }*/
 
         if (net == true) {
 

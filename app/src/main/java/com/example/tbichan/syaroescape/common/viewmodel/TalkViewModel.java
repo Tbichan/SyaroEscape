@@ -91,12 +91,28 @@ public abstract class TalkViewModel extends GlViewModel {
 
             }
         };
-        bgModel.setSize(GlView.VIEW_WIDTH - 500, 500);
-        bgModel.setX(250);
-        bgModel.setTextureId(R.drawable.flower_button);
+        bgModel.setSize(GlView.VIEW_WIDTH - 200, 525);
+        bgModel.setX(100);
+        bgModel.setTextureId(R.drawable.ant1);
+
+        GlModel bgModel2 = new GlModel(this, "load_bg_mini") {
+            @Override
+            public void start() {
+
+            }
+
+            @Override
+            public void update() {
+
+            }
+        };
+        bgModel2.setSize(800, 170);
+        bgModel2.setX(150);
+        bgModel2.setY(bgModel.getHeight() - 30);
+        bgModel2.setTextureId(R.drawable.ant_mini1);
 
         addModel(bgModel);
-
+        addModel(bgModel2);
 
         // 会話文
         nextTalk();
@@ -178,7 +194,7 @@ public abstract class TalkViewModel extends GlViewModel {
 
             };
 
-            nameModel.setPosition(300f, 60f);
+            nameModel.setPosition(300f, 110f);
             nameModel.setSize(2048, 512);
             addModel(nameModel);
         }

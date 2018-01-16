@@ -6,6 +6,7 @@ import com.example.tbichan.syaroescape.maingame.model.MainGameButton;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.viewmodel.GlViewModel;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.sound.SEManager;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,9 @@ public class ActButtonUIViewModel extends GlViewModel {
                 for (EnvironmentViewModel environmentViewModel: environmentViewModelArrayList) {
                     environmentViewModel.moveButtonClick();
                 }
+
+                // 効果音再生
+                SEManager.getInstance().playSE(R.raw.button_click);
             }
 
 
@@ -69,6 +73,8 @@ public class ActButtonUIViewModel extends GlViewModel {
                 }
 
                 wazaUIViewModel.appear();
+                // 効果音再生
+                SEManager.getInstance().playSE(R.raw.button_click);
             }
 
 
@@ -95,6 +101,8 @@ public class ActButtonUIViewModel extends GlViewModel {
 
                     // カメラ移動モードに
                     environmentViewModel.cameraCanMoveMode();
+                    // 効果音再生
+                    SEManager.getInstance().playSE(R.raw.button_click);
                 }
             }
         };
@@ -114,6 +122,9 @@ public class ActButtonUIViewModel extends GlViewModel {
                 for (EnvironmentViewModel environmentViewModel: environmentViewModelArrayList) {
                     environmentViewModel.cameraCanMoveMode();
                 }
+
+                // 効果音再生
+                SEManager.getInstance().playSE(R.raw.button_click);
             }
         };
 

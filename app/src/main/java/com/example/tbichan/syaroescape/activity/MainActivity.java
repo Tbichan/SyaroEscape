@@ -20,6 +20,8 @@ import com.example.tbichan.syaroescape.menu.MenuScene;
 import com.example.tbichan.syaroescape.opengl.view.GlView;
 import com.example.tbichan.syaroescape.opengl.*;
 import com.example.tbichan.syaroescape.scene.SceneBase;
+import com.example.tbichan.syaroescape.sound.BGMManager;
+import com.example.tbichan.syaroescape.sound.SEManager;
 import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 import com.example.tbichan.syaroescape.title.TitleScene;
 import com.example.tbichan.syaroescape.ui.EditAlertListenerManager;
@@ -42,6 +44,13 @@ public class MainActivity extends Activity {
     private EditText editText;
 
     private AlertDialog ad = null;
+
+    // 別アクティビティにいるかどうか
+    private boolean elseActivity = false;
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,17 +113,29 @@ public class MainActivity extends Activity {
         Log.d("sql", str + " aaaaaa");
         */
 
+        // SE音量
+        float se = 0.5f;
+        try {
+            se = Float.parseFloat(DataBaseHelper.getDataBaseHelper().read(DataBaseHelper.SE));
+        } catch (Exception e) {
+            se = 0.5f;
+        }
+
+        SEManager.getInstance().setVolume(se);
+
     }
 
     @Override
-    protected void onResume(){
+    public void onResume(){
         super.onResume();
         if (glView != null) glView.onResume();
+        BGMManager.getInstance().resume();
     }
 
     @Override
-    protected void onPause(){
+    public void onPause(){
         super.onPause();
+        if (!elseActivity) BGMManager.getInstance().pause();
         //if (glView != null) glView.onPause();
     }
 
@@ -186,6 +207,8 @@ public class MainActivity extends Activity {
     // 名前ダイアログを表示します。
     public static void showNameDialog(UIListener pos){
 
+        instance.elseActivity = true;
+
         // 登録
         EditAlertListenerManager.setPositiveListener(pos);
 
@@ -199,6 +222,8 @@ public class MainActivity extends Activity {
 
     // OKCancelダイアログを表示します。
     public static void showOKCancelDialog(UIListener positive, UIListener negative){
+
+        instance.elseActivity = true;
 
         // 登録
         EditAlertListenerManager.setPositiveListener(positive);
@@ -216,6 +241,8 @@ public class MainActivity extends Activity {
     // OKCancelダイアログを表示します。
     public static void showOKDialog(String title, String message, UIListener pos){
 
+        instance.elseActivity = true;
+
         // 登録
         EditAlertListenerManager.setPositiveListener(pos);
 
@@ -232,7 +259,7 @@ public class MainActivity extends Activity {
 
     // テキストダイアログを表示します。
     public static void showTextDialog(String title, UIListener pos){
-
+        instance.elseActivity = true;
 
         // 画面遷移
         Intent intent = new Intent(instance, EditTextDialogActivity.class);
@@ -244,6 +271,8 @@ public class MainActivity extends Activity {
 
     // テキストダイアログを表示します。
     public static void showTextDialog(String title, UIListener pos, UIListener neg){
+
+        instance.elseActivity = true;
 
         // 登録
         EditAlertListenerManager.setPositiveListener(pos);
@@ -284,11 +313,25 @@ public class MainActivity extends Activity {
 
     }
 
+    // オプションダイアログを表示します。
+    public static void showOptionDialog(UIListener pos){
+
+        instance.elseActivity = true;
+                EditAlertListenerManager.setPositiveListener(pos);
+        // 画面遷移
+        Intent intent = new Intent(instance, OptionActivity.class);
+
+        // タイトルを送信
+        //intent.putExtra("title", title);
+        instance.startActivityForResult(intent, 1);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         // テクスチャリロード
         //MainActivity.getGlView().loadTexAll();
         Log.d("MainActivity", "return");
+        elseActivity = false;
     }
 
 }

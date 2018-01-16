@@ -30,6 +30,7 @@ public class MyBGM implements MediaPlayer.OnCompletionListener {
 			player.seekTo(0);
 			player.start();
 			nowPlaying = true;
+
 		}
 		
 		return true;
@@ -57,13 +58,32 @@ public class MyBGM implements MediaPlayer.OnCompletionListener {
 	public void endSound() {
 		
 	}
+
+	/**
+	 * 一時停止を行います。
+	 */
+	public void pause() {
+		if (player != null) player.pause();
+	}
+
+	/**
+	 * 一時停止を解除します。
+	 */
+	public void resume() {
+		if (player != null) player.start();
+	}
 	
 	/**
 	 * 開放
 	 */
 	public final void release() {
 		player.release();
+		player = null;
 		Log.d("sound", "release");
 	}
 
+
+	public void setLoop(boolean loop) {
+		this.loop = loop;
+	}
 }

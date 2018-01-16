@@ -49,7 +49,7 @@ public class OKActivity extends Activity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         Log.d("TouchEvent", "X:" + event.getX() + ",Y:" + event.getY());
-        MainActivity.getGlView().onTouchEvent(event);
+        //MainActivity.getGlView().onTouchEvent(event);
         return false;
     }
 
@@ -106,7 +106,7 @@ public class OKActivity extends Activity {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            MainActivity.getGlView().onTouchEvent(event);
+            //MainActivity.getGlView().onTouchEvent(event);
             return false;
         }
     }

@@ -19,8 +19,7 @@ import com.example.tbichan.syaroescape.sqlite.DataBaseHelper;
 import com.example.tbichan.syaroescape.ui.UIListener;
 
 public class BGViewModel extends GlViewModel {
-	
-	GlModel bgStrErr;
+
 
 	public BGViewModel(GlView glView, SceneBase sceneBase, String name) {
 		super(glView, sceneBase, name);
@@ -29,6 +28,25 @@ public class BGViewModel extends GlViewModel {
 
 	@Override
 	public void awake() {
+
+		GlModel bgModel = new GlModel(this, "BGModel") {
+			@Override
+			public void start() {
+
+			}
+
+			@Override
+			public void update() {
+
+			}
+		};
+
+		bgModel.setTextureId(R.drawable.connect_bg);
+		bgModel.setSize(GlView.VIEW_WIDTH, GlView.VIEW_HEIGHT);
+		bgModel.setPosition(0, 0);
+		bgModel.setAlpha(0.5f);
+
+		addModel(bgModel);
 
 		// 表示する文字
 		GlModel bgStr = new GlModel(this, "bgStr_wait") {
@@ -51,27 +69,6 @@ public class BGViewModel extends GlViewModel {
 
 		addModel(bgStr);
 
-		// �ڑ��G���[�̕���
-		bgStrErr = new GlModel(this, "bgStr_err") {
-			@Override
-			public void start() {
-
-			}
-
-			@Override
-			public void update() {
-
-			}
-		};
-
-		bgStrErr.setTextureId(R.drawable.tushin_err);
-		bgStrErr.setSize(1500, 300);
-
-		// ���S�ɏo��
-		bgStrErr.setPosition(GlView.VIEW_WIDTH*0.5f-750, GlView.VIEW_HEIGHT*0.5f-450);
-		bgStrErr.setVisible(false);
-
-		addModel(bgStrErr);
 	}
 
 	@Override
@@ -154,7 +151,7 @@ public class BGViewModel extends GlViewModel {
 
 							@Override
 							public void fail(Exception e) {
-								bgStrErr.setVisible(true);
+
 								//Log.d("net", "接続エラー:" + e.toString());
 								new Thread(new Runnable() {
 
@@ -188,7 +185,7 @@ public class BGViewModel extends GlViewModel {
 							 */
 							@Override
 							public void onClick(View view) {
-								findUser(playerId);
+								SceneManager.getInstance().setNextScene(new MenuScene());
 
 							}
 						}, new UIListener() {
@@ -199,7 +196,8 @@ public class BGViewModel extends GlViewModel {
 							 */
 							@Override
 							public void onClick(View view) {
-								SceneManager.getInstance().setNextScene(new MenuScene());
+								findUser(playerId);
+
 							}
 						});
 					}
@@ -211,7 +209,7 @@ public class BGViewModel extends GlViewModel {
 
 			@Override
 			public void fail(Exception e) {
-				bgStrErr.setVisible(true);
+
 				//Log.d("net", "接続エラー:" + e.toString());
 				new Thread(new Runnable(){
 
